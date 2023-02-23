@@ -1,1 +1,2 @@
-# libseija-sn
+# libseija-sn  
+seija scala native binding
