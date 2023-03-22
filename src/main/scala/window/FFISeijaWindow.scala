@@ -1,6 +1,6 @@
 package window
 import scalanative.unsafe._
-import ffi.LibSeija;
+import core.LibSeija;
 type CWindowConfig = CStruct4[CFloat,CFloat,CInt,CBool];
 
 object FFISeijaWindow {

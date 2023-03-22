@@ -1,4 +1,4 @@
-package ffi
+package core
 import core.libloading.Library
 import scalanative.unsafe._
 object LibSeija {

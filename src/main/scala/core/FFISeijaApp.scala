@@ -1,6 +1,6 @@
 package core
 import scalanative.unsafe._
-import ffi.LibSeija;
+
 object FFISeijaApp {
     private val appNewPtr = LibSeija.getFunc[CFuncPtr0[Ptr[Byte]]]("app_new");
     private val appRunPtr = LibSeija.getFunc[CFuncPtr1[Ptr[Byte],Unit]]("app_run");
