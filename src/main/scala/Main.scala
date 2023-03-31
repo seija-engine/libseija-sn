@@ -9,27 +9,23 @@ import input.InputModule
 import input.FFISeijaInput
 import core.FFISeijaCore
 import scala.scalanative.unsafe._
-
-
-
+import core.IGameApp
+import input.Input
+import input.KeyCode
 
 object Main {
+
   def OnStart() :Unit = {
       println("OnStart");
   }
   
   def main(args: Array[String]): Unit = {
-    val app = core.App();
+    val app = core.App;
     app.addModule(CoreModule());
     app.addModule(AssetModule("./res/"));
     app.addModule(TransformModule());
     app.addModule(WindowModule());
     app.addModule(InputModule());
-    
-    val startPtr = CFuncPtr.toPtr(CFuncPtr0.fromScalaFunction(() => {
-      println("closure?");
-    }));  
-    FFISeijaCore.appSetOnStart(app.ptr,startPtr);
 
     /*
     app.addModule(render.RenderModule(render.RenderConfig(
@@ -37,11 +33,25 @@ object Main {
       "./res/script.lua",
       List("./res/render_libs/")
     )));*/
-    app.start();
+    app.start(new DemoGame());
     app.run();
-  }
+  } 
+}
 
+
+
+class DemoGame extends IGameApp {
+  def OnStart() = {
+    println("OnStart");
+  }
   
+  def OnUpdate() = {
+    
+    if(Input.getKeyUp(KeyCode.A)) {
+      println("A");
+    }
+   
+  }
 }
 
 

@@ -8,12 +8,12 @@ case class WindowModule(
     val height:Float = 768f,
     val title:String = "Seija In Scala Native"
 ) extends IModule {
-    def OnAdd(app:App):Unit = {
+    def OnAdd(appPtr:Ptr[Byte]):Unit = {
        val configPtr = FFISeijaWindow.newWindowConfig();
        configPtr._1 = width;
        configPtr._2 = height;
        
        FFISeijaWindow.SetConfigTitle(configPtr,title);
-       FFISeijaWindow.addWinitModule(app.ptr,configPtr);
+       FFISeijaWindow.addWinitModule(appPtr,configPtr);
     }
 }

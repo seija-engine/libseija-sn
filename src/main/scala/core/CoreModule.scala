@@ -1,8 +1,10 @@
 package core
 
+import scala.scalanative.unsafe.Ptr
+
 
 class CoreModule extends IModule {
-  override def OnAdd(app: App): Unit = {
-     FFISeijaCore.addCoreModule(app.ptr);
+  override def OnAdd(appPtr: Ptr[Byte]): Unit = {
+     FFISeijaCore.addCoreModule(appPtr);
   }
 }
