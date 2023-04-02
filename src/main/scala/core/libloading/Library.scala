@@ -9,7 +9,7 @@ class Library(dllPtr:Handle) {
         Zone { implicit z =>
             val errCode = stackalloc[CUnsignedLong]()
             val cSymName = toCString(symbolName)
-            val ptr = slib.WinGetSymbol(dllPtr,cSymName,errCode);
+            val ptr = slib.dll_get_sym(dllPtr,cSymName,errCode);
             
             if((!errCode).toLong == 0L) {
                 val funcPtr = CFuncPtr.fromPtr[T](ptr);
@@ -28,7 +28,7 @@ object Library {
         Zone { implicit z =>
             val errCode = stackalloc[CUnsignedLong]()
             val cLibPath = toCString(libPath)
-            val handle = slib.WinLoadLib(cLibPath,errCode);
+            val handle = slib.load_dll(cLibPath,errCode);
             if((!errCode).toLong == 0L) {
                 Right(new Library(handle))
             } else {

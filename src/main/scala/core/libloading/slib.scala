@@ -5,7 +5,7 @@ import scalanative.windows.HandleApi._
 
 @extern
 object slib {
-    def WinLoadLib(dllPath:CString,errorCode:Ptr[CUnsignedLong]):Handle = extern;
+    def load_dll(dllPath:CString,errorCode:Ptr[CUnsignedLong]):Ptr[Byte] = extern;
 
-    def WinGetSymbol(dllHandle:Handle,symName:CString,errorCode:Ptr[CUnsignedLong]):Ptr[Byte] = extern;
+    def dll_get_sym(dllHandle:Ptr[Byte],symName:CString,errorCode:Ptr[CUnsignedLong]):Ptr[Byte] = extern;
 }

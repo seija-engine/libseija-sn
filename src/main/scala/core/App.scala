@@ -2,7 +2,6 @@ package core;
 import scalanative.unsafe._
 import scalanative.unsigned.UnsignedRichInt
 import scala.scalanative.unsigned.UInt
-import ffi._;
 import input.Input
 import scala.collection.mutable;
 
