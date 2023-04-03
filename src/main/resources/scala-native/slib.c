@@ -1,4 +1,5 @@
 #ifdef _WIN32
+#include <windows.h>
 #else
 #include <dlfcn.h>
 #endif
@@ -7,6 +8,12 @@
 
 void* load_dll(char* dllPath,unsigned long* errCode) {
     #ifdef _WIN32
+       HMODULE hmod = LoadLibrary(dllPath);
+       DWORD lastErr = GetLastError();
+       if(lastErr != 0) {
+        *errCode = lastErr;
+       }
+       return hmod;
     #else
        void* dllPtr = dlopen(dllPath, RTLD_LAZY);
        if(!dllPtr)
@@ -20,6 +27,12 @@ void* load_dll(char* dllPath,unsigned long* errCode) {
 
 void* dll_get_sym(void* handle,const char* name,unsigned long* errCode) {
     #ifdef _WIN32
+      FARPROC symPtr = GetProcAddress(handle,name);
+      DWORD lastErr = GetLastError();
+      if(lastErr != 0) {
+          *errCode = lastErr;
+      }
+      return symPtr;
     #else
     void* symPtr = dlsym(handle, name);
     if(!symPtr)
@@ -30,24 +43,3 @@ void* dll_get_sym(void* handle,const char* name,unsigned long* errCode) {
     return symPtr;
     #endif
 }
-
-#ifdef _WIN32
-HMODULE WinLoadLib(char* dllPath,DWORD* outError) {
-    HMODULE hmod = LoadLibrary(dllPath);
-    DWORD lastErr = GetLastError();
-    if(lastErr != 0) {
-        *outError = lastErr;
-    }
-    return hmod;
-}
-
-FARPROC WinGetSymbol(HMODULE hmodule,char* symName,DWORD* outError) {
-   FARPROC symPtr = GetProcAddress(hmodule,symName);
-    DWORD lastErr = GetLastError();
-    if(lastErr != 0) {
-        *outError = lastErr;
-    }
-    return symPtr;
-}
-#else
-#endif
