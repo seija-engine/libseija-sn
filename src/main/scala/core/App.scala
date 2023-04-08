@@ -18,6 +18,7 @@ trait IGameApp {
 
 object App {
   val appPtr = FFISeijaApp.appNew();
+  var worldPtr:Ptr[Byte] = null;
   var moduleList:mutable.ArrayBuffer[IModule]  = new mutable.ArrayBuffer();
   var gameApp:IGameApp = null;
 
@@ -38,6 +39,7 @@ object App {
   }
 
   def OnStart(worldPtr:Ptr[Byte]) = {
+    App.worldPtr = worldPtr;
     this.moduleList.foreach(_.updateECSPtr(worldPtr))
 
     this.gameApp.OnStart();

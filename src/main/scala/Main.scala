@@ -12,7 +12,9 @@ import scala.scalanative.unsafe._
 import core.IGameApp
 import input.Input
 import input.KeyCode
-
+import core.Entity
+import math._;
+import core.{*,given}
 object Main {
 
   def OnStart() :Unit = {
@@ -42,7 +44,9 @@ object Main {
 
 class DemoGame extends IGameApp {
   def OnStart() = {
-    println("OnStart");
+     Entity.spawn().add[TestData]((cache) => {
+        cache.pos = Vector3.zero;
+     });
   }
   
   def OnUpdate() = {
