@@ -1,26 +1,22 @@
 package transform
-import core.RawComponentBuilder
-import math.Vector3
+import math.{Vector3,Quat}
 import scalanative.unsafe._
+import core.{RawComponentBuilder,RawComponent};
+import core.Entity
 
-/*
-class Transform extends RawComponent {
-    type Builder = TransformCache
-};
+class Transform;
 
-given TransformComponent:RawComponentClass[Transform] with {
-    def builder():TransformCache = new TransformCache()
+class TransformBuilder extends RawComponentBuilder {
+    var position:Vector3 = new Vector3(0,0,0)
+    var scale:Vector3 = new Vector3(1,1,1)
+    var quat:Quat = new Quat(0,0,0,1)
+    def build(entity:Entity):Unit = {
+
+    }
 }
 
-class TransformCache extends RawComponentBuilder {
-    var position:Vector3 = new Vector3(0,0,0);
-    var scale:Vector3 = new Vector3(1,1,1);
-    
+given TransformComponent:RawComponent[Transform] with {
+    type BuilderType = TransformBuilder
 
-    def build() = {
-       val posPtr = stackalloc[CStruct3[Float,Float,Float]]()
-       position.toPtr(posPtr)
-       val scalePtr = stackalloc[CStruct3[Float,Float,Float]]()
-       scale.toPtr(scalePtr)
-    }
-}*/
+    def builder():BuilderType = new TransformBuilder()
+}

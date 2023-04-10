@@ -5,7 +5,10 @@ case class Vector3(val x:Float,val y:Float,val z:Float) {
     def +(other:Vector3):Vector3 = Vector3(x + other.x,y + other.y,z + other.z)
     
     def normalize():Vector3 = Vector3.Normalize(this)
+
     def length():Float = Math.sqrt(x * x + y * y + z * z).toFloat
+
+    def mulScalar(other:Float):Vector3 = Vector3(x * other,y * other,z * other)
 
     def toPtr(ptr:Ptr[CStruct3[Float,Float,Float]]) = {
         ptr._1 = x

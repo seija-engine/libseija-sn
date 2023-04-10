@@ -14,7 +14,7 @@ import input.Input
 import input.KeyCode
 import core.Entity
 import math._;
-import core.{*,given}
+import transform.{Transform,TransformComponent}
 object Main {
 
   def OnStart() :Unit = {
@@ -44,9 +44,7 @@ object Main {
 
 class DemoGame extends IGameApp {
   def OnStart() = {
-     Entity.spawn().add[TestData]((cache) => {
-        cache.pos = Vector3.zero;
-     });
+     Entity.spawn().add[Transform]()
   }
   
   def OnUpdate() = {
