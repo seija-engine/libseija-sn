@@ -1,7 +1,14 @@
 package math
 
+import scala.scalanative.unsafe.{Ptr,CStruct4}
+
 case class Quat(var x:Float,val y:Float,val z:Float,val w:Float) {
-  
+    def toPtr(ptr:Ptr[CStruct4[Float,Float,Float,Float]]) = {
+        ptr._1 = x
+        ptr._2 = y
+        ptr._3 = z
+        ptr._4 = w
+    }
 }
 
 object Quat {

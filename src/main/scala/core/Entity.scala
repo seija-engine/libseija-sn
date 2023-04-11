@@ -1,28 +1,45 @@
 package core
 import math.Vector3
+import scala.scalanative.unsigned.UInt
 
-class Entity(private val id:Long) extends AnyVal {
-  
+class Entity(val id:Long) extends AnyVal {
+  def add[T](using v:RawComponent[T])(f:(builder:v.BuilderType) => Unit = null):Entity = {
+     val builder = v.builder();
+     if(f != null) {
+       f(builder);
+     }
+     builder.build(this);
+     this
+  }
 }
 
 object Entity {
-
-    def spawnEmpty() :Entity = {
-      val id = FFISeijaCore.coreSpawnEntity(App.worldPtr);
-      new Entity(id);
+    def from(generation:UInt,index:UInt):Entity = {
+      Entity((generation.toLong << 32) | index.toLong)
     }
 
-    def spawn():EntityBuilder = new EntityBuilder()
+    def spawnEmpty():Entity = {
+        Entity(FFISeijaCore.coreSpawnEntity(App.worldPtr))
+    }
+
+    
+
+    def spawn():EntityBuilder = new EntityBuilder(Entity(FFISeijaCore.coreSpawnEntity(App.worldPtr)))
 }
 
-case class EntityBuilder() {
+case class EntityBuilder(val entity:Entity) {
   
   def add[T](using v:RawComponent[T])(f:(builder:v.BuilderType) => Unit = null):EntityBuilder = {
+    val builder = v.builder();
     if(f != null) {
-      val builder = v.builder();
-      f(builder);  
+      f(builder);
     }
+    builder.build(this.entity)
     this
+  }
+
+  def build():Entity = {
+    entity
   }
   
 }

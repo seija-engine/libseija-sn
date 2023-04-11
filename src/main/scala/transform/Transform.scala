@@ -11,9 +11,9 @@ class TransformBuilder extends RawComponentBuilder {
     var scale:Vector3 = new Vector3(1,1,1)
     var quat:Quat = new Quat(0,0,0,1)
     def build(entity:Entity):Unit = {
-
+        FFISeijaTransform.transformAdd(core.App.worldPtr,entity,this)
     }
-}
+}   
 
 given TransformComponent:RawComponent[Transform] with {
     type BuilderType = TransformBuilder

@@ -15,6 +15,7 @@ import input.KeyCode
 import core.Entity
 import math._;
 import transform.{Transform,TransformComponent}
+import transform.FFISeijaTransform
 object Main {
 
   def OnStart() :Unit = {
@@ -44,7 +45,13 @@ object Main {
 
 class DemoGame extends IGameApp {
   def OnStart() = {
-     Entity.spawn().add[Transform]()
+    println("OnStart");
+    val entity = Entity.spawnEmpty().add[Transform](v => {
+      v.position = new Vector3(1,2,3);
+      v.quat = new Quat(4,5,6,7);
+      v.scale = new Vector3(8,9,10);
+    });
+    FFISeijaTransform.transformDebugLog(core.App.worldPtr,entity);
   }
   
   def OnUpdate() = {

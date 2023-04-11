@@ -1,5 +1,5 @@
 package math
-import scalanative.unsafe.{Ptr,CStruct3}
+import scalanative.unsafe.{Ptr,CStruct3,CStruct4}
 
 case class Vector3(val x:Float,val y:Float,val z:Float) {
     def +(other:Vector3):Vector3 = Vector3(x + other.x,y + other.y,z + other.z)
@@ -14,6 +14,12 @@ case class Vector3(val x:Float,val y:Float,val z:Float) {
         ptr._1 = x
         ptr._2 = y
         ptr._3 = z
+    }
+    def toPtr4(ptr:Ptr[CStruct4[Float,Float,Float,Float]]) = {
+        ptr._1 = x
+        ptr._2 = y
+        ptr._3 = z
+        ptr._4 = 0
     }
 }
 
