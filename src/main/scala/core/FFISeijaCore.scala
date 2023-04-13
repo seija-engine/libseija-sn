@@ -8,6 +8,7 @@ object FFISeijaCore {
     private val appSetOnStartPtr = LibSeija.getFunc[CFuncPtr2[Ptr[Byte],Ptr[Byte],Unit]]("app_set_on_start");
     private val appSetOnUpdatePtr = LibSeija.getFunc[CFuncPtr2[Ptr[Byte],Ptr[Byte],Unit]]("app_set_on_update");
     private val coreSpawnEntityPtr = LibSeija.getFunc[CFuncPtr1[Ptr[Byte],Long]]("core_spawn_entity");
+    private val initLogPtr = LibSeija.getFunc[CFuncPtr1[CString,Unit]]("init_log");
     //private val coreSpawnEmptyEntityPtr = LibSeija.getFunc[CFuncPtr2[Ptr[Byte],Ptr[Byte],Unit]]("core_spawn_empty_entity");
 
     def addCoreModule(appPtr:Ptr[Byte]):Unit = {
@@ -24,6 +25,10 @@ object FFISeijaCore {
 
     def coreSpawnEntity(worldPtr:Ptr[Byte]):Long = {
         coreSpawnEntityPtr(worldPtr)
+    }
+
+    def initLog(level:String):Unit =Zone { implicit z =>
+        initLogPtr(toCString(level))
     }
 
     /*

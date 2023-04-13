@@ -11,6 +11,7 @@ class Entity(val id:Long) extends AnyVal {
      builder.build(this);
      this
   }
+  def get[T]()(using v:RawComponent[T]):v.RawType = v.getRaw(this)
 }
 
 object Entity {

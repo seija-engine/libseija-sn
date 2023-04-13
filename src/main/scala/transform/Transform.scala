@@ -17,6 +17,15 @@ class TransformBuilder extends RawComponentBuilder {
 
 given TransformComponent:RawComponent[Transform] with {
     type BuilderType = TransformBuilder
-
+    type RawType = RawTransform
     def builder():BuilderType = new TransformBuilder()
+
+    def getRaw(entity:Entity):RawTransform = FFISeijaTransform.transformGet(core.App.worldPtr,entity.id)
 }
+
+extension (t:RawTransform) {
+    def setPosition(v3:Vector3):Unit = {
+        v3.toPtr4(t.at1)
+    }
+}
+    

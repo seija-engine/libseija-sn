@@ -8,6 +8,7 @@
 
 void* load_dll(char* dllPath,unsigned long* errCode) {
     #ifdef _WIN32
+       SetLastError(0);
        HMODULE hmod = LoadLibrary(dllPath);
        DWORD lastErr = GetLastError();
        if(lastErr != 0) {
@@ -27,6 +28,7 @@ void* load_dll(char* dllPath,unsigned long* errCode) {
 
 void* dll_get_sym(void* handle,const char* name,unsigned long* errCode) {
     #ifdef _WIN32
+      SetLastError(0);
       FARPROC symPtr = GetProcAddress(handle,name);
       DWORD lastErr = GetLastError();
       if(lastErr != 0) {
