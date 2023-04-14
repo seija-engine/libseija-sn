@@ -15,6 +15,7 @@ import input.KeyCode
 import core.Entity
 import math._;
 import transform.{Transform,TransformComponent}
+import render.{Camera,CameraComponent}
 import scalanative.unsafe.CFuncPtr1.fromScalaFunction
 import transform.setPosition
 
@@ -25,6 +26,8 @@ object Main {
   }
   
   def main(args: Array[String]): Unit = {
+    val file = java.io.File("");
+    println(file.getAbsolutePath());
     val app = core.App;
     FFISeijaCore.initLog("INFO");
     app.addModule(CoreModule());
@@ -34,9 +37,9 @@ object Main {
     app.addModule(InputModule());
    
     app.addModule(render.RenderModule(render.RenderConfig(
-      "./res/config.json",
-      "./res/script.lua",
-      List("./res/render_libs/")
+      "example/.shader",
+      "example/script/render.clj",
+      List("example/script")
     )));
     app.start(new DemoGame());
     app.run();
@@ -48,12 +51,15 @@ object Main {
 class DemoGame extends IGameApp {
   def OnStart() = {
     println("OnStart");
-    /*
     val entity = Entity.spawnEmpty().add[Transform](v => {
       v.position = new Vector3(1,2,3);
       v.quat = new Quat(4,5,6,7);
       v.scale = new Vector3(8,9,10);
+    }).add[Camera](v => {
+      
     });
+    /*
+    
     FFISeijaTransform.transformDebugLog(core.App.worldPtr,entity);
     val rawT = entity.get[Transform]()
     val entity2 = Entity.spawnEmpty().add[Transform]();

@@ -1,3 +1,4 @@
+.shader
 target
 .bloop
 .scalafmt.conf
