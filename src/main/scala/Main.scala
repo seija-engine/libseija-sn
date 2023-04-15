@@ -15,9 +15,12 @@ import input.KeyCode
 import core.Entity
 import math._;
 import transform.{Transform,TransformComponent}
-import render.{Camera,CameraComponent}
+import render.{Camera,CameraComponent,TextureType}
 import scalanative.unsafe.CFuncPtr1.fromScalaFunction
 import transform.setPosition
+import asset.FFISeijaAsset
+import asset.Assets
+import asset.HandleUntyped
 
 object Main {
 
@@ -31,7 +34,7 @@ object Main {
     val app = core.App;
     FFISeijaCore.initLog("INFO");
     app.addModule(CoreModule());
-    app.addModule(AssetModule("./res/"));
+    app.addModule(AssetModule("example/assets"));
     app.addModule(TransformModule());
     app.addModule(WindowModule());
     app.addModule(InputModule());
@@ -49,30 +52,21 @@ object Main {
 
 
 class DemoGame extends IGameApp {
+  var testTexure:HandleUntyped = null;
   def OnStart() = {
     println("OnStart");
-    val entity = Entity.spawnEmpty().add[Transform](v => {
-      v.position = new Vector3(1,2,3);
-      v.quat = new Quat(4,5,6,7);
-      v.scale = new Vector3(8,9,10);
-    }).add[Camera](v => {
-      
-    });
-    /*
-    
-    FFISeijaTransform.transformDebugLog(core.App.worldPtr,entity);
-    val rawT = entity.get[Transform]()
-    val entity2 = Entity.spawnEmpty().add[Transform]();
-    rawT.setPosition(Vector3(6,66,666))
-    FFISeijaTransform.transformDebugLog(core.App.worldPtr,entity);
-    */
+    val cameraEntity = Entity.spawnEmpty().add[Transform]().add[Camera]();
+    val cubeEntity = Entity.spawnEmpty().add[Transform]();
   }
 
   
   def OnUpdate() = {
     
-    if(Input.getKeyUp(KeyCode.A)) {
-      println("A");
+    if(Input.getKeyDown(KeyCode.A)) {
+      this.testTexure = Assets.loadSync("texture/b.jpg").get;
+      println(this.testTexure);
+    } else if(Input.getKeyUp(KeyCode.A)) {
+      //Assets.unload(this.testTexure);
     }
    
   }
