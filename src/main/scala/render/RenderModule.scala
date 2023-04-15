@@ -4,6 +4,7 @@ import scala.scalanative.unsafe.Ptr
 
 final case class RenderModule(val config:RenderConfig) extends IModule {
     def OnAdd(appPtr: Ptr[Byte]): Unit = {
-        FFISeijaRender.addRenderModule(config.toPtr(), appPtr)
+        val configPtr = config.toPtr();
+        FFISeijaRender.addRenderModule(configPtr, appPtr)
     }
 }

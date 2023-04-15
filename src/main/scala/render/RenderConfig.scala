@@ -10,6 +10,7 @@ case class RenderConfig(
             FFISeijaRender.renderConfigSetConfigPath(ptr, configPath)
             FFISeijaRender.renderConfigSetScriptPath(ptr, scriptPath)
             renderLibPaths.foreach(path => FFISeijaRender.renderConfigAddRenderLibPath(ptr, path))
+            FFISeijaRender.renderConfigAddPbr(ptr);
             ptr
         }
 }

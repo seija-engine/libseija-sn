@@ -1,0 +1,6 @@
+{
+    "material":"/materials/baseColor.mat.clj",
+    "props":{
+        "color":[1,0,0,1]
+    }
+ }

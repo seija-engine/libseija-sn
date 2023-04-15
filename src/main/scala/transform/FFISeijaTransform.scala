@@ -24,9 +24,9 @@ object FFISeijaTransform {
   def transformAdd(worldPtr:Ptr[Byte],entity:Entity,transformBuilder:TransformBuilder):Unit = {
       
       val trans = stackalloc[STransform]();
-      transformBuilder.position.toPtr4(trans.at1);
+       transformBuilder.scale.toPtr4(trans.at1);
       transformBuilder.quat.toPtr(trans.at2);
-      transformBuilder.scale.toPtr(trans.at3);
+      transformBuilder.position.toPtr(trans.at3);
       transformAddPtr(worldPtr,entity.id,trans)
      
   }

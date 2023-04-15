@@ -1,5 +1,6 @@
 package render
 import core.LibSeija;
+import asset.HandleUntyped;
 import scalanative.unsafe._
 
 type RawCamera = CStruct5[CInt,CInt,CInt,CBool,CChar]
@@ -20,7 +21,11 @@ object FFISeijaRender {
     private val renderCameraSetProjectionPtr = LibSeija.getFunc[CFuncPtr2[Ptr[RawCamera],Ptr[RawProjection],Unit]]("render_camera_set_projection");
     private val renderEntityAddCameraPtr = LibSeija.getFunc[CFuncPtr3[Ptr[Byte],Long,Ptr[RawCamera],Unit]]("render_entity_add_camera");
     private val renderEntityGetCameraPtr = LibSeija.getFunc[CFuncPtr2[Ptr[Byte],Long,Ptr[RawCamera]]]("render_entity_get_camera");
-    
+
+    private val renderEntityAddMeshPtr = LibSeija.getFunc[CFuncPtr5[Ptr[Byte],Long,Long,Long,Long,Unit]]("render_entity_add_mesh");
+    private val renderEntityAddMaterialPtr = LibSeija.getFunc[CFuncPtr5[Ptr[Byte],Long,Long,Long,Long,Unit]]("render_entity_add_material");
+    private val renderConfigAddPbrPtr = LibSeija.getFunc[CFuncPtr1[Ptr[Byte],Unit]]("render_config_add_pbr_plugin");
+
     def createRenderConfig(): Ptr[Byte] = createRenderConfigPtr()
 
     def addRenderModule(config: Ptr[Byte], appPtr: Ptr[Byte]): Unit = addRenderModulePtr(appPtr,config )
@@ -65,5 +70,18 @@ object FFISeijaRender {
 
     def renderEntityGetCamera(worldPtr: Ptr[Byte], entityID: Long): Ptr[RawCamera] = {
         renderEntityGetCameraPtr(worldPtr, entityID)
+    }
+
+
+    def renderEntityAddMesh(worldPtr: Ptr[Byte], entityID: Long,handle:HandleUntyped): Unit = {
+        renderEntityAddMeshPtr(worldPtr, entityID, handle.id, handle.ta, handle.tb)
+    }
+
+    def renderEntityAddMaterial(worldPtr: Ptr[Byte], entityID: Long,handle:HandleUntyped): Unit = {
+        renderEntityAddMaterialPtr(worldPtr, entityID, handle.id, handle.ta, handle.tb)
+    }
+
+    def renderConfigAddPbr(config: Ptr[Byte]): Unit = {
+        renderConfigAddPbrPtr(config)
     }
 }
