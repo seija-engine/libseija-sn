@@ -28,7 +28,6 @@ object Vector3 {
     final val zero = new Vector3(0,0,0);
     final val one = new Vector3(1,1,1);
     def Normalize(v:Vector3):Vector3 = {
-        
         v
     }
 }

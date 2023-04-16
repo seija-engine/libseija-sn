@@ -16,8 +16,8 @@ object FFISeijaRender {
     private val renderConfigAddRenderLibPath = LibSeija.getFunc[CFuncPtr2[Ptr[Byte],CString,Unit]]("render_config_add_render_lib_path");
     private val createCameraPtr = LibSeija.getFunc[CFuncPtr0[Ptr[RawCamera]]]("render_create_camera");
     private val renderCameraSetPath = LibSeija.getFunc[CFuncPtr2[Ptr[RawCamera],CString,Unit]]("render_camera_set_path");
-    private val renderCreateOrthoProjectionPtr = LibSeija.getFunc[CFuncPtr1[RawOrthographic,Ptr[RawProjection]]]("render_create_ortho_projection");
-    private val renderCreatePerpectiveProjectionPtr = LibSeija.getFunc[CFuncPtr1[RawPerspective,Ptr[RawProjection]]]("render_create_perpective_projection");
+    private val renderCreateOrthoProjectionPtr = LibSeija.getFunc[CFuncPtr1[Ptr[RawOrthographic],Ptr[RawProjection]]]("render_create_ortho_projection");
+    private val renderCreatePerpectiveProjectionPtr = LibSeija.getFunc[CFuncPtr1[Ptr[RawPerspective],Ptr[RawProjection]]]("render_create_perpective_projection");
     private val renderCameraSetProjectionPtr = LibSeija.getFunc[CFuncPtr2[Ptr[RawCamera],Ptr[RawProjection],Unit]]("render_camera_set_projection");
     private val renderEntityAddCameraPtr = LibSeija.getFunc[CFuncPtr3[Ptr[Byte],Long,Ptr[RawCamera],Unit]]("render_entity_add_camera");
     private val renderEntityGetCameraPtr = LibSeija.getFunc[CFuncPtr2[Ptr[Byte],Long,Ptr[RawCamera]]]("render_entity_get_camera");
@@ -55,7 +55,7 @@ object FFISeijaRender {
     }
 
     def renderCreatePerpectiveProjection(per: Perspective): Ptr[RawProjection] = {
-        val rawPer = stackalloc[RawPerspective]()
+        val rawPer:Ptr[RawPerspective] = stackalloc[RawPerspective]()
         per.toPtr(rawPer)
         renderCreatePerpectiveProjectionPtr(rawPer)
     }

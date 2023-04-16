@@ -1,4 +1,5 @@
 .shader
+example/config.json
 target
 .bloop
 .scalafmt.conf
@@ -7,3 +8,4 @@ target
 /.vscode
 /project/target
 /project/project
+liblib_seija.so

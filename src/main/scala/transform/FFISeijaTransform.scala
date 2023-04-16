@@ -16,7 +16,7 @@ object FFISeijaTransform {
   private val transformDebugLogPtr = LibSeija.getFunc[CFuncPtr2[Ptr[Byte],Long,Unit]]("transform_debug_log");
   private val transformMutViewPtr = LibSeija.getFunc[CFuncPtr3[Ptr[Byte],Long,Ptr[Byte],Unit]]("transform_mut_view");
   private val transformGetPtr = LibSeija.getFunc[CFuncPtr2[Ptr[Byte],Long,Ptr[STransform]]]("transform_get_ptr");
-
+  private val transformSetParentPtr = LibSeija.getFunc[CFuncPtr4[Ptr[Byte],Long,Long,Boolean,Unit]]("transform_set_parent");
   def addTransformModule(appPtr:Ptr[Byte]):Unit = {
       addTransformModulePtr(appPtr)
   }
@@ -39,4 +39,8 @@ object FFISeijaTransform {
   }
 
   def transformGet(worldPtr:Ptr[Byte],id:Long):Ptr[STransform] = transformGetPtr(worldPtr,id)
+
+  def transformSetParent(worldPtr:Ptr[Byte],entity:Long,parent:Long,isNull:Boolean) = {
+      transformSetParentPtr(core.App.worldPtr,entity,parent,isNull)
+  }
 }

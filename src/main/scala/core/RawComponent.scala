@@ -1,4 +1,5 @@
 package core;
+
 trait RawComponent[T] {
     type BuilderType <: RawComponentBuilder;
     type RawType;

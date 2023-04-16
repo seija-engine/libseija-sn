@@ -10,8 +10,12 @@ class TransformBuilder extends RawComponentBuilder {
     var position:Vector3 = new Vector3(0,0,0)
     var scale:Vector3 = new Vector3(1,1,1)
     var quat:Quat = new Quat(0,0,0,1)
+    var parent:Option[Entity] = None;
     def build(entity:Entity):Unit = {
         FFISeijaTransform.transformAdd(core.App.worldPtr,entity,this)
+        if(parent.isDefined) {
+            FFISeijaTransform.transformSetParent(core.App.worldPtr,entity.id,parent.get.id,false)
+        }
     }
 }   
 

@@ -1,5 +1,6 @@
 package render
 import scalanative.unsafe._
+import ui.FFISeijaUI
 
 case class RenderConfig(
     configPath: String,
@@ -11,6 +12,7 @@ case class RenderConfig(
             FFISeijaRender.renderConfigSetScriptPath(ptr, scriptPath)
             renderLibPaths.foreach(path => FFISeijaRender.renderConfigAddRenderLibPath(ptr, path))
             FFISeijaRender.renderConfigAddPbr(ptr);
+            FFISeijaUI.renderConfigSetUI(ptr)
             ptr
         }
 }
