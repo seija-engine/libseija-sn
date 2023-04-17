@@ -1,12 +1,12 @@
 package ui
-
-import core.LibSeija
 import scalanative.unsafe._
 import math.RawVector4
 import math.Vector4
-import core.App.worldPtr
-import core.{Entity,RawFFI}
+import _root_.core.{Entity,RawFFI,LibSeija}
 import math.Vector4RawFFI
+import ui.core.RawEventNode
+import ui.core.EventNode
+
 
 type RawSpriteSheet = Ptr[Byte]
 
@@ -21,6 +21,9 @@ object FFISeijaUI {
     private val entityAddCanvasPtr = LibSeija.getFunc[CFuncPtr2[Ptr[Byte],Long,Unit]]("entity_add_canvas");
     private val entityAddUISystemPtr = LibSeija.getFunc[CFuncPtr2[Ptr[Byte],Long,Unit]]("entity_add_ui_system");
     private val entityAddSpriteSimplePtr = LibSeija.getFunc[CFuncPtr5[Ptr[Byte],Long,Int,Long,Ptr[RawVector4],Unit]]("entity_add_sprite_simple");
+    private val entityAddSpriteSlicePtr = LibSeija.getFunc[CFuncPtr6[Ptr[Byte],Long,Int,Long,Ptr[RawVector4],Ptr[RawVector4],Unit]]("entity_add_sprite_slice");
+    private val entityAddEventNodePtr = LibSeija.getFunc[CFuncPtr4[Ptr[Byte],Long,Ptr[RawEventNode],CString,Unit]]("entity_add_event_node");
+    private val readUIEventsPtr = LibSeija.getFunc[CFuncPtr2[Ptr[Byte],Ptr[Byte],Unit]]("read_ui_events");
 
     def addSpriteSheetModule(appPtr:Ptr[Byte]):Unit = addSpritesheetModulePtr(appPtr)
     def spriteSheetAssetGet(worldPtr:Ptr[Byte],id:Long):RawSpriteSheet = spriteSheetAssetGetPtr(worldPtr,id);
@@ -55,5 +58,22 @@ object FFISeijaUI {
         val v4Ptr = stackalloc[RawVector4]()
         Vector4RawFFI.toRaw(color,v4Ptr);
         entityAddSpriteSimplePtr(worldPtr,entity,index,atlasId,v4Ptr)
+    }
+
+    def entityAddSpriteSlice(worldPtr:Ptr[Byte],entity:Long,index:Int,atlasId:Long,thickness:Vector4,color:Vector4) = {
+        val thicknessPtr = stackalloc[RawVector4]()
+        Vector4RawFFI.toRaw(thickness,thicknessPtr);
+        val colorPtr = stackalloc[RawVector4]()
+        Vector4RawFFI.toRaw(color,colorPtr);
+        entityAddSpriteSlicePtr(worldPtr,entity,index,atlasId,thicknessPtr,colorPtr)
+    }
+
+    def entityAddEventNode(worldPtr:Ptr[Byte],entity:Long,eventNodePtr:Ptr[RawEventNode],name:String) =  Zone { implicit z =>
+        entityAddEventNodePtr(worldPtr,entity,eventNodePtr,toCString(name))
+    }
+
+    def readUIEvents(worldPtr:Ptr[Byte],fPtr:CFuncPtr) = {
+        val funcPtr = CFuncPtr.toPtr(fPtr);
+        readUIEventsPtr(worldPtr,funcPtr);
     }
 }

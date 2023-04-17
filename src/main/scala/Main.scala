@@ -11,6 +11,7 @@ import core.FFISeijaCore
 import scala.scalanative.unsafe._
 import core.IGameApp
 import input.Input
+import scalanative.unsafe.CFuncPtr3.fromScalaFunction
 import input.KeyCode
 import core.Entity
 import math._;
@@ -26,6 +27,7 @@ import render.{
   Material,
   MaterialAssetType
 }
+import java.util.ArrayList;
 import scalanative.unsafe.CFuncPtr1.fromScalaFunction
 import transform.setPosition
 import asset.FFISeijaAsset
@@ -49,12 +51,15 @@ import ui.{
   Sprite,
   SpriteComponent
 }
+import ui.core.{EventNode,EventNodeComponent}
+import scala.scalanative.unsafe.Tag.UInt
+import scala.scalanative.unsigned.UInt
 
 object Main {
   def main(args: Array[String]): Unit = {
     val file = java.io.File("");
     val app = core.App;
-    FFISeijaCore.initLog("ERROR");
+    FFISeijaCore.initLog("INFO");
     app.addModule(CoreModule());
     app.addModule(AssetModule("example/assets"));
     app.addModule(TransformModule());
@@ -74,6 +79,10 @@ object Main {
     app.start(new DemoGame());
     app.run();
   }
+}
+
+object DemoGame {
+  var events:ArrayList[Long] = ArrayList();
 }
 
 class DemoGame extends IGameApp {
@@ -110,6 +119,10 @@ class DemoGame extends IGameApp {
             s.atlas = hSheet;
             s.spriteIndex = spriteIndex;
           })
+          .add[EventNode](v => {
+             v.eventType = EventNode.TOUCH_START | EventNode.TOUCH_END;
+             v.userKey = "传递String";
+          })
   }
 
   def init3D() = {
@@ -129,9 +142,14 @@ class DemoGame extends IGameApp {
       .add[Handle[Material]](_.material = hMaterial);
 
   }
-
+  
   def OnUpdate() = {
-    if (Input.getKeyDown(KeyCode.A)) {} else if (Input.getKeyUp(KeyCode.A)) {}
+    FFISeijaUI.readUIEvents(core.App.worldPtr,(entityId:Long,typ:UInt,keyPtr:Ptr[Byte]) => {
+      val keyString = fromCString(keyPtr); 
+       DemoGame.events.add(entityId);
+    });
 
+    DemoGame.events.forEach(println);
+    DemoGame.events.clear();
   }
 }
