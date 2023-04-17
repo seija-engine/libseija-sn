@@ -6,6 +6,11 @@ import _root_.core.{Entity,RawFFI,LibSeija}
 import math.Vector4RawFFI
 import ui.core.RawEventNode
 import ui.core.EventNode
+import ui.core.{RawCommonView,RawThickness,ThicknessRawFFI}
+import _root_.core.App.worldPtr
+import ui.core.CommonView
+import ui.core.Thickness
+import ui.core.RawStackLayout
 
 
 type RawSpriteSheet = Ptr[Byte]
@@ -24,7 +29,12 @@ object FFISeijaUI {
     private val entityAddSpriteSlicePtr = LibSeija.getFunc[CFuncPtr6[Ptr[Byte],Long,Int,Long,Ptr[RawVector4],Ptr[RawVector4],Unit]]("entity_add_sprite_slice");
     private val entityAddEventNodePtr = LibSeija.getFunc[CFuncPtr4[Ptr[Byte],Long,Ptr[RawEventNode],CString,Unit]]("entity_add_event_node");
     private val readUIEventsPtr = LibSeija.getFunc[CFuncPtr2[Ptr[Byte],Ptr[Byte],Unit]]("read_ui_events");
-
+    type AddStackType = CFuncPtr6[Ptr[Byte],Long,CFloat,Byte,Ptr[RawCommonView],Ptr[ui.core.RawUISize],Unit];
+    private val entityAddStackPtr = LibSeija.getFunc[AddStackType]("entity_add_stack");
+    type AddCommonViewType = CFuncPtr4[Ptr[Byte],Long,Ptr[RawCommonView],Ptr[ui.core.RawUISize],Unit];
+    private val entityAddCommonviewPtr = LibSeija.getFunc[AddCommonViewType]("entity_add_commonview");
+    private val entityGetStackPtr = LibSeija.getFunc[CFuncPtr2[Ptr[Byte],Long,Ptr[CStruct2[CFloat,Byte]]]]("entity_get_stack");
+    private val entityGetCommonViewPtr =LibSeija.getFunc[CFuncPtr2[Ptr[Byte],Long,Ptr[RawCommonView]]]("entity_get_commonview")
     def addSpriteSheetModule(appPtr:Ptr[Byte]):Unit = addSpritesheetModulePtr(appPtr)
     def spriteSheetAssetGet(worldPtr:Ptr[Byte],id:Long):RawSpriteSheet = spriteSheetAssetGetPtr(worldPtr,id);
     def spritesheetGetIndex(sheet: RawSpriteSheet, name: String): Int = Zone { implicit z =>
@@ -60,9 +70,9 @@ object FFISeijaUI {
         entityAddSpriteSimplePtr(worldPtr,entity,index,atlasId,v4Ptr)
     }
 
-    def entityAddSpriteSlice(worldPtr:Ptr[Byte],entity:Long,index:Int,atlasId:Long,thickness:Vector4,color:Vector4) = {
-        val thicknessPtr = stackalloc[RawVector4]()
-        Vector4RawFFI.toRaw(thickness,thicknessPtr);
+    def entityAddSpriteSlice(worldPtr:Ptr[Byte],entity:Long,index:Int,atlasId:Long,thickness:Thickness,color:Vector4) = {
+        val thicknessPtr = stackalloc[RawThickness]()
+        ThicknessRawFFI.toRaw(thickness,thicknessPtr);
         val colorPtr = stackalloc[RawVector4]()
         Vector4RawFFI.toRaw(color,colorPtr);
         entityAddSpriteSlicePtr(worldPtr,entity,index,atlasId,thicknessPtr,colorPtr)
@@ -75,5 +85,29 @@ object FFISeijaUI {
     def readUIEvents(worldPtr:Ptr[Byte],fPtr:CFuncPtr) = {
         val funcPtr = CFuncPtr.toPtr(fPtr);
         readUIEventsPtr(worldPtr,funcPtr);
+    }
+
+    def entityAddStack(worldPtr:Ptr[Byte],entityId:Long,spacing:Float,ori:Byte,view:CommonView) = {
+        val ptrCommonView = stackalloc[RawCommonView]()
+        ui.core.CommonViewToFFI.toRaw(view,ptrCommonView);
+        val ptrUISize = stackalloc[ui.core.RawUISize]()
+        ui.core.SizeValueToFFI.toRaw(view.uiSize,ptrUISize)
+        entityAddStackPtr(worldPtr,entityId,spacing,ori,ptrCommonView,ptrUISize);
+    }
+
+    def entityAddCommonView(worldPtr:Ptr[Byte],entityId:Long,view:CommonView) = {
+        val ptrCommonView = stackalloc[RawCommonView]()
+        ui.core.CommonViewToFFI.toRaw(view,ptrCommonView);
+        val ptrUISize = stackalloc[ui.core.RawUISize]()
+        ui.core.SizeValueToFFI.toRaw(view.uiSize,ptrUISize)
+        entityAddCommonviewPtr(worldPtr,entityId,ptrCommonView,ptrUISize);
+    }
+
+    def entityGetStackView(worldPtr:Ptr[Byte],entityId:Long):Ptr[CStruct2[CFloat,Byte]] = {
+        entityGetStackPtr(worldPtr,entityId)
+    }
+
+    def entityGetCommonView(worldPtr:Ptr[Byte],entityId:Long):Ptr[RawCommonView] = {
+        entityGetCommonViewPtr(worldPtr,entityId)
     }
 }
