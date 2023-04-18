@@ -48,16 +48,29 @@ import ui.{
   CanvasComponent,
   UIModule,
   Canvas,
-  Sprite,SpriteType,
-  SpriteComponent,
+  Sprite,
+  SpriteType,
+  SpriteComponent
 }
-import ui.core.{Orientation,ItemLayoutComponent,EventNode,EventNodeComponent,StackLayoutComponent,SizeValue,LayoutAlignment}
+import ui.core.{
+  FlexLayoutComponent,
+  FlexItemComponent,
+  Orientation,
+  ItemLayoutComponent,
+  EventNode,
+  EventNodeComponent,
+  StackLayoutComponent,
+  SizeValue,
+  LayoutAlignment
+}
 import scala.scalanative.unsafe.Tag.UInt
 import scala.scalanative.unsigned.UInt
 import ui.core.StackLayout
 import ui.core.StackLayout
 import ui.core.Thickness
 import ui.core.ItemLayout
+import ui.core.FlexLayout
+import ui.core.FlexItem
 
 object Main {
   def main(args: Array[String]): Unit = {
@@ -86,15 +99,15 @@ object Main {
 }
 
 object DemoGame {
-  var events:ArrayList[Long] = ArrayList();
+  var events: ArrayList[Long] = ArrayList();
 }
 
 class DemoGame extends IGameApp {
   var testTexure: HandleUntyped = null;
-  var entityStack:Entity = Entity(0);
+  var entityStack: Entity = Entity(0);
   var hSheet: Handle[SpriteSheet] = null;
   var bgSpriteIndex: Int = 0;
-  var btnSpriteIndex:Int = 0;
+  var btnSpriteIndex: Int = 0;
   def OnStart() = {
     println("DemoGame.OnStart");
     this.init2D();
@@ -105,38 +118,90 @@ class DemoGame extends IGameApp {
     val sheet = FFISeijaUI.spriteSheetAssetGet(core.App.worldPtr, hSheet.id.id)
     this.bgSpriteIndex = sheet.getIndex("lm-db").get
     this.btnSpriteIndex = sheet.getIndex("Btn3On").get
-    val ui_camera = Entity.spawnEmpty().add[Transform]().add[Camera](cam => cam.sortType = 1).add[UICanvas]().add[UISystem]()
+    val ui_camera = Entity
+      .spawnEmpty()
+      .add[Transform]()
+      .add[Camera](cam => cam.sortType = 1)
+      .add[UICanvas]()
+      .add[UISystem]()
 
-    this.createTestStack(ui_camera);
+    this.createFlex(ui_camera);
   }
 
-  def createTestStack(ui_camera:Entity) = {
-    this.entityStack = Entity.spawnEmpty()
-          .add[Transform](t => {
-            t.parent = Some(ui_camera);
-            t.position = Vector3(0,0,-2);
-          }).add[Rect2D]().add[Canvas]().add[Sprite](s => {
-            s.atlas = hSheet;
-            s.spriteIndex = bgSpriteIndex;
-            s.typ = SpriteType.Slice(Thickness(30))
-          }).add[EventNode](v => {
-             v.eventType = EventNode.TOUCH_START | EventNode.TOUCH_END;
-             v.userKey = "传递String";
-          }).add[StackLayout](v => {
-            v.common.hor = LayoutAlignment.Stretch;
-            v.common.ver = LayoutAlignment.Stretch;
-            v.common.padding = Thickness(20)
-            v.spacing = 10;
-            v.orientation = Orientation.Vertical;
-          })
-    for(i <- 1 to 7) {
-      Entity.spawnEmpty()
-          .add[Transform](t => { t.parent = Some(this.entityStack); })
-          .add[Rect2D]()
-          .add[ItemLayout](v => {
-            v.common.uiSize.width = SizeValue.Pixel(120);
-            v.common.uiSize.height = SizeValue.Pixel(50);
-          }).add[Sprite](v => { v.typ = SpriteType.Slice(Thickness(30)); v.atlas = hSheet; v.spriteIndex = this.btnSpriteIndex; } )
+  def createFlex(uiCamera: Entity): Unit = {
+    val flexEntity = Entity
+      .spawnEmpty()
+      .add[Transform](t => {
+        t.parent = Some(uiCamera); t.position = Vector3(0, 0, -2);
+      })
+      .add[Rect2D]()
+      .add[Canvas]()
+      .add[Sprite](s => {
+        s.atlas = hSheet;
+        s.spriteIndex = bgSpriteIndex;
+        s.typ = SpriteType.Slice(Thickness(30))
+      })
+      .add[FlexLayout](v => {
+        v.common.padding = Thickness(0)
+        v.alignItems = ui.core.FlexAlignItems.Start;
+        v.justify = ui.core.FlexJustify.Start;
+      });
+    Entity
+      .spawnEmpty()
+      .add[Transform](t => { t.parent = Some(flexEntity); })
+      .add[Rect2D]()
+      .add[ItemLayout](v => {
+        v.common.uiSize.width = SizeValue.Pixel(150);
+        v.common.uiSize.height = SizeValue.Pixel(50);
+        v.common.hor = LayoutAlignment.Start;
+        v.common.ver = LayoutAlignment.End;
+      })
+      .add[FlexItem](item => item.grow = 1)
+      .add[Sprite](v => {
+        v.typ = SpriteType.Slice(Thickness(30)); v.atlas = hSheet;
+        v.spriteIndex = this.btnSpriteIndex;
+      });
+    
+  }
+
+  def createTestStack(ui_camera: Entity) = {
+    this.entityStack = Entity
+      .spawnEmpty()
+      .add[Transform](t => {
+        t.parent = Some(ui_camera);
+        t.position = Vector3(0, 0, -2);
+      })
+      .add[Rect2D]()
+      .add[Canvas]()
+      .add[Sprite](s => {
+        s.atlas = hSheet;
+        s.spriteIndex = bgSpriteIndex;
+        s.typ = SpriteType.Slice(Thickness(30))
+      })
+      .add[EventNode](v => {
+        v.eventType = EventNode.TOUCH_START | EventNode.TOUCH_END;
+        v.userKey = "传递String";
+      })
+      .add[StackLayout](v => {
+        v.common.hor = LayoutAlignment.Stretch;
+        v.common.ver = LayoutAlignment.Stretch;
+        v.common.padding = Thickness(20)
+        v.spacing = 10;
+        v.orientation = Orientation.Vertical;
+      })
+    for (i <- 1 to 7) {
+      Entity
+        .spawnEmpty()
+        .add[Transform](t => { t.parent = Some(this.entityStack); })
+        .add[Rect2D]()
+        .add[ItemLayout](v => {
+          v.common.uiSize.width = SizeValue.Pixel(120);
+          v.common.uiSize.height = SizeValue.Pixel(50);
+        })
+        .add[Sprite](v => {
+          v.typ = SpriteType.Slice(Thickness(30)); v.atlas = hSheet;
+          v.spriteIndex = this.btnSpriteIndex;
+        })
     }
   }
 
@@ -156,21 +221,26 @@ class DemoGame extends IGameApp {
       .add[Handle[Mesh]](_.mesh = hMesh)
       .add[Handle[Material]](_.material = hMaterial);
   }
-  
-  def OnUpdate() = {
-    FFISeijaUI.readUIEvents(core.App.worldPtr,(entityId:Long,typ:UInt,keyPtr:Ptr[Byte]) => {
-      val keyString = fromCString(keyPtr); 
-       DemoGame.events.add(entityId);
-    });
 
-    if(DemoGame.events.size() > 0) {
+  def OnUpdate() = {
+    FFISeijaUI.readUIEvents(
+      core.App.worldPtr,
+      (entityId: Long, typ: UInt, keyPtr: Ptr[Byte]) => {
+        val keyString = fromCString(keyPtr);
+        DemoGame.events.add(entityId);
+      }
+    );
+
+    if (DemoGame.events.size() > 0) {
       val rawStack = this.entityStack.get[StackLayout]()
-      //rawStack.setPadding(Thickness(30))
-      //rawStack.setOrientation(Orientation.Horizontal)
+      // rawStack.setPadding(Thickness(30))
+      // rawStack.setOrientation(Orientation.Horizontal)
       rawStack.getOrientation() match
-        case Orientation.Horizontal => rawStack.setOrientation(Orientation.Vertical)
-        case Orientation.Vertical => rawStack.setOrientation(Orientation.Horizontal)
-      
+        case Orientation.Horizontal =>
+          rawStack.setOrientation(Orientation.Vertical)
+        case Orientation.Vertical =>
+          rawStack.setOrientation(Orientation.Horizontal)
+
     }
     DemoGame.events.clear();
   }

@@ -1,7 +1,6 @@
 package core
 import scalanative.unsafe._
 
-//case class FFIEntityMut(val entityG:CUnsignedInt,val entityI:CUnsignedInt,val local0:CSize,val local1:CSize);
 
 object FFISeijaCore {
     private val addCoreModulePtr = LibSeija.getFunc[CFuncPtr1[Ptr[Byte],Unit]]("core_add_module");
@@ -9,7 +8,6 @@ object FFISeijaCore {
     private val appSetOnUpdatePtr = LibSeija.getFunc[CFuncPtr2[Ptr[Byte],Ptr[Byte],Unit]]("app_set_on_update");
     private val coreSpawnEntityPtr = LibSeija.getFunc[CFuncPtr1[Ptr[Byte],Long]]("core_spawn_entity");
     private val initLogPtr = LibSeija.getFunc[CFuncPtr1[CString,Unit]]("init_log");
-    //private val coreSpawnEmptyEntityPtr = LibSeija.getFunc[CFuncPtr2[Ptr[Byte],Ptr[Byte],Unit]]("core_spawn_empty_entity");
 
     def addCoreModule(appPtr:Ptr[Byte]):Unit = {
         addCoreModulePtr(appPtr)

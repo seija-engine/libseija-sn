@@ -13,6 +13,7 @@ import ui.core.Thickness
 import ui.core.RawStackLayout
 import ui.core.RawUISize
 import ui.core.RawFlexLayout
+import ui.core.RawFlexItem
 
 
 type RawSpriteSheet = Ptr[Byte]
@@ -39,6 +40,7 @@ object FFISeijaUI {
     private val entityGetCommonViewPtr =LibSeija.getFunc[CFuncPtr2[Ptr[Byte],Long,Ptr[RawCommonView]]]("entity_get_commonview");
     type AddFlexType = CFuncPtr5[Ptr[Byte],Long,Ptr[RawCommonView],Ptr[RawUISize],Ptr[RawFlexLayout],Unit];
     private val entityAddFlexPtr = LibSeija.getFunc[AddFlexType]("entity_add_flex");
+    private val entityAddFlexItemPtr = LibSeija.getFunc[CFuncPtr3[Ptr[Byte],Long,Ptr[RawFlexItem],Unit]]("entity_add_flexitem");
 
     def addSpriteSheetModule(appPtr:Ptr[Byte]):Unit = addSpritesheetModulePtr(appPtr)
     def spriteSheetAssetGet(worldPtr:Ptr[Byte],id:Long):RawSpriteSheet = spriteSheetAssetGetPtr(worldPtr,id);
@@ -122,5 +124,9 @@ object FFISeijaUI {
         val ptrUISize = stackalloc[ui.core.RawUISize]()
         ui.core.SizeValueToFFI.toRaw(view.uiSize,ptrUISize)
         entityAddFlexPtr(worldPtr,entity,ptrCommonView,ptrUISize,flex)
+    }
+
+    def entityAddFlexItem(worldPtr:Ptr[Byte],entity:Long,flexItemPtr:Ptr[RawFlexItem]) = {
+        entityAddFlexItemPtr(worldPtr,entity,flexItemPtr)
     }
 }

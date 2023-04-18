@@ -28,8 +28,8 @@ case class UISize(var width: SizeValue, var height: SizeValue)
 case class CommonView(
   var margin:Thickness = Thickness.zero,
   var padding:Thickness = Thickness.zero,
-  var hor:LayoutAlignment = LayoutAlignment.Start,
-  var ver:LayoutAlignment = LayoutAlignment.Start,
+  var hor:LayoutAlignment = LayoutAlignment.Stretch,
+  var ver:LayoutAlignment = LayoutAlignment.Stretch,
   var useRectSize:Boolean = false,
   var uiSize:UISize = UISize(SizeValue.Auto,SizeValue.Auto)
 );
