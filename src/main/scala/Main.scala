@@ -92,24 +92,25 @@ object DemoGame {
 class DemoGame extends IGameApp {
   var testTexure: HandleUntyped = null;
   var entityStack:Entity = Entity(0);
+  var hSheet: Handle[SpriteSheet] = null;
+  var bgSpriteIndex: Int = 0;
+  var btnSpriteIndex:Int = 0;
   def OnStart() = {
     println("DemoGame.OnStart");
     this.init2D();
   }
 
   def init2D() = {
-    val hSheet: Handle[SpriteSheet] =
-      Assets.loadSync[SpriteSheet]("ui/ui.json").get;
+    this.hSheet = Assets.loadSync[SpriteSheet]("ui/ui.json").get;
     val sheet = FFISeijaUI.spriteSheetAssetGet(core.App.worldPtr, hSheet.id.id)
-    val bgSpriteIndex = sheet.getIndex("lm-db").get
-    val btnSpriteIndex = sheet.getIndex("Btn3On").get
-    val ui_camera = Entity
-      .spawnEmpty()
-      .add[Transform]()
-      .add[Camera](cam => cam.sortType = 1)
-      .add[UICanvas]()
-      .add[UISystem]()
+    this.bgSpriteIndex = sheet.getIndex("lm-db").get
+    this.btnSpriteIndex = sheet.getIndex("Btn3On").get
+    val ui_camera = Entity.spawnEmpty().add[Transform]().add[Camera](cam => cam.sortType = 1).add[UICanvas]().add[UISystem]()
 
+    this.createTestStack(ui_camera);
+  }
+
+  def createTestStack(ui_camera:Entity) = {
     this.entityStack = Entity.spawnEmpty()
           .add[Transform](t => {
             t.parent = Some(ui_camera);
@@ -135,10 +136,8 @@ class DemoGame extends IGameApp {
           .add[ItemLayout](v => {
             v.common.uiSize.width = SizeValue.Pixel(120);
             v.common.uiSize.height = SizeValue.Pixel(50);
-          }).add[Sprite](v => { v.typ = SpriteType.Slice(Thickness(30)); v.atlas = hSheet; v.spriteIndex = btnSpriteIndex; } )
+          }).add[Sprite](v => { v.typ = SpriteType.Slice(Thickness(30)); v.atlas = hSheet; v.spriteIndex = this.btnSpriteIndex; } )
     }
-    
-    
   }
 
   def init3D() = {
@@ -156,7 +155,6 @@ class DemoGame extends IGameApp {
       .add[Transform](v => v.position = Vector3(0, 0, -1))
       .add[Handle[Mesh]](_.mesh = hMesh)
       .add[Handle[Material]](_.material = hMaterial);
-
   }
   
   def OnUpdate() = {
