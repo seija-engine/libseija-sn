@@ -142,9 +142,24 @@ class DemoGame extends IGameApp {
         s.typ = SpriteType.Slice(Thickness(30))
       })
       .add[FlexLayout](v => {
-        v.common.padding = Thickness(0)
+        v.common.padding = Thickness(30)
         v.alignItems = ui.core.FlexAlignItems.Start;
         v.justify = ui.core.FlexJustify.Start;
+      });
+    Entity
+      .spawnEmpty()
+      .add[Transform](t => { t.parent = Some(flexEntity); })
+      .add[Rect2D]()
+      .add[ItemLayout](v => {
+        v.common.uiSize.width = SizeValue.Pixel(150);
+        v.common.uiSize.height = SizeValue.Pixel(50);
+        v.common.hor = LayoutAlignment.Start;
+        v.common.ver = LayoutAlignment.End;
+      })
+      .add[FlexItem]()
+      .add[Sprite](v => {
+        v.typ = SpriteType.Slice(Thickness(30)); v.atlas = hSheet;
+        v.spriteIndex = this.btnSpriteIndex;
       });
     Entity
       .spawnEmpty()
