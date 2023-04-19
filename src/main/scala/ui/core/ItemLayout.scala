@@ -2,7 +2,7 @@ package ui.core
 
 import core.RawComponentBuilder
 import core.Entity
-import ui.FFISeijaUI
+import ui.core.FFISeijaUI
 import core.RawComponent
 
 class ItemLayout

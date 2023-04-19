@@ -4,7 +4,7 @@ import core.RawComponentBuilder
 import core.Entity
 import core.RawComponent
 import scala.scalanative.unsigned._
-import ui.FFISeijaUI
+import ui.core.FFISeijaUI
 
 
 type RawEventNode = CStruct5[UInt,UInt,Boolean,Boolean,Boolean];

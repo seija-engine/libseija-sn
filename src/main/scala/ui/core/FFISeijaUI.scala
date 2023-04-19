@@ -1,4 +1,4 @@
-package ui
+package ui.core
 import scalanative.unsafe._
 import math.RawVector4
 import math.Vector4

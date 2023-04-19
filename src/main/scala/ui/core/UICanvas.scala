@@ -1,8 +1,10 @@
-package ui
+package ui.core
 
 import core.Entity
 import core.RawComponentBuilder
 import core.RawComponent
+import ui.core.FFISeijaUI
+
 
 class UICanvas
 

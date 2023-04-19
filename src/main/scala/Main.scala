@@ -1,3 +1,10 @@
+import ui.core.FFISeijaUI
+import ui.core.Rect2D
+import ui.core.{Sprite, SpriteType}
+import ui.core.{SpriteSheet, getIndex}
+import ui.core.UICanvas
+import ui.core.UIModule
+import ui.core.UISystem
 import scalanative.unsigned.UnsignedRichInt
 import scala.scalanative.unsafe
 import scala.scalanative.runtime.libc
@@ -16,7 +23,6 @@ import input.KeyCode
 import core.Entity
 import math._;
 import transform.{Transform, TransformComponent}
-import ui.SpriteSheetAsset;
 import render.{
   Camera,
   CameraComponent,
@@ -35,23 +41,9 @@ import asset.Assets
 import asset.{HandleUntyped, Handle}
 import render.FFISeijaRender
 import render.Texture
-import ui.{
-  UISystem,
-  UISystemComponent,
-  Rect2D,
-  UICanvas,
-  UICanvasComponent,
-  Rect2dComponent,
-  getIndex,
-  FFISeijaUI,
-  SpriteSheet,
-  CanvasComponent,
-  UIModule,
-  Canvas,
-  Sprite,
-  SpriteType,
-  SpriteComponent
-}
+
+import ui.core.Canvas
+
 import ui.core.{
   FlexLayoutComponent,
   FlexItemComponent,
@@ -64,6 +56,7 @@ import ui.core.{
   LayoutAlignment,
   Text,TextComponent
 }
+import ui.core.given;
 import scala.scalanative.unsafe.Tag.UInt
 import scala.scalanative.unsigned.UInt
 import ui.core.StackLayout
@@ -183,11 +176,11 @@ class DemoGame extends IGameApp {
         v.spriteIndex = this.btnSpriteIndex;
       });
     
-    //Entity.spawnEmpty().add[Transform](t => t.parent = Some(fstEntity)).add[Rect2D]().add[Text](text => {
-    //  text.text = "测试文本";
-    //  text.font = this.font;
-    //  text.color = Vector4(0,0.1,1,1);
-    //})
+    Entity.spawnEmpty().add[Transform](t => t.parent = Some(fstEntity)).add[Rect2D]().add[Text](text => {
+      text.text = "测试文本";
+      text.font = this.font;
+      text.color = Vector4(0,0.1,1,1);
+    })
   }
 
   def createTestStack(ui_camera: Entity) = {

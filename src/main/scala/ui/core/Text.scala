@@ -5,7 +5,7 @@ import core.Entity
 import core.RawComponent
 import scala.scalanative.unsafe._
 import math.RawVector4
-import ui.FFISeijaUI
+import ui.core.FFISeijaUI
 import scala.scalanative.unsigned._
 import math.Vector4
 import asset.Handle

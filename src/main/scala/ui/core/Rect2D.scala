@@ -1,9 +1,11 @@
-package ui
+package ui.core
 
 import core.RawComponent
 import core.Entity
 import core.RawComponentBuilder
 import math.Vector4
+import ui.core.FFISeijaUI
+
 
 class Rect2D
 

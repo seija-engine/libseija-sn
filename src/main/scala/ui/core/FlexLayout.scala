@@ -3,7 +3,7 @@ import core.RawComponentBuilder
 import core.Entity
 import core.RawComponent
 import scala.scalanative.unsafe._
-import ui.FFISeijaUI
+import ui.core.FFISeijaUI
 
 class FlexLayout;
 

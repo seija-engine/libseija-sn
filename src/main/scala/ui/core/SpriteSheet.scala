@@ -1,7 +1,9 @@
-package ui
+package ui.core
 
 import asset.IAssetType
 import asset.Assets
+import ui.core.{RawSpriteSheet, FFISeijaUI}
+
 
 class SpriteSheet;
 

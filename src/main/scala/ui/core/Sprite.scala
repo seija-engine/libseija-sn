@@ -1,4 +1,4 @@
-package ui
+package ui.core
 
 import _root_.core.RawComponentBuilder
 import _root_.core.{Entity,App}
@@ -8,6 +8,9 @@ import scala.scalanative.unsafe.Ptr
 import asset.Handle
 import math.Vector4
 import ui.core.Thickness
+import ui.core.FFISeijaUI
+import ui.core.SpriteSheet
+
 
 class Sprite;
 

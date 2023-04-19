@@ -1,4 +1,4 @@
-package ui
+package ui.core
 
 import core.RawComponentBuilder
 import core.Entity

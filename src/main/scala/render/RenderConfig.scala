@@ -1,6 +1,6 @@
 package render
 import scalanative.unsafe._
-import ui.FFISeijaUI
+import ui.core.FFISeijaUI
 
 case class RenderConfig(
     configPath: String,
