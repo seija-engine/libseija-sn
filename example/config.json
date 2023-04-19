@@ -1,7 +1,0 @@
-{
-    "material_paths":["assets/materials"],
-    "script_path":"script/render.clj",
-    "out_path":".shader",
-    "script_libs":["script"],
-    "shader_libs":["/home/yangdao/Project/Rust/seija/crates/shaders/"]
-}

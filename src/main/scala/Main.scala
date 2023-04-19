@@ -60,8 +60,9 @@ import ui.core.{
   EventNode,
   EventNodeComponent,
   StackLayoutComponent,
-  SizeValue,
-  LayoutAlignment
+  SizeValue,Font,FontAssetType,
+  LayoutAlignment,
+  Text,TextComponent
 }
 import scala.scalanative.unsafe.Tag.UInt
 import scala.scalanative.unsigned.UInt
@@ -71,6 +72,8 @@ import ui.core.Thickness
 import ui.core.ItemLayout
 import ui.core.FlexLayout
 import ui.core.FlexItem
+import ui.core.Text
+import ui.core.Font
 
 object Main {
   def main(args: Array[String]): Unit = {
@@ -108,6 +111,7 @@ class DemoGame extends IGameApp {
   var hSheet: Handle[SpriteSheet] = null;
   var bgSpriteIndex: Int = 0;
   var btnSpriteIndex: Int = 0;
+  var font: Handle[Font] = null;
   def OnStart() = {
     println("DemoGame.OnStart");
     this.init2D();
@@ -124,7 +128,8 @@ class DemoGame extends IGameApp {
       .add[Camera](cam => cam.sortType = 1)
       .add[UICanvas]()
       .add[UISystem]()
-
+    this.font = Assets.loadSync[Font]("ui/WenQuanYiMicroHei.ttf").get
+    println(this.font)
     this.createFlex(ui_camera);
   }
 
@@ -146,7 +151,7 @@ class DemoGame extends IGameApp {
         v.alignItems = ui.core.FlexAlignItems.Start;
         v.justify = ui.core.FlexJustify.Start;
       });
-    Entity
+    val fstEntity = Entity
       .spawnEmpty()
       .add[Transform](t => { t.parent = Some(flexEntity); })
       .add[Rect2D]()
@@ -177,6 +182,10 @@ class DemoGame extends IGameApp {
         v.spriteIndex = this.btnSpriteIndex;
       });
     
+    Entity.spawnEmpty().add[Transform](t => t.parent = Some(fstEntity)).add[Rect2D]().add[Text](text => {
+      text.text = "测试文本";
+      text.font = this.font;
+    })
   }
 
   def createTestStack(ui_camera: Entity) = {

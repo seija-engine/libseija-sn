@@ -14,6 +14,7 @@ import ui.core.RawStackLayout
 import ui.core.RawUISize
 import ui.core.RawFlexLayout
 import ui.core.RawFlexItem
+import ui.core.RawText
 
 
 type RawSpriteSheet = Ptr[Byte]
@@ -41,6 +42,7 @@ object FFISeijaUI {
     type AddFlexType = CFuncPtr5[Ptr[Byte],Long,Ptr[RawCommonView],Ptr[RawUISize],Ptr[RawFlexLayout],Unit];
     private val entityAddFlexPtr = LibSeija.getFunc[AddFlexType]("entity_add_flex");
     private val entityAddFlexItemPtr = LibSeija.getFunc[CFuncPtr3[Ptr[Byte],Long,Ptr[RawFlexItem],Unit]]("entity_add_flexitem");
+    private val entityAddTextPtr = LibSeija.getFunc[CFuncPtr6[Ptr[Byte],Long,Ptr[RawText],Int,CString,Long,Unit]]("entity_add_text");
 
     def addSpriteSheetModule(appPtr:Ptr[Byte]):Unit = addSpritesheetModulePtr(appPtr)
     def spriteSheetAssetGet(worldPtr:Ptr[Byte],id:Long):RawSpriteSheet = spriteSheetAssetGetPtr(worldPtr,id);
@@ -128,5 +130,9 @@ object FFISeijaUI {
 
     def entityAddFlexItem(worldPtr:Ptr[Byte],entity:Long,flexItemPtr:Ptr[RawFlexItem]) = {
         entityAddFlexItemPtr(worldPtr,entity,flexItemPtr)
+    }
+
+    def entityAddText(worldPtr:Ptr[Byte],entity:Long,ptrText:Ptr[RawText],size:Int,text:String,fontId:Long) = Zone { implicit z =>
+        entityAddTextPtr(worldPtr,entity,ptrText,size,toCString(text),fontId)
     }
 }
