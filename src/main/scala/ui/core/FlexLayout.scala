@@ -70,8 +70,8 @@ class FlexLayoutBuilder extends RawComponentBuilder {
   var direction:FlexDirection = FlexDirection.Row;
   var warp:FlexWrap = FlexWrap.NoWrap;
   var justify:FlexJustify = FlexJustify.Start;
-  var alignItems:FlexAlignItems = FlexAlignItems.Center;
-  var alignContent:FlexAlignContent = FlexAlignContent.Center;
+  var alignItems:FlexAlignItems = FlexAlignItems.Stretch;
+  var alignContent:FlexAlignContent = FlexAlignContent.Stretch;
 
   override def build(entity: Entity): Unit = {
     val flexPtr = stackalloc[RawFlexLayout]();

@@ -37,7 +37,7 @@ case class CommonView(
 type RawCommonView = CStruct5[RawThickness,RawThickness,Byte,Byte,Boolean]
 
 given CommonViewToFFI:RawFFI[CommonView,Ptr[RawCommonView]] with {
-  override def toRaw(value: CommonView, ptr: Ptr[RawCommonView]): Unit = {
+    override def toRaw(value: CommonView, ptr: Ptr[RawCommonView]): Unit = {
     ThicknessRawFFI.toRaw(value.margin,ptr.at1)
     ThicknessRawFFI.toRaw(value.padding,ptr.at2)
     ptr._3 = value.hor.v;

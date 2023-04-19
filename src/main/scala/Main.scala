@@ -150,6 +150,7 @@ class DemoGame extends IGameApp {
         v.common.padding = Thickness(30)
         v.alignItems = ui.core.FlexAlignItems.Start;
         v.justify = ui.core.FlexJustify.Start;
+        v.direction = ui.core.FlexDirection.Column;
       });
     val fstEntity = Entity
       .spawnEmpty()
@@ -158,8 +159,8 @@ class DemoGame extends IGameApp {
       .add[ItemLayout](v => {
         v.common.uiSize.width = SizeValue.Pixel(150);
         v.common.uiSize.height = SizeValue.Pixel(50);
-        v.common.hor = LayoutAlignment.Start;
-        v.common.ver = LayoutAlignment.End;
+        //v.common.hor = LayoutAlignment.Stretch;
+        //v.common.ver = LayoutAlignment.Start;
       })
       .add[FlexItem]()
       .add[Sprite](v => {
@@ -171,10 +172,10 @@ class DemoGame extends IGameApp {
       .add[Transform](t => { t.parent = Some(flexEntity); })
       .add[Rect2D]()
       .add[ItemLayout](v => {
-        v.common.uiSize.width = SizeValue.Pixel(150);
+        v.common.uiSize.width = SizeValue.Auto;
         v.common.uiSize.height = SizeValue.Pixel(50);
-        v.common.hor = LayoutAlignment.Start;
-        v.common.ver = LayoutAlignment.End;
+        v.common.hor = LayoutAlignment.Stretch;
+        //v.common.ver = LayoutAlignment.Start;
       })
       .add[FlexItem](item => item.grow = 1)
       .add[Sprite](v => {
@@ -182,10 +183,11 @@ class DemoGame extends IGameApp {
         v.spriteIndex = this.btnSpriteIndex;
       });
     
-    Entity.spawnEmpty().add[Transform](t => t.parent = Some(fstEntity)).add[Rect2D]().add[Text](text => {
-      text.text = "测试文本";
-      text.font = this.font;
-    })
+    //Entity.spawnEmpty().add[Transform](t => t.parent = Some(fstEntity)).add[Rect2D]().add[Text](text => {
+    //  text.text = "测试文本";
+    //  text.font = this.font;
+    //  text.color = Vector4(0,0.1,1,1);
+    //})
   }
 
   def createTestStack(ui_camera: Entity) = {
