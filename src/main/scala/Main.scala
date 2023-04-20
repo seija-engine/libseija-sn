@@ -52,9 +52,12 @@ import ui.core.{
   EventNode,
   EventNodeComponent,
   StackLayoutComponent,
-  SizeValue,Font,FontAssetType,
+  SizeValue,
+  Font,
+  FontAssetType,
   LayoutAlignment,
-  Text,TextComponent
+  Text,
+  TextComponent
 }
 import ui.core.given;
 import scala.scalanative.unsafe.Tag.UInt
@@ -103,13 +106,65 @@ class DemoGame extends IGameApp {
   var entityStack: Entity = Entity(0);
   var hSheet: Handle[SpriteSheet] = null;
   var bgSpriteIndex: Int = 0;
+  var bgSprite2Index: Int = 0;
   var btnSpriteIndex: Int = 0;
   var font: Handle[Font] = null;
   def OnStart() = {
     println("DemoGame.OnStart");
-    this.init2D();
+    val canvas = ui.UICanvas.create();
+    
+    this.hSheet = Assets.loadSync[SpriteSheet]("ui/default.json").get;
+    val sheet = FFISeijaUI.spriteSheetAssetGet(core.App.worldPtr, hSheet.id.id)
+    this.bgSpriteIndex = sheet.getIndex("fbf").get
+    this.bgSprite2Index = sheet.getIndex("dk2").get;
+    this.btnSpriteIndex = sheet.getIndex("Btn3On").get
+    this.font = Assets.loadSync[Font]("ui/WenQuanYiMicroHei.ttf").get
+    this.createBG();
+    
+    val fstEntity = Entity
+      .spawnEmpty()
+      .add[Transform](t => { t.parent = Some(canvas.rootEntity); })
+      .add[Rect2D]()
+      .add[ItemLayout](v => {
+        v.common.uiSize.width = SizeValue.Pixel(150);
+        v.common.uiSize.height = SizeValue.Pixel(50);
+        v.common.hor = LayoutAlignment.Stretch;
+      })
+      .add[FlexItem](item => item.grow = 1)
+      .add[Sprite](v => {
+        v.typ = SpriteType.Slice(Thickness(30)); v.atlas = hSheet;
+        v.spriteIndex = this.btnSpriteIndex;
+      });
+
+    Entity.spawnEmpty().add[Transform](t => t.parent = Some(fstEntity)).add[Rect2D]().add[Text](text => {
+      text.text = "测试文本";
+      text.font = this.font;
+      text.color = Vector4(0,0.1,1,1);
+    })
   }
 
+  def createBG() = {
+      val canvas = ui.UICanvas.fst();
+      Entity
+        .spawnEmpty()
+        .add[Transform](_.parent = Some(canvas.rootEntity))
+        .add[Rect2D]()
+        .add[Sprite](s => {
+          s.atlas = hSheet;
+          s.spriteIndex = bgSprite2Index;
+          s.typ = SpriteType.Slice(Thickness(35))
+        })
+      Entity
+        .spawnEmpty()
+        .add[Transform](_.parent = Some(canvas.rootEntity))
+        .add[Rect2D]()
+        .add[Sprite](s => {
+          s.atlas = hSheet;
+          s.spriteIndex = bgSpriteIndex;
+          s.typ = SpriteType.Slice(Thickness(70))
+        })
+    };
+  /*
   def init2D() = {
     this.hSheet = Assets.loadSync[SpriteSheet]("ui/ui.json").get;
     val sheet = FFISeijaUI.spriteSheetAssetGet(core.App.worldPtr, hSheet.id.id)
@@ -175,7 +230,7 @@ class DemoGame extends IGameApp {
         v.typ = SpriteType.Slice(Thickness(30)); v.atlas = hSheet;
         v.spriteIndex = this.btnSpriteIndex;
       });
-    
+
     Entity.spawnEmpty().add[Transform](t => t.parent = Some(fstEntity)).add[Rect2D]().add[Text](text => {
       text.text = "测试文本";
       text.font = this.font;
@@ -239,9 +294,10 @@ class DemoGame extends IGameApp {
       .add[Transform](v => v.position = Vector3(0, 0, -1))
       .add[Handle[Mesh]](_.mesh = hMesh)
       .add[Handle[Material]](_.material = hMaterial);
-  }
+  }*/
 
   def OnUpdate() = {
+    /*
     FFISeijaUI.readUIEvents(
       core.App.worldPtr,
       (entityId: Long, typ: UInt, keyPtr: Ptr[Byte]) => {
@@ -261,6 +317,6 @@ class DemoGame extends IGameApp {
           rawStack.setOrientation(Orientation.Horizontal)
 
     }
-    DemoGame.events.clear();
+    DemoGame.events.clear();*/
   }
 }
