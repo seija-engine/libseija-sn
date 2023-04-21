@@ -1,0 +1,5 @@
+<CheckBox checked="false">
+    <Template>
+        <Sprite width="50" height="50" sprite="{Bind Owner.checked}" />
+    </Template>
+</CheckBox>

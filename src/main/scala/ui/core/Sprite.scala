@@ -20,17 +20,18 @@ enum SpriteType {
 }
 
 class SpriteBuilder extends RawComponentBuilder {
-    var spriteIndex:Int = 0;
-    var atlas:Handle[SpriteSheet] = null;
+    var spriteIndex:Int = -1;
+    var atlas:Option[Handle[SpriteSheet]] = None;
     var color:Vector4 = Vector4.one;
     var typ:SpriteType = SpriteType.Simple
     def build(entity: Entity): Unit = {
+        val atlasIndex:Long = atlas.map(_.id.id).getOrElse(0L);
         typ match
           case SpriteType.Simple => {
-            FFISeijaUI.entityAddSpriteSimple(App.worldPtr,entity.id,spriteIndex,atlas.id.id,color);
+            FFISeijaUI.entityAddSpriteSimple(App.worldPtr,entity.id,spriteIndex,atlasIndex,color);
           }
           case SpriteType.Slice(border) => {
-            FFISeijaUI.entityAddSpriteSlice(App.worldPtr,entity.id,spriteIndex,atlas.id.id,border,color)
+            FFISeijaUI.entityAddSpriteSlice(App.worldPtr,entity.id,spriteIndex,atlasIndex,border,color)
           }
     }
 }

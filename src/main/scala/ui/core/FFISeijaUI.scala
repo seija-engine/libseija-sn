@@ -15,6 +15,7 @@ import ui.core.RawUISize
 import ui.core.RawFlexLayout
 import ui.core.RawFlexItem
 import ui.core.RawText
+import scala.scalanative.runtime.libc
 
 
 type RawSpriteSheet = Ptr[Byte]
@@ -43,6 +44,9 @@ object FFISeijaUI {
     private val entityAddFlexPtr = LibSeija.getFunc[AddFlexType]("entity_add_flex");
     private val entityAddFlexItemPtr = LibSeija.getFunc[CFuncPtr3[Ptr[Byte],Long,Ptr[RawFlexItem],Unit]]("entity_add_flexitem");
     private val entityAddTextPtr = LibSeija.getFunc[CFuncPtr6[Ptr[Byte],Long,Ptr[RawText],Int,CString,Long,Unit]]("entity_add_text");
+    private val spritesheetBeginReadPtr = LibSeija.getFunc[CFuncPtr3[RawSpriteSheet,Ptr[Int],Ptr[Int],Ptr[Byte]]]("spritesheet_begin_read");
+    private val spritesheetGetInfoPtr = LibSeija.getFunc[CFuncPtr4[Ptr[Byte],Int,Ptr[Int],CString,Unit]]("spritesheet_get_info");
+    private val spritesheetEndReadPtr = LibSeija.getFunc[CFuncPtr1[RawSpriteSheet,Unit]]("spritesheet_end_read");
 
     def addSpriteSheetModule(appPtr:Ptr[Byte]):Unit = addSpritesheetModulePtr(appPtr)
     def spriteSheetAssetGet(worldPtr:Ptr[Byte],id:Long):RawSpriteSheet = spriteSheetAssetGetPtr(worldPtr,id);
@@ -135,4 +139,21 @@ object FFISeijaUI {
     def entityAddText(worldPtr:Ptr[Byte],entity:Long,ptrText:Ptr[RawText],size:Int,text:String,fontId:Long) = Zone { implicit z =>
         entityAddTextPtr(worldPtr,entity,ptrText,size,toCString(text),fontId)
     }
+
+    def spriteBeginRead(ptr:RawSpriteSheet):(Ptr[Byte],Int,Int) = {
+        val ptrCount = stackalloc[Int]()
+        val ptrMaxCharCount = stackalloc[Int]()
+        val ptrFFI = spritesheetBeginReadPtr(ptr,ptrCount,ptrMaxCharCount);
+        (ptrFFI,!ptrCount,!ptrMaxCharCount)
+    }
+
+    def spriteSheetGetInfo(ptr:Ptr[Byte],index:Int,outNamePtr:CString):(Int,String) = {
+       val outIndex:Ptr[Int] = stackalloc[Int]()
+       spritesheetGetInfoPtr(ptr,index,outIndex,outNamePtr)
+      
+       val outName = fromCString(outNamePtr);
+       (!outIndex,outName)
+    }
+
+    def spriteEndRead(ptr:RawSpriteSheet) = spritesheetEndReadPtr(ptr)
 }

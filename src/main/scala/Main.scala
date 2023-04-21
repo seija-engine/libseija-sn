@@ -1,3 +1,4 @@
+import ui.controls.Image
 import ui.core.FFISeijaUI
 import ui.core.Rect2D
 import ui.core.{Sprite, SpriteType}
@@ -70,12 +71,14 @@ import ui.core.FlexLayout
 import ui.core.FlexItem
 import ui.core.Text
 import ui.core.Font
+import ui.Atlas
+import ui.PropertyChangedEventArgs
 
 object Main {
   def main(args: Array[String]): Unit = {
     val file = java.io.File("");
     val app = core.App;
-    FFISeijaCore.initLog("INFO");
+    FFISeijaCore.initLog("ERROR");
     app.addModule(CoreModule());
     app.addModule(AssetModule("example/assets"));
     app.addModule(TransformModule());
@@ -112,13 +115,21 @@ class DemoGame extends IGameApp {
   def OnStart() = {
     println("DemoGame.OnStart");
     val canvas = ui.UICanvas.create();
-    
-    this.hSheet = Assets.loadSync[SpriteSheet]("ui/default.json").get;
-    val sheet = FFISeijaUI.spriteSheetAssetGet(core.App.worldPtr, hSheet.id.id)
-    this.bgSpriteIndex = sheet.getIndex("fbf").get
-    this.bgSprite2Index = sheet.getIndex("dk2").get;
-    this.btnSpriteIndex = sheet.getIndex("Btn3On").get
+    val atlas = Atlas.load("default","ui/default.json").get
+    val checkBox = new ui.controls.CheckBox();
+    canvas.addControl(checkBox);
+    /*
+    val rawSheet = FFISeijaUI.spriteSheetAssetGet(core.App.worldPtr, hSheet.id.id)
+    this.bgSpriteIndex = rawSheet.getIndex("fbf").get
+    this.bgSprite2Index = rawSheet.getIndex("dk2").get;
+    this.btnSpriteIndex = rawSheet.getIndex("Btn3On").get
     this.font = Assets.loadSync[Font]("ui/WenQuanYiMicroHei.ttf").get
+    */
+    
+    
+    //var newImage:Image = new ui.controls.Image();
+    //canvas.addControl(newImage);
+    /*
     this.createBG();
     
     val fstEntity = Entity
@@ -140,9 +151,9 @@ class DemoGame extends IGameApp {
       text.text = "测试文本";
       text.font = this.font;
       text.color = Vector4(0,0.1,1,1);
-    })
+    })*/
   }
-
+  /*
   def createBG() = {
       val canvas = ui.UICanvas.fst();
       Entity
@@ -164,6 +175,7 @@ class DemoGame extends IGameApp {
           s.typ = SpriteType.Slice(Thickness(70))
         })
     };
+    */
   /*
   def init2D() = {
     this.hSheet = Assets.loadSync[SpriteSheet]("ui/ui.json").get;

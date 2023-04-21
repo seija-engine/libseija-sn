@@ -1,14 +1,18 @@
 package ui.controls
 import ui.BaseControl
+import ui.INotifyPropertyChanged
 
-class CheckBox extends BaseControl {
-    protected var checked: Boolean = false;
+class CheckBox extends BaseControl with INotifyPropertyChanged {
+    protected var _checked: Boolean = false;
 
-    override def Enter():Unit = {
-
+    def checked = this._checked
+    def checked_=(value: Boolean): Unit = {
+        this._checked = value;
+        this.callPropertyChanged("checked")
     }
 
-    override def Exit():Unit = {
-        
+    override def OnEnter():Unit = {
+        if(this.template.isEmpty) return;
+        val template = this.template.get;
     }
 }

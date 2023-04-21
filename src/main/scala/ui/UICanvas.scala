@@ -7,12 +7,16 @@ import ui.core.given;
 import ui.core.UISystem
 import render.{Camera, given}
 import math.Vector3
+import ui.BaseControl;
 
 case class UICanvas(
     val cameraEntity: Entity,
     val rootEntity:Entity,
-) {
+) extends BaseControl {
+  this.entity = Some(rootEntity);
+  
   def addControl(control: BaseControl): Unit = {
+    this.AddChild(control);
   }
 }
 
