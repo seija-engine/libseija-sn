@@ -35,7 +35,7 @@ enum TypeInfo {
   case Bool
   case Class(value: ClassType[_])
   case NumberEnum(val name: String)
-  case Enum(fields: List[EnumItem])
+  case Enum(val name:String,fields: List[EnumItem])
 }
 
 case class EnumItem(val name: String, val value: Option[TypeInfo]);

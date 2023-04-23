@@ -30,7 +30,7 @@ given LayoutAlignmentUDSL: UDSLType[LayoutAlignment] with {
 
 
 given SizeValueUDSL: UDSLType[SizeValue] with {
-  val typInfo = TypeInfo.Enum(List(
+  val typInfo = TypeInfo.Enum("SizeValue",List(
     EnumItem("Auto", None),
     EnumItem("FormRect", None),
     EnumItem("Pixel", Some(TypeInfo.Float)),

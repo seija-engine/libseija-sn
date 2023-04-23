@@ -75,14 +75,13 @@ import ui.Atlas
 import ui.PropertyChangedEventArgs
 import ui.usl.UDSL;
 import scala.collection.mutable.HashMap
-
+import ui.usl.TestOpCodes
+import ui.usl.types.given;
 object Main {
   def main(args: Array[String]): Unit = {
     println("runMain")
-    val fieldCount = 4;
-    for (i <- 0 until(fieldCount,2)) {     
-      println(i)
-    }
+    UDSL.addType[SizeValue]
+    TestOpCodes.test1()
   }
 
   def runSeija() = {
