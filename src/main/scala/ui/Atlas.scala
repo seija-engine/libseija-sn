@@ -24,6 +24,8 @@ object Atlas {
         newAtlas
     }
 
+    def get(name:String):Option[Atlas] = Option(atlasDict.get(name));
+
     def apply(hSheet:Handle[SpriteSheet]):Atlas = {
         val atlas = new Atlas(hSheet);
         val rawSheet = FFISeijaUI.spriteSheetAssetGet(App.worldPtr, hSheet.id.id);

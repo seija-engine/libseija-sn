@@ -1,22 +1,19 @@
 <CheckBox checked="false">
     <Template>
-        <Sprite width="50" height="50" sprite="{Bind Owner.checked}" />
+        <Sprite width="50" height="50" sprite="default.Btn3On" />
     </Template>
 </CheckBox>
 
-<!--
-PushString "CheckBox"
-PushString "checked"
-PushBool false
-PusString "Template"
+<!-- 
 PushString "Sprite"
-PushString "width"
+PushString "Width"
 PushInt 50
-PushString "height"
+MakeObject "SizeValue" 2
+PushString "Height"
 PushInt 50
-PushString "sprite"
-PushString "VVVV"
-MakeControl 3
-MakeTemplate
-MakeControl 1
+MakeObject "SizeValue" 2
+PushString "Sprite"
+PushString "default"
+PushString "Btn3On"
+MakeObject "AtlasSprite"
 -->

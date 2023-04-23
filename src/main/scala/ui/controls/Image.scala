@@ -9,15 +9,32 @@ import ui.AtlasSprite
 
 class Image extends BaseControl with INotifyPropertyChanged {
   private var _hor:LayoutAlignment = LayoutAlignment.Stretch
-  protected  var ver:LayoutAlignment = LayoutAlignment.Stretch
-  protected  var width:SizeValue = SizeValue.Auto
-  protected  var height:SizeValue = SizeValue.Auto
+  protected  var _ver:LayoutAlignment = LayoutAlignment.Stretch
+  protected  var _width:SizeValue = SizeValue.Auto
+  protected  var _height:SizeValue = SizeValue.Auto
   protected  var _sprite:Option[AtlasSprite] = None
+
+
+  def width_= (value:SizeValue):Unit = { 
+    this._width = value; 
+    this.callPropertyChanged("width")
+  }
+
+  def height_= (value:SizeValue):Unit = { 
+    this._height = value; 
+    this.callPropertyChanged("height")
+  }
 
   def hor = this._hor
   def hor_=(value:LayoutAlignment):Unit = { 
     this._hor = value;
     this.callPropertyChanged("hor") 
+  }
+
+ 
+  def ver_=(value:LayoutAlignment):Unit = { 
+    this._ver = value;
+    this.callPropertyChanged("ver") 
   }
 
   def sprite = this._sprite
@@ -27,16 +44,16 @@ class Image extends BaseControl with INotifyPropertyChanged {
   }
 
   override def OnEnter(): Unit = {
-    this.hor = LayoutAlignment.Stretch;
+    this._hor = LayoutAlignment.Stretch;
     val parentEntity = this.parent.flatMap(_.getEntity());
     Entity.spawnEmpty()
           .add[Transform](_.parent = parentEntity)
           .add[Rect2D]()
           .add[ItemLayout](v => {
             v.common.hor = this._hor;
-            v.common.ver = this.ver;
-            v.common.uiSize.width = this.width;
-            v.common.uiSize.height = this.height;
+            v.common.ver = this._ver;
+            v.common.uiSize.width = this._width;
+            v.common.uiSize.height = this._height;
           })
           .add[ui.core.Sprite](v => {
               if(this._sprite.isDefined) {

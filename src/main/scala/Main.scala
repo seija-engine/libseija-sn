@@ -73,9 +73,19 @@ import ui.core.Text
 import ui.core.Font
 import ui.Atlas
 import ui.PropertyChangedEventArgs
+import ui.usl.UDSL;
+import scala.collection.mutable.HashMap
 
 object Main {
   def main(args: Array[String]): Unit = {
+    println("runMain")
+    val fieldCount = 4;
+    for (i <- 0 until(fieldCount,2)) {     
+      println(i)
+    }
+  }
+
+  def runSeija() = {
     val file = java.io.File("");
     val app = core.App;
     FFISeijaCore.initLog("ERROR");
@@ -114,12 +124,8 @@ class DemoGame extends IGameApp {
   var font: Handle[Font] = null;
   def OnStart() = {
     val canvas = ui.UICanvas.create();
-    import ui.usl.OpCode;
-    println(OpCode.MakeControl.ordinal);
-    
+
   }
 
-  def OnUpdate() = {
-    
-  }
+  def OnUpdate() = {}
 }
