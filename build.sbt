@@ -14,6 +14,6 @@ lazy val root = project
   )
 
 nativeConfig ~= {
-    _.withMode(Mode.releaseFast)
+    _.withMode(Mode.debug)
     .withGC(GC.commix)
 }

@@ -77,11 +77,17 @@ import ui.usl.UDSL;
 import scala.collection.mutable.HashMap
 import ui.usl.TestOpCodes
 import ui.usl.types.given;
+import core.xml.FFIXml
+import scala.util.control.Breaks._
+import core.xml.{XmlReader,XmlEvent}
+import ui.xml.XmlControl
+import core.StringObject
 object Main {
   def main(args: Array[String]): Unit = {
     println("runMain")
-    UDSL.addType[SizeValue]
-    TestOpCodes.test1()
+    
+    
+    XmlControl.fromString("<Image width=150 height=50> </Image>")
   }
 
   def runSeija() = {
@@ -128,3 +134,18 @@ class DemoGame extends IGameApp {
 
   def OnUpdate() = {}
 }
+
+/*
+控件树：
+  Panel
+    Button
+
+View树:
+  ImageBG                 -Panel
+    BorderImage           -Panel
+  ChildAttach[padding 20] -Panel的子控件槽
+    ButtonBG              --Button
+      ButtonText          --Button
+    
+  
+*/
