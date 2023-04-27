@@ -86,6 +86,7 @@ object Main {
   def main(args: Array[String]): Unit = {
     println("runMain")
     
+    StringObject.register("Image",ui.controls.ImageFormString)
     
     XmlControl.fromString("<Image width=150 height=50> </Image>")
   }

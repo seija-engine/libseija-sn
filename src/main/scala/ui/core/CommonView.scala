@@ -2,6 +2,7 @@ package ui.core
 import core.RawFFI;
 import scala.scalanative.unsafe._
 import ui.core.Thickness
+import core.IFromString
 
 type RawUISize = CStruct4[Byte, Byte, CFloat, CFloat]
 
@@ -18,12 +19,38 @@ enum LayoutAlignment(val v:Byte) {
   case Stretch extends LayoutAlignment(3)
 }
 
+given IFromString[LayoutAlignment] with {
+  override def from(strValue: String): Option[LayoutAlignment] = strValue match
+    case "Start"   => Some(LayoutAlignment.Start)
+    case "Center"  => Some(LayoutAlignment.Center)
+    case "End"     => Some(LayoutAlignment.End)
+    case "Stretch" => Some(LayoutAlignment.Stretch)
+    case _         => None
+}
+
+
 enum Orientation(val v:Byte) {
     case Horizontal extends Orientation(0)
     case Vertical extends Orientation(1)
 }
 
+given IFromString[Orientation] with {
+  override def from(strValue: String): Option[Orientation] = strValue match
+    case "Hor" => Some(Orientation.Horizontal)
+    case "Ver"   => Some(Orientation.Vertical)
+    case _            => None
+}
+
 case class UISize(var width: SizeValue, var height: SizeValue)
+
+given IFromString[UISize] with {
+  override def from(strValue: String): Option[UISize] = {
+    strValue match
+      case "*" => Some(UISize(SizeValue.Auto, SizeValue.Auto))
+    
+    None
+  }
+}
 
 case class CommonView(
   var margin:Thickness = Thickness.zero,

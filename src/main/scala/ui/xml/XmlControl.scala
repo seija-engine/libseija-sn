@@ -4,7 +4,7 @@ import ui.BaseControl
 import core.xml.XmlReader
 import core.xml.XmlEvent
 import core.StringObject
-import core.{IFromString,IStringObject}
+import core.{IStringPropObject,ObjectPair}
 
 object XmlControl {
     def fromString(xmlString:String):BaseControl = {
@@ -38,11 +38,13 @@ object XmlControl {
         null
     }
 
-    private def setXmlTagProperty(reader:XmlReader,control:IStringObject) = {
+    private def setXmlTagProperty(reader:XmlReader,control:ObjectPair[_]) = {
        var curAttr = reader.nextAttr();
        while(curAttr.isDefined) {
          val k = curAttr.get._1;
          val v = curAttr.get._2;
+         control.setter.setProperty(control.obj,k,v);
+         curAttr = reader.nextAttr();
        }
     }
 }

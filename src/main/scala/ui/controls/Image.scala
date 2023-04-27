@@ -6,8 +6,10 @@ import ui.BaseControl
 import core.Entity
 import transform.{Transform,given}
 import ui.AtlasSprite
+import core.IStringPropObject
 
-class Image extends BaseControl with INotifyPropertyChanged {
+class Image extends BaseControl with INotifyPropertyChanged  {
+
   private var _hor:LayoutAlignment = LayoutAlignment.Stretch
   protected  var _ver:LayoutAlignment = LayoutAlignment.Stretch
   protected  var _width:SizeValue = SizeValue.Auto
@@ -69,4 +71,23 @@ class Image extends BaseControl with INotifyPropertyChanged {
       case "sprite" => 
       case _ => 
   }
+}
+
+
+given ImageFormString:IStringPropObject[Image] with {
+
+  override def setProperty(target: Image, name: String, value: String): Unit = {
+    /*
+    name match
+      case "hor" => target.hor = LayoutAlignment.fromString(value)
+      case "ver" => target.ver = LayoutAlignment.fromString(value)
+      case "width" => target.width = SizeValue.fromString(value)
+      case "height" => target.height = SizeValue.fromString(value)
+      case "sprite" => target.sprite = AtlasSprite.fromString(value)
+      case _ =>*/
+  }
+
+  def create():Image = new Image();
+
+  
 }
