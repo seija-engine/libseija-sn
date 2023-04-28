@@ -1,94 +1,34 @@
-import ui.controls.Image
-import ui.core.FFISeijaUI
-import ui.core.Rect2D
-import ui.core.{Sprite, SpriteType}
-import ui.core.{SpriteSheet, getIndex}
-import ui.core.UICanvas
-import ui.core.UIModule
-import ui.core.UISystem
-import scalanative.unsigned.UnsignedRichInt
-import scala.scalanative.unsafe
-import scala.scalanative.runtime.libc
-import core.CoreModule
-import window.WindowModule
-import transform.TransformModule
-import asset.AssetModule
-import input.InputModule
-import input.FFISeijaInput
-import core.FFISeijaCore
-import scala.scalanative.unsafe._
-import core.IGameApp
-import input.Input
-import scalanative.unsafe.CFuncPtr3.fromScalaFunction
-import input.KeyCode
-import core.Entity
-import math._;
-import transform.{Transform, TransformComponent}
-import render.{
-  Camera,
-  CameraComponent,
-  MaterialComponent,
-  TextureAssetType,
-  Mesh,
-  MeshComponent,
-  Material,
-  MaterialAssetType
-}
-import java.util.ArrayList;
-import scalanative.unsafe.CFuncPtr1.fromScalaFunction
-import transform.setPosition
-import asset.FFISeijaAsset
-import asset.Assets
-import asset.{HandleUntyped, Handle}
-import render.FFISeijaRender
-import render.Texture
-
-import ui.core.Canvas
-
-import ui.core.{
-  FlexLayoutComponent,
-  FlexItemComponent,
-  Orientation,
-  ItemLayoutComponent,
-  EventNode,
-  EventNodeComponent,
-  StackLayoutComponent,
-  SizeValue,
-  Font,
-  FontAssetType,
-  LayoutAlignment,
-  Text,
-  TextComponent
-}
-import ui.core.given;
-import scala.scalanative.unsafe.Tag.UInt
-import scala.scalanative.unsigned.UInt
-import ui.core.StackLayout
-import ui.core.StackLayout
-import ui.core.Thickness
-import ui.core.ItemLayout
-import ui.core.FlexLayout
-import ui.core.FlexItem
-import ui.core.Text
-import ui.core.Font
-import ui.Atlas
-import ui.PropertyChangedEventArgs
-import ui.usl.UDSL;
-import scala.collection.mutable.HashMap
-import ui.usl.TestOpCodes
-import ui.usl.types.given;
-import core.xml.FFIXml
-import scala.util.control.Breaks._
-import core.xml.{XmlReader,XmlEvent}
 import ui.xml.XmlControl
-import core.StringObject
+import core.FFISeijaCore
+import core.{CoreModule,Entity}
+import asset.AssetModule
+import transform.TransformModule
+import window.WindowModule
+import input.InputModule
+import ui.core.UIModule
+import java.util.ArrayList
+import core.IGameApp
+import asset.HandleUntyped
+import asset.Handle
+import ui.core.SpriteSheet
+import ui.core.Font
+import ui.controls.{CheckBox,Image}
+import ui.controls.given
+
 object Main {
   def main(args: Array[String]): Unit = {
     println("runMain")
-    
-    StringObject.register("Image",ui.controls.ImageFormString)
-    
-    XmlControl.fromString("<Image width=150 height=50> </Image>")
+    XmlControl.register[CheckBox]();
+    XmlControl.register[Image]();
+    var testXml =   """
+      <CheckBox checked='false'>
+        <CheckBox.Template>
+          <Image sprite='default.CheckBG' />
+          <Image sprite='default.CheckOff' />
+        </CheckBox.Template>
+      </CheckBox>
+    """
+    XmlControl.fromString(testXml)
   }
 
   def runSeija() = {
@@ -135,18 +75,3 @@ class DemoGame extends IGameApp {
 
   def OnUpdate() = {}
 }
-
-/*
-控件树：
-  Panel
-    Button
-
-View树:
-  ImageBG                 -Panel
-    BorderImage           -Panel
-  ChildAttach[padding 20] -Panel的子控件槽
-    ButtonBG              --Button
-      ButtonText          --Button
-    
-  
-*/

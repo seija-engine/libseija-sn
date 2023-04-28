@@ -6,44 +6,18 @@ import ui.BaseControl
 import core.Entity
 import transform.{Transform,given}
 import ui.AtlasSprite
-import core.IStringPropObject
+import core.IFromString
+import ui.xml.IControlFromXml
 
-class Image extends BaseControl with INotifyPropertyChanged  {
-
-  private var _hor:LayoutAlignment = LayoutAlignment.Stretch
-  protected  var _ver:LayoutAlignment = LayoutAlignment.Stretch
-  protected  var _width:SizeValue = SizeValue.Auto
-  protected  var _height:SizeValue = SizeValue.Auto
+class Image extends BaseLayout  {
   protected  var _sprite:Option[AtlasSprite] = None
-
-
-  def width_= (value:SizeValue):Unit = { 
-    this._width = value; 
-    this.callPropertyChanged("width")
-  }
-
-  def height_= (value:SizeValue):Unit = { 
-    this._height = value; 
-    this.callPropertyChanged("height")
-  }
-
-  def hor = this._hor
-  def hor_=(value:LayoutAlignment):Unit = { 
-    this._hor = value;
-    this.callPropertyChanged("hor") 
-  }
-
- 
-  def ver_=(value:LayoutAlignment):Unit = { 
-    this._ver = value;
-    this.callPropertyChanged("ver") 
-  }
-
   def sprite = this._sprite
   def sprite_= (value:Option[AtlasSprite]):Unit = { 
     this._sprite = value; 
     this.callPropertyChanged("sprite")
   }
+
+ 
 
   override def OnEnter(): Unit = {
     this._hor = LayoutAlignment.Stretch;
@@ -73,21 +47,11 @@ class Image extends BaseControl with INotifyPropertyChanged  {
   }
 }
 
+given IControlFromXml[Image] with {
+    val name:String = "Image"
+    def create():Image = new Image()
+    def setStringPropery(control:Image,name:String,value:String):Unit = {
+      given_IControlFromXml_BaseLayout.setStringPropery(control,name,value)
+    }
 
-given ImageFormString:IStringPropObject[Image] with {
-
-  override def setProperty(target: Image, name: String, value: String): Unit = {
-    /*
-    name match
-      case "hor" => target.hor = LayoutAlignment.fromString(value)
-      case "ver" => target.ver = LayoutAlignment.fromString(value)
-      case "width" => target.width = SizeValue.fromString(value)
-      case "height" => target.height = SizeValue.fromString(value)
-      case "sprite" => target.sprite = AtlasSprite.fromString(value)
-      case _ =>*/
-  }
-
-  def create():Image = new Image();
-
-  
 }

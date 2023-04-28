@@ -1,8 +1,9 @@
 package ui.controls
 import ui.BaseControl
 import ui.INotifyPropertyChanged
+import ui.xml.IControlFromXml
 
-class CheckBox extends BaseControl with INotifyPropertyChanged {
+class CheckBox extends BaseLayout {
     protected var _checked: Boolean = false;
 
     def checked = this._checked
@@ -15,4 +16,19 @@ class CheckBox extends BaseControl with INotifyPropertyChanged {
         if(this.template.isEmpty) return;
         val template = this.template.get;
     }
+}
+
+
+given IControlFromXml[CheckBox] with {
+    val name:String = "CheckBox"
+    def create():CheckBox = new CheckBox()
+    def setStringPropery(control:CheckBox,name:String,value:String):Unit = {
+        import core.given
+        
+        given_IControlFromXml_BaseLayout.setStringPropery(control,name,value)
+        name match
+         case "checked" => control.checked = core.formString[Boolean](value).getOrElse(false)
+         case _ => 
+    }
+
 }

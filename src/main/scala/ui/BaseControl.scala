@@ -1,8 +1,9 @@
 package ui
 import _root_.core.Entity;
 import java.util.ArrayList
+import _root_.core.IFromString
 
-class BaseControl {
+class BaseControl extends  INotifyPropertyChanged {
     protected var isEntered:Boolean = false;
     protected var entity:Option[Entity] = None;
     var Name: String = "";
@@ -22,6 +23,11 @@ class BaseControl {
         child.Enter();
         this.childrenList.add(child);
     }
+
+    override def onPropertyChanged(propertyName: String): Unit = {
+        println(propertyName)
+    }
+    
 
     def Enter():Unit = { 
         this.isEntered = true;

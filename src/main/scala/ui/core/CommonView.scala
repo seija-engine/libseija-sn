@@ -12,6 +12,13 @@ enum SizeValue {
   case Pixel(v: Float)
 }
 
+given IFromString[SizeValue] with {
+  override def from(strValue: String): Option[SizeValue] = strValue match
+    case "*" => Some(SizeValue.Auto)
+    case "-" => Some(SizeValue.FormRect)
+    case _ => strValue.toFloatOption.map(SizeValue.Pixel(_))
+}
+
 enum LayoutAlignment(val v:Byte) {
   case Start extends LayoutAlignment(0)
   case Center extends LayoutAlignment(1)
@@ -43,12 +50,17 @@ given IFromString[Orientation] with {
 
 case class UISize(var width: SizeValue, var height: SizeValue)
 
+
 given IFromString[UISize] with {
   override def from(strValue: String): Option[UISize] = {
-    strValue match
-      case "*" => Some(UISize(SizeValue.Auto, SizeValue.Auto))
-    
-    None
+    val values = strValue.split("x");
+    if(values.length == 2) {
+      val width:Option[SizeValue] = given_IFromString_SizeValue.from(values(0));
+      val height:Option[SizeValue] = given_IFromString_SizeValue.from(values(1));
+      if(width.isDefined && height.isDefined) {
+        Some(UISize(width.get,height.get))
+      } else None
+    } else None
   }
 }
 

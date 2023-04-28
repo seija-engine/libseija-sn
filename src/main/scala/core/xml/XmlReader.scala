@@ -60,11 +60,3 @@ object XmlReader {
 
   
 }
-
-/*
-FFIXml.stringReaderReadEvent(ptrReader);
-    FFIXml.stringReaderReadAttr(ptrReader);
-    FFIXml.stringReaderReadAttr(ptrReader);
-    
-    FFIXml.stringReaderReadAttr(ptrReader);
-*/
