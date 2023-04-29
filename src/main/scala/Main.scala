@@ -14,27 +14,26 @@ import ui.core.SpriteSheet
 import ui.core.Font
 import ui.controls.{CheckBox,Image}
 import ui.controls.given
+import scala.util.Failure
+import scala.util.Success
+import ui.UICanvas
+import Main.testXml
+import ui.Atlas
 
 object Main {
+  val testXml = """
+      <Image sprite='default.Btn3On' hor='Start' ver='Start' width='100' height='100' />
+  """
   def main(args: Array[String]): Unit = {
-    println("runMain")
     XmlControl.register[CheckBox]();
     XmlControl.register[Image]();
-    var testXml =   """
-      <CheckBox checked='false'>
-        <CheckBox.Template>
-          <Image sprite='default.CheckBG' />
-          <Image sprite='default.CheckOff' />
-        </CheckBox.Template>
-      </CheckBox>
-    """
-    XmlControl.fromString(testXml)
+    runSeija(); 
   }
 
   def runSeija() = {
     val file = java.io.File("");
     val app = core.App;
-    FFISeijaCore.initLog("ERROR");
+    FFISeijaCore.initLog("INFO");
     app.addModule(CoreModule());
     app.addModule(AssetModule("example/assets"));
     app.addModule(TransformModule());
@@ -50,7 +49,6 @@ object Main {
       )
     );
     app.addModule(UIModule());
-
     app.start(new DemoGame());
     app.run();
   }
@@ -70,7 +68,9 @@ class DemoGame extends IGameApp {
   var font: Handle[Font] = null;
   def OnStart() = {
     val canvas = ui.UICanvas.create();
-
+    Atlas.load("default","ui/default.json").get
+    val uiControl = XmlControl.fromString(testXml).get;
+    canvas.addControl(uiControl);
   }
 
   def OnUpdate() = {}

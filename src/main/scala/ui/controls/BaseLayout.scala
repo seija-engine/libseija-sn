@@ -28,6 +28,7 @@ class BaseLayout extends BaseControl {
       this._hor = value;
       this.callPropertyChanged("hor") 
     }
+    def ver = this._ver
     def ver_=(value:LayoutAlignment):Unit = { 
       this._ver = value;
       this.callPropertyChanged("ver") 
@@ -42,10 +43,15 @@ given IControlFromXml[BaseLayout] with {
     def setStringPropery(control:BaseLayout,name:String,value:String):Unit = {
        import ui.core._
        import ui.core.given;
+       println(s"set $name = $value")
        name match
         case "width"  => control.width = core.formString[SizeValue](value).get
         case "height" => control.height = core.formString[SizeValue](value).get
-        case _ =>
+        case "hor" => control.hor = core.formString[LayoutAlignment](value).get
+        case "ver" => control.ver = core.formString[LayoutAlignment](value).get
+        case _ => {}
+
+      
     }
 
 }

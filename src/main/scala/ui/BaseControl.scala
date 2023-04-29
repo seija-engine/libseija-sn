@@ -10,7 +10,6 @@ class BaseControl extends  INotifyPropertyChanged {
     var ClassName: String = "";
     protected var parent:Option[BaseControl] = None;
     protected var childrenList: ArrayList[BaseControl] = new ArrayList[BaseControl]();
-    protected var template:Option[Template] = None;
 
     def setParent(parent:Option[BaseControl]) = {
         this.parent = parent;
@@ -18,9 +17,11 @@ class BaseControl extends  INotifyPropertyChanged {
 
     def getEntity():Option[Entity] = this.entity
 
-    def AddChild(child:BaseControl) = {
+    def AddChild(child:BaseControl,isEnter:Boolean = true) = {
         child.setParent(Some(this));
-        child.Enter();
+        if(isEnter) {
+           child.Enter();
+        }
         this.childrenList.add(child);
     }
 
@@ -29,9 +30,13 @@ class BaseControl extends  INotifyPropertyChanged {
     }
     
 
-    def Enter():Unit = { 
-        this.isEntered = true;
-        this.OnEnter();
+    def Enter():Unit = {
+        if(!this.isEntered) {
+          this.isEntered = true;
+          this.OnEnter();
+        }
+        this.childrenList.forEach(_.Enter());
+        
     }
 
     def OnEnter() = {}

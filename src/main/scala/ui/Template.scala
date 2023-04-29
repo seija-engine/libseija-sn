@@ -1,8 +1,9 @@
 package ui
-/*
-Template存储控件描述信息
-*/
+import java.util.ArrayList;
+
 class Template {
+    var children:ArrayList[BaseControl] = ArrayList()
+    
     def instantiate(): Unit = {
         
     }

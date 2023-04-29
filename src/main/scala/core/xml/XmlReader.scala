@@ -1,6 +1,9 @@
 package core.xml
 import scalanative.unsafe._
 import scala.collection.Iterable
+import scala.util.Try
+import scala.util.Success
+import scala.util.Failure
 enum XmlEvent {
   case StartElement(name:String)
   case EndElement(name:String)
@@ -9,14 +12,58 @@ enum XmlEvent {
   case Comment(text:String)
   case EOF
   case Unkonwn
+
+  def IsEOF():Boolean = {
+     this match
+      case EOF => true
+      case _ => false
+  }
+
+  def IsEnd(name:String):Boolean = {
+    this match
+      case EndElement(endName) => endName == name
+      case _ => false
+  }
+
+  def castStart():Option[String] = {
+    this match
+      case StartElement(name) => Some(name)
+      case _ => None
+  }
+
+  def castEmpty():Option[String] = {
+    this match
+      case EmptyElement(name) => Some(name)
+      case _ => None 
+    
+  }
 }
+
 
 class XmlReader(private val rawPtr:Ptr[Byte]) extends Iterable[XmlEvent] {
    override def iterator: Iterator[XmlEvent] = new XmlReaderIter(rawPtr)
+   var cacheEvent:Option[XmlEvent] = None;
 
-   def nextEvent():Either[String,XmlEvent] = {
-      FFIXml.stringReaderReadEvent(rawPtr)
+   def nextEvent():Try[XmlEvent] = {
+      if(this.cacheEvent.isDefined) {
+         val ret = this.cacheEvent.get;
+         this.cacheEvent = None;
+         return Success(ret)
+      }
+      FFIXml.stringReaderReadEvent(rawPtr).left.map(new Throwable(_)).toTry
+      
    }
+
+   def lookNext():Try[XmlEvent] = {
+      if(this.cacheEvent.isDefined) {
+        return Success(this.cacheEvent.get)
+      }
+      this.nextEvent().flatMap { newEvent =>
+          this.cacheEvent = Some(newEvent)
+          Success(newEvent)
+      }
+   }
+
    def nextAttr():Option[(String,String)] = {
      FFIXml.readerReadAttr(rawPtr)
    }

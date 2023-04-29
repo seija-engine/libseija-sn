@@ -8,6 +8,7 @@ import transform.{Transform,given}
 import ui.AtlasSprite
 import core.IFromString
 import ui.xml.IControlFromXml
+import ui.Atlas
 
 class Image extends BaseLayout  {
   protected  var _sprite:Option[AtlasSprite] = None
@@ -20,8 +21,9 @@ class Image extends BaseLayout  {
  
 
   override def OnEnter(): Unit = {
-    this._hor = LayoutAlignment.Stretch;
     val parentEntity = this.parent.flatMap(_.getEntity());
+    println(this._hor)
+    println(this._ver)
     Entity.spawnEmpty()
           .add[Transform](_.parent = parentEntity)
           .add[Rect2D]()
@@ -52,6 +54,13 @@ given IControlFromXml[Image] with {
     def create():Image = new Image()
     def setStringPropery(control:Image,name:String,value:String):Unit = {
       given_IControlFromXml_BaseLayout.setStringPropery(control,name,value)
+      name match
+        case "sprite" => { 
+          control.sprite = Atlas.getPath(value); 
+          
+        }
+        case _ => {}
+      
     }
 
 }

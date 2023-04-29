@@ -26,6 +26,12 @@ object Atlas {
 
     def get(name:String):Option[Atlas] = Option(atlasDict.get(name));
 
+    def getPath(path:String):Option[AtlasSprite] = {
+        val strs = path.split('.');
+        if(strs.length != 2) { return None };
+        this.get(strs(0)).flatMap(_.get(strs(1)))
+    }   
+
     def apply(hSheet:Handle[SpriteSheet]):Atlas = {
         val atlas = new Atlas(hSheet);
         val rawSheet = FFISeijaUI.spriteSheetAssetGet(App.worldPtr, hSheet.id.id);
