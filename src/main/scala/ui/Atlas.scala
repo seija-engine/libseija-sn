@@ -43,7 +43,6 @@ object Atlas {
             val sprite = FFISeijaUI.spriteSheetGetInfo(ptr,i,ptrStringBuffer);
             val atlasSprite = AtlasSprite(sprite._1,atlas,sprite._2);
             atlas.sprites.put(sprite._2,atlasSprite);
-            //println(atlasSprite)
         }
         FFISeijaUI.spriteEndRead(ptr);
         atlas

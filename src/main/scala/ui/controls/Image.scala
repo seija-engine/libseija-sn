@@ -21,10 +21,9 @@ class Image extends BaseLayout  {
  
 
   override def OnEnter(): Unit = {
+    
     val parentEntity = this.parent.flatMap(_.getEntity());
-    println(this._hor)
-    println(this._ver)
-    Entity.spawnEmpty()
+    val entity = Entity.spawnEmpty()
           .add[Transform](_.parent = parentEntity)
           .add[Rect2D]()
           .add[ItemLayout](v => {
@@ -39,6 +38,7 @@ class Image extends BaseLayout  {
                 v.spriteIndex = this._sprite.get.index;
               }
           })
+    this.entity = Some(entity)
   }
 
   override def onPropertyChanged(propertyName: String): Unit = {

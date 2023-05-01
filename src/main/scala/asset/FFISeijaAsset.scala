@@ -31,7 +31,6 @@ object FFISeijaAsset {
     if(assetLoadSyncPtr(worldPtr,toCString(assetPath),ta,tb,id)) {
       return Some(HandleUntyped(!id,ta,tb));
     } else {
-      println("222");
       return None;
     }
   }

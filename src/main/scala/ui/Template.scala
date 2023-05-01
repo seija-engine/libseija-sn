@@ -1,10 +1,11 @@
 package ui
-import java.util.ArrayList;
 
 class Template {
-    var children:ArrayList[BaseControl] = ArrayList()
-    
-    def instantiate(): Unit = {
-        
+    var children:List[BaseControl] = List()
+
+    def applyTo(parent:BaseControl) = {
+        for(control <- this.children) {
+            parent.AddChild(control)
+        }
     }
 }

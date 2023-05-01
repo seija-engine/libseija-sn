@@ -1,6 +1,5 @@
 package core
 import scala.collection.mutable;
-
 trait IFromString[T] {
     def from(strValue:String):Option[T];
 }

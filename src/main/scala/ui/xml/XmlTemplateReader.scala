@@ -22,7 +22,7 @@ case class XmlTemplateReader(val reader:XmlReader) {
               return Success(template)
            }
            val control = XmlControlReader(reader).read().get
-           template.children.add(control)
+           template.children = template.children :+ control;
         }
         Success(template)
     }

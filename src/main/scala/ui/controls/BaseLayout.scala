@@ -43,7 +43,6 @@ given IControlFromXml[BaseLayout] with {
     def setStringPropery(control:BaseLayout,name:String,value:String):Unit = {
        import ui.core._
        import ui.core.given;
-       println(s"set $name = $value")
        name match
         case "width"  => control.width = core.formString[SizeValue](value).get
         case "height" => control.height = core.formString[SizeValue](value).get

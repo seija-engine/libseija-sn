@@ -22,7 +22,11 @@ import ui.Atlas
 
 object Main {
   val testXml = """
-      <Image sprite='default.Btn3On' hor='Start' ver='Start' width='100' height='100' />
+      <CheckBox hor='Center' ver='Center' width='50' height='50' >
+        <CheckBox.Template>
+          <Image sprite='default.Btn3On'  />
+        </CheckBox.Template>
+      </CheckBox>
   """
   def main(args: Array[String]): Unit = {
     XmlControl.register[CheckBox]();
@@ -33,7 +37,7 @@ object Main {
   def runSeija() = {
     val file = java.io.File("");
     val app = core.App;
-    FFISeijaCore.initLog("INFO");
+    FFISeijaCore.initLog("ERROR");
     app.addModule(CoreModule());
     app.addModule(AssetModule("example/assets"));
     app.addModule(TransformModule());

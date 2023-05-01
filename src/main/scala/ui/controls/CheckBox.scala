@@ -8,6 +8,11 @@ import scala.util.Failure
 import ui.Template
 import ui.xml.XmlTemplateReader
 import scala.util.Success
+import core.Entity
+import transform.{Transform,TransformComponent}
+import ui.core.Rect2D
+import ui.core.ItemLayout
+import ui.core.given;
 
 class CheckBox extends BaseLayout {
     protected var _checked: Boolean = false;
@@ -26,8 +31,28 @@ class CheckBox extends BaseLayout {
     }
 
     override def OnEnter():Unit = {
-        if(this.template.isEmpty) return;
+        if(this.template.isEmpty) {
+            return;
+        }
         val template = this.template.get;
+        val checkEntity = this.createEntity();
+        template.applyTo(this);
+        
+    }
+
+    def createEntity():Entity = {
+        val parentEntity = this.parent.flatMap(_.getEntity());
+        val entity = Entity.spawnEmpty()
+          .add[Transform](_.parent = parentEntity)
+          .add[Rect2D]()
+          .add[ItemLayout](v => {
+            v.common.hor = this._hor;
+            v.common.ver = this._ver;
+            v.common.uiSize.width = this._width;
+            v.common.uiSize.height = this._height;
+          })
+        this.entity = Some(entity)
+        return entity;
     }
 }
 
