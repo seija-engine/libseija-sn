@@ -9,6 +9,8 @@ trait IModule {
   def OnAdd(appPtr:Ptr[Byte]):Unit;
 
   def updateECSPtr(worldPtr:Ptr[Byte]):Unit = {};
+
+  def update():Unit = {}
 }
 
 trait IGameApp {
@@ -46,7 +48,11 @@ object App {
   }
 
   def OnUpdate(worldPtr:Ptr[Byte]) = {
-    this.moduleList.foreach(_.updateECSPtr(worldPtr))
+    this.moduleList.foreach((module) => {
+      module.updateECSPtr(worldPtr)
+      module.update();
+    })
+    
     
     this.gameApp.OnUpdate();
   }

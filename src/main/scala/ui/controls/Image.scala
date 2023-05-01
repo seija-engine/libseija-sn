@@ -10,8 +10,21 @@ import core.IFromString
 import ui.xml.IControlFromXml
 import ui.Atlas
 
+enum ImageType(val value:Int)  {
+  case Simple extends ImageType(0)
+  case Slice extends ImageType(1)
+}
+
 class Image extends BaseLayout with Cloneable  {
-  protected  var _sprite:Option[AtlasSprite] = None
+  protected var _sprite:Option[AtlasSprite] = None
+  protected var _imageType:ImageType = ImageType.Simple
+
+  def imageType = this._imageType
+  def imageType_= (value:ImageType):Unit = { 
+    this._imageType = value; 
+    this.callPropertyChanged("imageType")
+  }
+
   def sprite = this._sprite
   def sprite_= (value:Option[AtlasSprite]):Unit = { 
     this._sprite = value; 
@@ -21,6 +34,12 @@ class Image extends BaseLayout with Cloneable  {
  
 
   override def OnEnter(): Unit = {
+    val spriteType = _imageType match
+      case ImageType.Simple => ui.core.SpriteType.Simple
+      case ImageType.Slice => {
+        val border = this._sprite.flatMap(_.sliceInfo).getOrElse(Thickness.zero)
+        ui.core.SpriteType.Slice(border)
+      }
     
     val parentEntity = this.parent.flatMap(_.getEntity());
     val entity = Entity.spawnEmpty()
@@ -36,6 +55,7 @@ class Image extends BaseLayout with Cloneable  {
               if(this._sprite.isDefined) {
                 v.atlas = Some(this._sprite.get.atlas.sheet);
                 v.spriteIndex = this._sprite.get.index;
+                v.typ = spriteType;
               }
           })
     this.entity = Some(entity)

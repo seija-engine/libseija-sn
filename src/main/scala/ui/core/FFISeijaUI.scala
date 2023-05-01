@@ -33,6 +33,7 @@ object FFISeijaUI {
     private val entityAddSpriteSimplePtr = LibSeija.getFunc[CFuncPtr5[Ptr[Byte],Long,Int,Long,Ptr[RawVector4],Unit]]("entity_add_sprite_simple");
     private val entityAddSpriteSlicePtr = LibSeija.getFunc[CFuncPtr6[Ptr[Byte],Long,Int,Long,Ptr[RawVector4],Ptr[RawVector4],Unit]]("entity_add_sprite_slice");
     private val entityAddEventNodePtr = LibSeija.getFunc[CFuncPtr4[Ptr[Byte],Long,Ptr[RawEventNode],CString,Unit]]("entity_add_event_node");
+    private val entityRemoveEventPtr = LibSeija.getFunc[CFuncPtr2[Ptr[Byte],Long,Boolean]]("entity_remove_event_node")
     private val readUIEventsPtr = LibSeija.getFunc[CFuncPtr2[Ptr[Byte],Ptr[Byte],Unit]]("read_ui_events");
     type AddStackType = CFuncPtr6[Ptr[Byte],Long,CFloat,Byte,Ptr[RawCommonView],Ptr[ui.core.RawUISize],Unit];
     private val entityAddStackPtr = LibSeija.getFunc[AddStackType]("entity_add_stack");
@@ -94,6 +95,8 @@ object FFISeijaUI {
     def entityAddEventNode(worldPtr:Ptr[Byte],entity:Long,eventNodePtr:Ptr[RawEventNode],name:String) =  Zone { implicit z =>
         entityAddEventNodePtr(worldPtr,entity,eventNodePtr,toCString(name))
     }
+
+    def entityRemoveEventNode(worldPtr:Ptr[Byte],entity:Long):Boolean = entityRemoveEventPtr(worldPtr,entity)
 
     def readUIEvents(worldPtr:Ptr[Byte],fPtr:CFuncPtr) = {
         val funcPtr = CFuncPtr.toPtr(fPtr);

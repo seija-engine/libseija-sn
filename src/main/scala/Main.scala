@@ -5,7 +5,7 @@ import asset.AssetModule
 import transform.TransformModule
 import window.WindowModule
 import input.InputModule
-import ui.core.UIModule
+import ui.UIModule
 import java.util.ArrayList
 import core.IGameApp
 import asset.HandleUntyped
@@ -19,6 +19,7 @@ import scala.util.Success
 import ui.UICanvas
 import Main.testXml
 import ui.Atlas
+import ui.core.Thickness
 
 object Main {
   val testXml = """
@@ -38,7 +39,7 @@ object Main {
   def runSeija() = {
     val file = java.io.File("");
     val app = core.App;
-    FFISeijaCore.initLog("ERROR");
+    FFISeijaCore.initLog("INFO");
     app.addModule(CoreModule());
     app.addModule(AssetModule("example/assets"));
     app.addModule(TransformModule());
@@ -74,9 +75,15 @@ class DemoGame extends IGameApp {
   def OnStart() = {
     val canvas = ui.UICanvas.create();
     Atlas.load("default","ui/default.json").get
+    val bgSprite = Atlas.getPath("default.dk2").get;
+    bgSprite.sliceInfo = Some(Thickness(30))
+
     val image = Image();
-    image.sprite = Atlas.getPath("default.dk2")
+    image.sprite = Some(bgSprite)
+    image.imageType = ui.controls.ImageType.Slice;
     canvas.addControl(image);
+
+
     val uiControl = XmlControl.fromString(testXml).get;
     canvas.addControl(uiControl);
   }

@@ -4,7 +4,7 @@ import ui.core.SpriteSheet;
 import scalanative.unsafe._
 import scalanative.runtime._
 import asset.{Handle,Assets};
-import ui.core.{FFISeijaUI,given}
+import ui.core.{FFISeijaUI,Thickness,given}
 import java.util.HashMap;
 import scala.scalanative.unsigned._
 import scala.scalanative.runtime.libc
@@ -18,7 +18,7 @@ object Atlas {
     private var atlasDict = new HashMap[String,Atlas]();
 
     def load(name:String,path:String):Option[Atlas] = {
-        val hSheet = Assets.loadSync[SpriteSheet]("ui/default.json");
+        val hSheet = Assets.loadSync[SpriteSheet](path);
         val newAtlas = hSheet.map(Atlas.apply);
         newAtlas.foreach(atlas => atlasDict.put(name,atlas));
         newAtlas
@@ -41,7 +41,7 @@ object Atlas {
         for (i <- 0 until count) {
             libc.memset(toRawPtr(ptrStringBuffer),0,charMax.toULong);
             val sprite = FFISeijaUI.spriteSheetGetInfo(ptr,i,ptrStringBuffer);
-            val atlasSprite = AtlasSprite(sprite._1,atlas,sprite._2);
+            val atlasSprite = AtlasSprite(sprite._1,atlas,sprite._2,None);
             atlas.sprites.put(sprite._2,atlasSprite);
         }
         FFISeijaUI.spriteEndRead(ptr);
@@ -50,4 +50,5 @@ object Atlas {
 }
 
 
-case class AtlasSprite(val index:Int,val atlas:Atlas, val name:String);
+
+case class AtlasSprite(val index:Int,val atlas:Atlas, val name:String,var sliceInfo:Option[Thickness]);

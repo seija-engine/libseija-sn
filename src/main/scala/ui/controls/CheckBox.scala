@@ -13,6 +13,7 @@ import transform.{Transform,TransformComponent}
 import ui.core.Rect2D
 import ui.core.ItemLayout
 import ui.core.given;
+import ui.EventManager
 
 class CheckBox extends BaseLayout {
     protected var _checked: Boolean = false;
@@ -36,8 +37,14 @@ class CheckBox extends BaseLayout {
         }
         val template = this.template.get;
         val checkEntity = this.createEntity();
+        EventManager.register(checkEntity,ui.EventType.CLICK,this.onClickCheckBox,"CQCQ");
         template.applyTo(this);
         
+    }
+
+    def onClickCheckBox(args:Any) = {
+        println(s"onClickCheckBox${args}")
+        EventManager.unRegister(this.entity.get)
     }
 
     def createEntity():Entity = {
