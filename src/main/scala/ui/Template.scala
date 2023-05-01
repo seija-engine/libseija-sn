@@ -5,7 +5,7 @@ class Template {
 
     def applyTo(parent:BaseControl) = {
         for(control <- this.children) {
-            parent.AddChild(control)
+            parent.AddChild(control.clone())
         }
     }
 }

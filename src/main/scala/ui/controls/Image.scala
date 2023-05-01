@@ -10,7 +10,7 @@ import core.IFromString
 import ui.xml.IControlFromXml
 import ui.Atlas
 
-class Image extends BaseLayout  {
+class Image extends BaseLayout with Cloneable  {
   protected  var _sprite:Option[AtlasSprite] = None
   def sprite = this._sprite
   def sprite_= (value:Option[AtlasSprite]):Unit = { 
@@ -46,6 +46,12 @@ class Image extends BaseLayout  {
     propertyName match
       case "sprite" => 
       case _ => 
+  }
+
+  override def clone():Image = {
+    val control = super.clone().asInstanceOf[Image];
+    
+    control
   }
 }
 

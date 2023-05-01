@@ -6,7 +6,7 @@ import core.IFromString
 
 type RawUISize = CStruct4[Byte, Byte, CFloat, CFloat]
 
-enum SizeValue {
+enum SizeValue extends Cloneable {
   case Auto
   case FormRect
   case Pixel(v: Float)

@@ -7,7 +7,7 @@ import ui.core.SizeValue
 import ui.core.{given_IFromString_LayoutAlignment};
 import ui.xml.IControlFromXml
 
-class BaseLayout extends BaseControl {
+class BaseLayout extends BaseControl with Cloneable {
     protected var _hor:LayoutAlignment = LayoutAlignment.Stretch
     protected  var _ver:LayoutAlignment = LayoutAlignment.Stretch
     protected  var _width:SizeValue = SizeValue.Auto
@@ -32,6 +32,12 @@ class BaseLayout extends BaseControl {
     def ver_=(value:LayoutAlignment):Unit = { 
       this._ver = value;
       this.callPropertyChanged("ver") 
+    }
+
+    override def clone():BaseLayout = {
+        val control:BaseLayout = super.clone().asInstanceOf[BaseLayout];
+        
+        control
     }
 }
 

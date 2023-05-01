@@ -22,9 +22,10 @@ import ui.Atlas
 
 object Main {
   val testXml = """
-      <CheckBox hor='Center' ver='Center' width='50' height='50' >
+      <CheckBox hor='Center' ver='Center' width='25' height='25' >
         <CheckBox.Template>
-          <Image sprite='default.Btn3On'  />
+          <Image sprite='default.duikong'  />
+          <Image sprite='default.duihao'  />
         </CheckBox.Template>
       </CheckBox>
   """
@@ -73,6 +74,9 @@ class DemoGame extends IGameApp {
   def OnStart() = {
     val canvas = ui.UICanvas.create();
     Atlas.load("default","ui/default.json").get
+    val image = Image();
+    image.sprite = Atlas.getPath("default.dk2")
+    canvas.addControl(image);
     val uiControl = XmlControl.fromString(testXml).get;
     canvas.addControl(uiControl);
   }
