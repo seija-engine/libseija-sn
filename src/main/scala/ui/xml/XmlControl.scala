@@ -8,6 +8,7 @@ import ui.controls.BaseLayout
 import scala.util.Try
 import scala.util.Failure
 import scala.util.Success
+import ui.BindingItem
 
 trait IControlFromXml[T <: BaseControl] {
     val name:String;
@@ -43,7 +44,7 @@ object XmlControl {
         fromXmlReader(XmlReader.fromString(xmlString))
     }
 
-    def fromXmlReader(reader:XmlReader):Try[BaseControl] = XmlControlReader(reader).read()
+    def fromXmlReader(reader:XmlReader):Try[BaseControl] = XmlControlReader(reader,None).read()
    
 }
 

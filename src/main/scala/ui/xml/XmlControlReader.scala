@@ -5,9 +5,10 @@ import ui.BaseControl
 import scala.util.Try
 import scala.util.Failure
 import scala.util.Success
+import ui.BindingItem
 
 
-case class XmlControlReader(val reader:XmlReader) {
+case class XmlControlReader(val reader:XmlReader,val templateOwner:Option[BaseControl]) {
 
     def read():Try[BaseControl] =  this.readControl()
 
@@ -36,14 +37,14 @@ case class XmlControlReader(val reader:XmlReader) {
                         if(startEvent.get.startsWith(curControlName + ".")) {
                             readXmlProperty(pair).get;
                         } else {
-                           val childControl = XmlControlReader(reader).read().get;
+                           val childControl = XmlControlReader(reader,templateOwner).read().get;
                            pair.control.AddChild(childControl,false)
                         }
                     }
                     //Empty
                     val emptyEvent = nextEvent.castEmpty();
                     if(emptyEvent.isDefined) {
-                        val childControl = XmlControlReader(reader).read().get;
+                        val childControl = XmlControlReader(reader,templateOwner).read().get;
                         pair.control.AddChild(childControl,false)
                     }
                 }
@@ -63,8 +64,13 @@ case class XmlControlReader(val reader:XmlReader) {
        while(curAttr.isDefined) {
          val k = curAttr.get._1;
          val v = curAttr.get._2;
-         val curControl = control.control;
-         control.setter.setStringPropery(curControl,k,v);
+         if(v.startsWith("{Binding")) {
+           val bindingItem = BindingItem.parse(v,k);
+           control.control.addBindItem(bindingItem);
+         } else {
+            val curControl = control.control;
+            control.setter.setStringPropery(curControl,k,v);
+         }
          curAttr = reader.nextAttr();
        }
     }

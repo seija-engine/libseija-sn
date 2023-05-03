@@ -25,8 +25,8 @@ object Main {
   val testXml = """
       <CheckBox hor='Center' ver='Center' width='25' height='25' >
         <CheckBox.Template>
-          <Image sprite='default.duikong'  />
-          <Image sprite='default.duihao'  />
+          <Image sprite="default.duikong"  />
+          <Image sprite="{Binding Owner checked}"  />
         </CheckBox.Template>
       </CheckBox>
   """
@@ -39,7 +39,7 @@ object Main {
   def runSeija() = {
     val file = java.io.File("");
     val app = core.App;
-    FFISeijaCore.initLog("INFO");
+    FFISeijaCore.initLog("ERROR");
     app.addModule(CoreModule());
     app.addModule(AssetModule("example/assets"));
     app.addModule(TransformModule());

@@ -16,22 +16,22 @@ class BaseLayout extends BaseControl with Cloneable {
     def width = this._width;
     def width_= (value:SizeValue):Unit = { 
       this._width = value; 
-      this.callPropertyChanged("width")
+      this.callPropertyChanged("width",this._width)
     }
     def height = this._height;
     def height_= (value:SizeValue):Unit = { 
      this._height = value; 
-     this.callPropertyChanged("height")
+     this.callPropertyChanged("height",this._height)
     }
     def hor = this._hor
     def hor_=(value:LayoutAlignment):Unit = { 
       this._hor = value;
-      this.callPropertyChanged("hor") 
+      this.callPropertyChanged("hor",this._hor) 
     }
     def ver = this._ver
     def ver_=(value:LayoutAlignment):Unit = { 
       this._ver = value;
-      this.callPropertyChanged("ver") 
+      this.callPropertyChanged("ver",this._ver) 
     }
 
     override def clone():BaseLayout = {

@@ -5,9 +5,10 @@ import ui.Template
 import scala.util.Try
 import scala.util.Success
 import scala.util.Failure
+import ui.BaseControl
 
 
-case class XmlTemplateReader(val reader:XmlReader) {
+case class XmlTemplateReader(val reader:XmlReader,val owner:BaseControl) {
     def read():Try[Template] = {
         val event = reader.nextEvent().get;
         val paramName = event.castStart();
@@ -21,8 +22,9 @@ case class XmlTemplateReader(val reader:XmlReader) {
               reader.nextEvent();
               return Success(template)
            }
-           val control = XmlControlReader(reader).read().get
+           val control = XmlControlReader(reader,Some(owner)).read().get
            template.children = template.children :+ control;
+           control.templateOwner = Some(owner);
         }
         Success(template)
     }

@@ -22,13 +22,12 @@ class CheckBox extends BaseLayout {
     def checked = this._checked
     def checked_=(value: Boolean): Unit = {
         this._checked = value;
-        this.callPropertyChanged("checked")
+        this.callPropertyChanged("checked",this._checked)
     }
 
     def template = this._template
     def template_=(value: Template): Unit = {
         this._template = Some(value);
-        this.callPropertyChanged("checked")
     }
 
     override def OnEnter():Unit = {
@@ -77,7 +76,7 @@ given IControlFromXml[CheckBox] with {
     }
 
     override def readXmlProperty(control: CheckBox, reader: XmlReader): Try[Unit] = {
-        XmlTemplateReader(reader).read().flatMap { template =>
+        XmlTemplateReader(reader,control).read().flatMap { template =>
           control.template = template;
           Success(())
         }

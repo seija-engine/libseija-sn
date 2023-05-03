@@ -22,13 +22,13 @@ class Image extends BaseLayout with Cloneable  {
   def imageType = this._imageType
   def imageType_= (value:ImageType):Unit = { 
     this._imageType = value; 
-    this.callPropertyChanged("imageType")
+    this.callPropertyChanged("imageType",this._imageType)
   }
 
   def sprite = this._sprite
   def sprite_= (value:Option[AtlasSprite]):Unit = { 
     this._sprite = value; 
-    this.callPropertyChanged("sprite")
+    this.callPropertyChanged("sprite",this._sprite)
   }
 
  

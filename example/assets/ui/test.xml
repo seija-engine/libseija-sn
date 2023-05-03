@@ -1,19 +1,6 @@
-<CheckBox checked="false">
-    <Template>
-        <Sprite width="50" height="50" sprite="default.Btn3On" />
-    </Template>
+<CheckBox hor='Center' ver='Center' width='25' height='25' >
+    <CheckBox.Template>
+        <Image sprite='default.duikong'  />
+        <Image sprite='default.duihao'  />
+    </CheckBox.Template>
 </CheckBox>
-
-<!-- 
-PushString "Sprite"
-PushString "Width"
-PushInt 50
-MakeObject "SizeValue" 2
-PushString "Height"
-PushInt 50
-MakeObject "SizeValue" 2
-PushString "Sprite"
-PushString "default"
-PushString "Btn3On"
-MakeObject "AtlasSprite"
--->
