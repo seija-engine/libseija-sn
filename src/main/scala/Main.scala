@@ -20,6 +20,44 @@ import ui.UICanvas
 import Main.testXml
 import ui.Atlas
 import ui.core.Thickness
+import scala.deriving.Mirror
+import ui.BaseControl
+
+
+
+case class TypeInfo(val name:String,val fieldList:List[FieldInfo]);
+
+case class FieldInfo(val Name:String,set:(Any,Any) => Unit,get:(Any) => Any);
+
+
+trait TypeObject[T] {
+    extension(v:T) def info:TypeInfo;
+}
+
+given TypeObject[A] with {
+  extension (v: A) override def info: TypeInfo = {
+    TypeInfo("A",List(
+        FieldInfo("fa",(obj,field) => {
+            obj.asInstanceOf[A].fa = field.asInstanceOf[Int]
+        },_.asInstanceOf[A].fa)
+    ))
+  }
+}
+
+class A {
+    var fa:Int = 0;
+    def setValue(name:String,value:Any) = {
+        name match
+            case "fa" => this.fa = value.asInstanceOf[Int];
+            case _: String => 
+    }
+    def getValue(name:String):Any = {
+        name match
+            case "fa" => this.fa
+    }
+}
+
+
 
 object Main {
   val testXml = """
@@ -33,7 +71,10 @@ object Main {
   def main(args: Array[String]): Unit = {
     XmlControl.register[CheckBox]();
     XmlControl.register[Image]();
-    runSeija(); 
+   
+    val sss = ui.Atlas.testMacro[ui.controls](123);
+    println(s"testMacro:${sss}")
+    //runSeija(); 
   }
 
   def runSeija() = {

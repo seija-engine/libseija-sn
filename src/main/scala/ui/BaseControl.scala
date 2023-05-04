@@ -3,6 +3,8 @@ import _root_.core.Entity;
 import java.util.ArrayList
 import _root_.core.IFromString
 import java.util.ArrayList;
+import java.util.HashMap
+
 
 class BaseControl extends INotifyPropertyChanged with Cloneable {
     var templateOwner:Option[BaseControl] = None;
@@ -15,9 +17,7 @@ class BaseControl extends INotifyPropertyChanged with Cloneable {
     protected var bindItemList:ArrayList[BindingItem] = ArrayList();
     protected var bindObjectList:ArrayList[INotifyPropertyChanged] = ArrayList()
 
-    def setParent(parent:Option[BaseControl]) = {
-        this.parent = parent;
-    }
+    def setParent(parent:Option[BaseControl]) = this.parent = parent;
 
     def getEntity():Option[Entity] = this.entity
 
@@ -65,6 +65,8 @@ class BaseControl extends INotifyPropertyChanged with Cloneable {
                 if(this.templateOwner.isDefined) {
                    this.templateOwner.get.addPropertyChangedHandler(this.onBindSourceChanged);
                    this.bindObjectList.add(this.templateOwner.get);
+                   val classInfo:Class[?] = this.templateOwner.get.getClass();
+                   
                    this.onBindSourceChanged(this.templateOwner.get,ui.PropertyChangedEventArgs(curItem.sourceKey,null))
                 }
              } 

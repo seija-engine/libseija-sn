@@ -31,9 +31,7 @@ class CheckBox extends BaseLayout {
     }
 
     override def OnEnter():Unit = {
-        if(this.template.isEmpty) {
-            return;
-        }
+        if(this.template.isEmpty) { return; }
         val template = this.template.get;
         val checkEntity = this.createEntity();
         EventManager.register(checkEntity,ui.EventType.CLICK,this.onClickCheckBox,"CQCQ");
@@ -42,7 +40,7 @@ class CheckBox extends BaseLayout {
     }
 
     def onClickCheckBox(args:Any) = {
-        println(s"onClickCheckBox${args}")
+        println(s"onClickCheckBox:${args}")
         EventManager.unRegister(this.entity.get)
     }
 
@@ -68,7 +66,6 @@ given IControlFromXml[CheckBox] with {
     def create():CheckBox = new CheckBox()
     def setStringPropery(control:CheckBox,name:String,value:String):Unit = {
         import core.given
-        
         given_IControlFromXml_BaseLayout.setStringPropery(control,name,value)
         name match
          case "checked" => control.checked = core.formString[Boolean](value).getOrElse(false)

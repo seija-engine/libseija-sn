@@ -47,8 +47,31 @@ object Atlas {
         FFISeijaUI.spriteEndRead(ptr);
         atlas
     }
+
+    inline def testMacro[T](inline x: Int): String = ${testMacroImpl[T]('{x})}
 }
 
 
 
 case class AtlasSprite(val index:Int,val atlas:Atlas, val name:String,var sliceInfo:Option[Thickness]);
+
+
+import scala.quoted.*
+
+
+
+def testMacroImpl[T:Type](x: Expr[Int])(using Quotes): Expr[String] = {
+  import quotes.reflect.*
+  val typ = TypeRepr.of[T];
+  val classSym = typ.classSymbol.get;
+  
+  var outString = "";
+  outString += classSym.name + "\r\n";
+  val formXml = TypeRepr.of[ui.xml.IControlFromXml];
+  classSym.declaredTypes.foreach(s => {
+    if(s.fullName.indexOf("given_IControlFromXml") > 0) {
+        outString += s"${s.fullName} | \r\n";
+    }
+  });
+  Expr(outString)
+}
