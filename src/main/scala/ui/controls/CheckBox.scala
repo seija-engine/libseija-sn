@@ -40,8 +40,7 @@ class CheckBox extends BaseLayout {
     }
 
     def onClickCheckBox(args:Any) = {
-        println(s"onClickCheckBox:${args}")
-        EventManager.unRegister(this.entity.get)
+        this.checked = !this.checked;
     }
 
     def createEntity():Entity = {
@@ -78,5 +77,11 @@ given IControlFromXml[CheckBox] with {
           Success(())
         }
     }
+}
 
+import core.reflect.*;
+given ReflectType[CheckBox] with {
+  override def info: TypeInfo = TypeInfo("ui.controls.CheckBox",Some(typeInfoOf[BaseLayout]),List(
+     FieldInfo("checked",null,_.asInstanceOf[CheckBox].checked),
+  ))
 }

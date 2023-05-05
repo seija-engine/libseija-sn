@@ -63,6 +63,7 @@ class Image extends BaseLayout with Cloneable  {
 
   override def onPropertyChanged(propertyName: String): Unit = {
     if(!this.isEntered) return;
+    println(s"onPropertyChanged:${propertyName}")
     propertyName match
       case "sprite" => 
       case _ => 
@@ -85,8 +86,18 @@ given IControlFromXml[Image] with {
           control.sprite = Atlas.getPath(value); 
           
         }
-        case _ => {}
-      
+        case _ => {} 
     }
+}
 
+import core.reflect.*;
+given ReflectType[Image] with {
+  override def info: TypeInfo = TypeInfo("ui.controls.Image",Some(typeInfoOf[BaseLayout]),List(
+     FieldInfo("sprite",
+     (a,b) => a.asInstanceOf[Image].sprite = b.asInstanceOf[Option[AtlasSprite]],
+     _.asInstanceOf[Image].sprite),
+     FieldInfo("imageType",
+     (a,b) => a.asInstanceOf[Image].imageType = b.asInstanceOf[ImageType],
+     _.asInstanceOf[Image].imageType)
+  ))
 }

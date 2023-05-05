@@ -4,6 +4,7 @@ import java.util.ArrayList
 import _root_.core.IFromString
 import java.util.ArrayList;
 import java.util.HashMap
+import _root_.core.reflect.Assembly;
 
 
 class BaseControl extends INotifyPropertyChanged with Cloneable {
@@ -63,11 +64,10 @@ class BaseControl extends INotifyPropertyChanged with Cloneable {
            curItem.sourceType match {
              case BindingSource.Owner => {
                 if(this.templateOwner.isDefined) {
-                   this.templateOwner.get.addPropertyChangedHandler(this.onBindSourceChanged);
                    this.bindObjectList.add(this.templateOwner.get);
-                   val classInfo:Class[?] = this.templateOwner.get.getClass();
-                   
-                   this.onBindSourceChanged(this.templateOwner.get,ui.PropertyChangedEventArgs(curItem.sourceKey,null))
+                   this.templateOwner.get.addPropertyChangedHandler(this.onBindSourceChanged,curItem);
+                   //val typInfo = Assembly.getTypeInfo(this.templateOwner.get);
+                   //val sourceValue = typInfo.get.GetValue(this.templateOwner.get,curItem.sourceKey);
                 }
              } 
              case BindingSource.Data => {
@@ -77,8 +77,15 @@ class BaseControl extends INotifyPropertyChanged with Cloneable {
         }
     }
 
-    def onBindSourceChanged(src:INotifyPropertyChanged,args:PropertyChangedEventArgs) = {
-        println(s"ssssrc:${src}=${args.propertyName}")
+    def onBindSourceChanged(src:INotifyPropertyChanged,name:String,newValue:Any,param:Any):Unit = {
+       val curItem = param.asInstanceOf[BindingItem];
+       val dstField = Assembly.getTypeInfo(this).flatMap(_.GetField(curItem.dstKey));
+       if(dstField.isEmpty) return;
+       
+       println(s"give ${curItem.dstKey} = ${newValue}")
+       dstField.foreach {field => 
+          this.callPropertyChanged(curItem.dstKey,newValue);
+       };
     }
 
     def OnEnter() = {}

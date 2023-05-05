@@ -1,26 +1,31 @@
 package ui
 import scala.collection.mutable.ListBuffer
+import scala.collection.mutable.HashMap
+
+type PropertyChangedCallBack = (INotifyPropertyChanged,String,Any,Any) => Unit;
 
 trait INotifyPropertyChanged {
-  var propertyChangedHandlers: ListBuffer[(INotifyPropertyChanged, PropertyChangedEventArgs) => Unit] = ListBuffer()
+  var handles:HashMap[PropertyChangedCallBack,Any] = HashMap()
 
-  def addPropertyChangedHandler(handler: (INotifyPropertyChanged, PropertyChangedEventArgs) => Unit): Unit = {
-    propertyChangedHandlers += handler
+  def addPropertyChangedHandler(handler:PropertyChangedCallBack,param:Any): Unit = {
+    this.handles.put(handler,param)
   }
 
-  def removePropertyChangedHandler(handler: (INotifyPropertyChanged, PropertyChangedEventArgs) => Unit): Unit = {
-    propertyChangedHandlers -= handler
+  def removePropertyChangedHandler(handler:PropertyChangedCallBack): Unit = {
+    this.handles.remove(handler)
   }
 
   def callPropertyChanged(propertyName: String,newValue:Any): Unit = {
-    propertyChangedHandlers.foreach(_.apply(this, new PropertyChangedEventArgs(propertyName,newValue)))
+    this.onPropertyChanged(propertyName)
+    for(kv <- this.handles) {
+       kv._1.apply(this,propertyName,newValue,kv._2)
+    }
   }
 
   def onPropertyChanged(propertyName:String):Unit = {}
 
 }
 
-case class PropertyChangedEventArgs(val propertyName: String,val newValue:Any)
 
 
 enum BindingSource(val value:Int) {

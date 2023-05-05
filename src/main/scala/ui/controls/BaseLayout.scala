@@ -6,6 +6,7 @@ import ui.core.LayoutAlignment
 import ui.core.SizeValue
 import ui.core.{given_IFromString_LayoutAlignment};
 import ui.xml.IControlFromXml
+import core.reflect.{TypeInfo,FieldInfo,ReflectType}
 
 class BaseLayout extends BaseControl with Cloneable {
     protected var _hor:LayoutAlignment = LayoutAlignment.Stretch
@@ -55,8 +56,15 @@ given IControlFromXml[BaseLayout] with {
         case "hor" => control.hor = core.formString[LayoutAlignment](value).get
         case "ver" => control.ver = core.formString[LayoutAlignment](value).get
         case _ => {}
-
-      
     }
+}
 
+
+given ReflectType[BaseLayout] with {
+  override def info: TypeInfo = TypeInfo("ui.controls.BaseLayout",None,List(
+     FieldInfo("width",null,null),
+     FieldInfo("height",null,null),
+     FieldInfo("hor",null,null),
+     FieldInfo("ver",null,null),
+  ))
 }
