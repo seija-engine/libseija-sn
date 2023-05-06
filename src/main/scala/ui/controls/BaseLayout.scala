@@ -61,7 +61,7 @@ given IControlFromXml[BaseLayout] with {
 
 
 given ReflectType[BaseLayout] with {
-  override def info: TypeInfo = TypeInfo("ui.controls.BaseLayout",None,List(
+  override def info: TypeInfo = TypeInfo("ui.controls.BaseLayout",() => BaseLayout(),None,List(
      FieldInfo("width",null,null),
      FieldInfo("height",null,null),
      FieldInfo("hor",null,null),

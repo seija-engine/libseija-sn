@@ -2,7 +2,10 @@ package core.reflect
 import scala.collection.immutable.HashMap;
 
 
-case class TypeInfo(val name:String,val base:Option[TypeInfo],val fieldList:List[FieldInfo]) {
+case class TypeInfo(val name:String,
+                    val create:() => Any,
+                    val base:Option[TypeInfo],
+                    val fieldList:List[FieldInfo]) {
    val fieldMap:HashMap[String,FieldInfo] = fieldList.foldLeft(HashMap[String,FieldInfo]()){(map,info) =>
       map.updated(info.Name,info)
    };

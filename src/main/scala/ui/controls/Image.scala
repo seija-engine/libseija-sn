@@ -65,7 +65,12 @@ class Image extends BaseLayout with Cloneable  {
     if(!this.isEntered) return;
     println(s"onPropertyChanged:${propertyName}")
     propertyName match
-      case "sprite" => 
+      case "sprite" => {
+        this.entity.foreach(v => {
+           val rawSprite = v.get[Sprite]();
+           rawSprite.setSprite(this._sprite);
+        })
+      }
       case _ => 
   }
 
@@ -92,7 +97,7 @@ given IControlFromXml[Image] with {
 
 import core.reflect.*;
 given ReflectType[Image] with {
-  override def info: TypeInfo = TypeInfo("ui.controls.Image",Some(typeInfoOf[BaseLayout]),List(
+  override def info: TypeInfo = TypeInfo("ui.controls.Image",() => Image(),Some(typeInfoOf[BaseLayout]),List(
      FieldInfo("sprite",
      (a,b) => a.asInstanceOf[Image].sprite = b.asInstanceOf[Option[AtlasSprite]],
      _.asInstanceOf[Image].sprite),

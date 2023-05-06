@@ -66,8 +66,10 @@ class BaseControl extends INotifyPropertyChanged with Cloneable {
                 if(this.templateOwner.isDefined) {
                    this.bindObjectList.add(this.templateOwner.get);
                    this.templateOwner.get.addPropertyChangedHandler(this.onBindSourceChanged,curItem);
-                   //val typInfo = Assembly.getTypeInfo(this.templateOwner.get);
-                   //val sourceValue = typInfo.get.GetValue(this.templateOwner.get,curItem.sourceKey);
+
+                   val srcField = Assembly.getTypeInfo(this.templateOwner.get).flatMap(_.GetField(curItem.sourceKey));
+                   val srcValue = srcField.map(_.get(this.templateOwner.get));
+                   this.onBindSourceChanged(this.templateOwner.get,curItem.sourceKey,srcValue.getOrElse(null),curItem);
                 }
              } 
              case BindingSource.Data => {
@@ -81,10 +83,13 @@ class BaseControl extends INotifyPropertyChanged with Cloneable {
        val curItem = param.asInstanceOf[BindingItem];
        val dstField = Assembly.getTypeInfo(this).flatMap(_.GetField(curItem.dstKey));
        if(dstField.isEmpty) return;
-       
-       println(s"give ${curItem.dstKey} = ${newValue}")
+       var realValue = newValue;
+       if(curItem.conv.isDefined) {
+         val conv = curItem.conv.get;
+         realValue = conv.conv(newValue);
+       }
        dstField.foreach {field => 
-          this.callPropertyChanged(curItem.dstKey,newValue);
+          field.set(this,realValue);
        };
     }
 

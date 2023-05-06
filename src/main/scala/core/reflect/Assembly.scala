@@ -10,4 +10,10 @@ object Assembly {
     }
 
     def getTypeInfo(obj:Any):Option[TypeInfo] = Option(this.typeMap.get(obj.getClass().getName()))
+
+    def createInstance(name:String):Option[Any] = {
+       val typInfo = this.typeMap.get(name);
+       if(typInfo == null) return None;
+       Some(typInfo.create())
+    }
 }

@@ -18,7 +18,7 @@ import scala.util.Failure
 import scala.util.Success
 import ui.UICanvas
 import Main.testXml
-import ui.Atlas
+import ui.{Atlas,BoolAtlasSprite,given}
 import ui.core.Thickness
 import scala.deriving.Mirror
 import ui.BaseControl
@@ -30,8 +30,7 @@ object Main {
   val testXml = """
       <CheckBox hor='Center' ver='Center' width='25' height='25' >
         <CheckBox.Template>
-          <Image sprite="default.duikong"  />
-          <Image sprite="{Binding Owner checked}"  />
+          <Image sprite="{Binding Owner checked ui.BoolAtlasSprite(default.duihao,default.duikong)}"  />
         </CheckBox.Template>
       </CheckBox>
   """
@@ -42,6 +41,7 @@ object Main {
     Assembly.add[BaseLayout]();
     Assembly.add[CheckBox]()
     Assembly.add[Image]()
+    Assembly.add[BoolAtlasSprite]();
    
     runSeija(); 
   }

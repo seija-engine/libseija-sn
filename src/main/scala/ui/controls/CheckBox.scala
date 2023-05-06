@@ -81,7 +81,7 @@ given IControlFromXml[CheckBox] with {
 
 import core.reflect.*;
 given ReflectType[CheckBox] with {
-  override def info: TypeInfo = TypeInfo("ui.controls.CheckBox",Some(typeInfoOf[BaseLayout]),List(
+  override def info: TypeInfo = TypeInfo("ui.controls.CheckBox",() => CheckBox(),Some(typeInfoOf[BaseLayout]),List(
      FieldInfo("checked",null,_.asInstanceOf[CheckBox].checked),
   ))
 }

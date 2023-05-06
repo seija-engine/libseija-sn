@@ -10,9 +10,23 @@ import math.Vector4
 import ui.core.Thickness
 import ui.core.FFISeijaUI
 import ui.core.SpriteSheet
-
+import ui.AtlasSprite
+import _root_.core.App;
 
 class Sprite;
+
+case class RawSprite(val rawPtr:Ptr[Byte]) {
+  def setSprite(sprite:Option[AtlasSprite]) = {
+    sprite match {
+      case Some(s) => {
+        FFISeijaUI.spriteSetSptite(App.worldPtr,this.rawPtr,s.index, s.atlas.sheet.id.id)
+      }
+      case None => {
+        FFISeijaUI.spriteSetSptite(App.worldPtr,this.rawPtr,-1,0)
+      }
+    }
+  }
+}
 
 enum SpriteType {
   case Simple
@@ -39,10 +53,8 @@ class SpriteBuilder extends RawComponentBuilder {
 
 given SpriteComponent:RawComponent[Sprite] with  {
   type BuilderType = SpriteBuilder;
-  type RawType = Ptr[Byte]
+  type RawType = RawSprite
   override def builder(): BuilderType = new SpriteBuilder()
 
-  override def getRaw(entity: Entity): RawType = ???
-
-
+  override def getRaw(entity: Entity): RawType = RawSprite(FFISeijaUI.entityGetSprite(App.worldPtr,entity.id,true))
 }

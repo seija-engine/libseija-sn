@@ -32,7 +32,9 @@ object FFISeijaUI {
     private val entityAddUISystemPtr = LibSeija.getFunc[CFuncPtr2[Ptr[Byte],Long,Unit]]("entity_add_ui_system");
     private val entityAddSpriteSimplePtr = LibSeija.getFunc[CFuncPtr5[Ptr[Byte],Long,Int,Long,Ptr[RawVector4],Unit]]("entity_add_sprite_simple");
     private val entityAddSpriteSlicePtr = LibSeija.getFunc[CFuncPtr6[Ptr[Byte],Long,Int,Long,Ptr[RawVector4],Ptr[RawVector4],Unit]]("entity_add_sprite_slice");
-    private val entityAddEventNodePtr = LibSeija.getFunc[CFuncPtr4[Ptr[Byte],Long,Ptr[RawEventNode],CString,Unit]]("entity_add_event_node");
+    private val entityGetSpritePtr = LibSeija.getFunc[CFuncPtr3[Ptr[Byte],Long,Boolean,Ptr[Byte]]]("entity_get_sprite");
+    private val spriteSetSpritePtr = LibSeija.getFunc[CFuncPtr4[Ptr[Byte],Ptr[Byte],Int,Long,Unit]]("sprite_set_sprite");
+    private val entityAddEventNodePtr = LibSeija.getFunc[CFuncPtr3[Ptr[Byte],Long,Ptr[RawEventNode],Unit]]("entity_add_event_node");
     private val entityRemoveEventPtr = LibSeija.getFunc[CFuncPtr2[Ptr[Byte],Long,Boolean]]("entity_remove_event_node")
     private val readUIEventsPtr = LibSeija.getFunc[CFuncPtr2[Ptr[Byte],Ptr[Byte],Unit]]("read_ui_events");
     type AddStackType = CFuncPtr6[Ptr[Byte],Long,CFloat,Byte,Ptr[RawCommonView],Ptr[ui.core.RawUISize],Unit];
@@ -92,8 +94,11 @@ object FFISeijaUI {
         entityAddSpriteSlicePtr(worldPtr,entity,index,atlasId,thicknessPtr,colorPtr)
     }
 
-    def entityAddEventNode(worldPtr:Ptr[Byte],entity:Long,eventNodePtr:Ptr[RawEventNode],name:String) =  Zone { implicit z =>
-        entityAddEventNodePtr(worldPtr,entity,eventNodePtr,toCString(name))
+    def entityGetSprite(worldPtr:Ptr[Byte],entity:Long,isMut:Boolean):Ptr[Byte] = entityGetSpritePtr(worldPtr,entity,isMut)
+
+    def entityAddEventNode(worldPtr:Ptr[Byte],entity:Long,eventNodePtr:Ptr[RawEventNode]) =  Zone { implicit z =>
+        entityAddEventNodePtr(worldPtr,entity,eventNodePtr)
+       
     }
 
     def entityRemoveEventNode(worldPtr:Ptr[Byte],entity:Long):Boolean = entityRemoveEventPtr(worldPtr,entity)
@@ -125,6 +130,10 @@ object FFISeijaUI {
 
     def entityGetCommonView(worldPtr:Ptr[Byte],entityId:Long):Ptr[RawCommonView] = {
         entityGetCommonViewPtr(worldPtr,entityId)
+    }
+
+    def spriteSetSptite(worldPtr:Ptr[Byte],spritePtr:Ptr[Byte],index:Int,atlasId:Long) = {
+        spriteSetSpritePtr(worldPtr,spritePtr,index,atlasId)
     }
 
     def entityAddFlex(worldPtr:Ptr[Byte],entity:Long,view:CommonView,flex:Ptr[RawFlexLayout]) = {

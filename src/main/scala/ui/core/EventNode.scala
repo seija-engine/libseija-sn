@@ -7,7 +7,7 @@ import scala.scalanative.unsigned._
 import ui.core.FFISeijaUI
 
 
-type RawEventNode = CStruct5[UInt,UInt,Boolean,Boolean,Boolean];
+type RawEventNode = CStruct5[CUnsignedInt,CUnsignedInt,Boolean,Boolean,Boolean];
 
 
 class EventNode;
@@ -17,15 +17,14 @@ class EventNodeBuilder extends RawComponentBuilder {
   var stopCapture:Boolean = false;
   var stopBubble:Boolean = false;
   var useCapture:Boolean = false;
-  var userKey:String = null;
-
   override def build(entity: Entity): Unit = {
     val eventNodePtr = stackalloc[RawEventNode]();
+    eventNodePtr._1 = EventNode.NONE;
     eventNodePtr._2 = this.eventType;
     eventNodePtr._3 = this.stopCapture;
     eventNodePtr._4 = this.stopBubble;
     eventNodePtr._5 = this.useCapture;
-    FFISeijaUI.entityAddEventNode(core.App.worldPtr,entity.id,eventNodePtr,userKey)
+    FFISeijaUI.entityAddEventNode(core.App.worldPtr,entity.id,eventNodePtr)
   }
 }
 
