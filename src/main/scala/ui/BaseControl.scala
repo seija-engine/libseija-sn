@@ -17,6 +17,12 @@ class BaseControl extends INotifyPropertyChanged with Cloneable {
     protected var childrenList: ArrayList[BaseControl] = new ArrayList[BaseControl]();
     protected var bindItemList:ArrayList[BindingItem] = ArrayList();
     protected var bindObjectList:ArrayList[INotifyPropertyChanged] = ArrayList()
+    protected var _dataContext:Any = null;
+    
+    def dataContext = this._dataContext;
+    def dataContext_=(value:Any) = {
+        this._dataContext = value;
+    } 
 
     def setParent(parent:Option[BaseControl]) = this.parent = parent;
 
@@ -57,6 +63,15 @@ class BaseControl extends INotifyPropertyChanged with Cloneable {
         this.childrenList.forEach(_.Enter());
     }
 
+    def findDataContext():Any = {
+        if(this._dataContext == null) {
+            if(this.parent.isDefined) {
+               return this.parent.get.findDataContext();
+            }
+        }
+        return this._dataContext;
+    }
+
     def applyBindItems():Unit = {
         if(this.bindItemList.size() == 0) return;
         for(idx <- 0 until this.bindItemList.size()) {
@@ -73,7 +88,15 @@ class BaseControl extends INotifyPropertyChanged with Cloneable {
                 }
              } 
              case BindingSource.Data => {
-
+                val dataCtx = this.findDataContext();
+                if(dataCtx != null) {
+                  val srcField = Assembly.getTypeInfo(dataCtx).flatMap(_.GetField(curItem.sourceKey));
+                  val srcValue = srcField.map(_.get(dataCtx));
+                  if(srcValue.isDefined) {
+                    this.onBindSourceChanged(null,curItem.sourceKey,srcValue.get,curItem);
+                  }
+                }
+                
              }
            }
         }

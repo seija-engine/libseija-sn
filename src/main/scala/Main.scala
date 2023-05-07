@@ -23,12 +23,13 @@ import ui.core.Thickness
 import scala.deriving.Mirror
 import ui.BaseControl
 import core.reflect.Assembly
+import _root_.core.reflect.*
 
 
 
 object Main {
   val testXml = """
-      <CheckBox hor='Center' ver='Center' width='25' height='25' >
+      <CheckBox hor='Center' checked="{Binding Data isTest}" ver='Center' width='25' height='25' >
         <CheckBox.Template>
           <Image sprite="{Binding Owner checked ui.BoolAtlasSprite(default.duihao,default.duikong)}"  />
         </CheckBox.Template>
@@ -42,6 +43,7 @@ object Main {
     Assembly.add[CheckBox]()
     Assembly.add[Image]()
     Assembly.add[BoolAtlasSprite]();
+    Assembly.add[TestViewModel]()
    
     runSeija(); 
   }
@@ -94,9 +96,25 @@ class DemoGame extends IGameApp {
     canvas.addControl(image);
 
 
+    var testViewModel = new TestViewModel();
     val uiControl = XmlControl.fromString(testXml).get;
+    uiControl.dataContext = testViewModel;
     canvas.addControl(uiControl);
   }
 
   def OnUpdate() = {}
+}
+
+class TestViewModel {
+  var isTest:Boolean = true;
+}
+
+given ReflectType[TestViewModel] with {
+  override def info: TypeInfo = TypeInfo("TestViewModel",
+  () => new TestViewModel(),None,List(
+    FieldInfo("isTest",
+     (a,b) => a.asInstanceOf[TestViewModel].isTest = b.asInstanceOf[Boolean],
+     (a) => a.asInstanceOf[TestViewModel].isTest
+    )
+  ))
 }

@@ -42,11 +42,13 @@ object BindingItem {
     val startLen = "{Binding".length();
     val remainString = value.substring(startLen,value.length() - 1).trim();
     var args = remainString.split(' ');
+    
     val sourceType = args(0) match
       case "Data"  => BindingSource.Data
       case "Owner" => BindingSource.Owner
       case _ => BindingSource.Data
     val srcKey = args(1);
+   
     var conv:Option[PropertyConverter] = None;
     if(args.length > 2) {
       conv = this.parseConverter(args(2))
