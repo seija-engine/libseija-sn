@@ -5,7 +5,7 @@ import ui.BaseControl
 import scala.util.Try
 import scala.util.Failure
 import scala.util.Success
-import ui.BindingItem
+import ui.binding.BindingItem
 
 
 case class XmlControlReader(val reader:XmlReader,val templateOwner:Option[BaseControl]) {
@@ -67,6 +67,9 @@ case class XmlControlReader(val reader:XmlReader,val templateOwner:Option[BaseCo
          if(v.startsWith("{Binding")) {
            val bindingItem = BindingItem.parse(v,k);
            control.control.addBindItem(bindingItem);
+
+           val item = BindingItem.parse2(v);
+           println(item)
          } else {
             val curControl = control.control;
             control.setter.setStringPropery(curControl,k,v);

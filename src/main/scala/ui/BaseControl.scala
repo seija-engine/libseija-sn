@@ -5,7 +5,7 @@ import _root_.core.IFromString
 import java.util.ArrayList;
 import java.util.HashMap
 import _root_.core.reflect.Assembly;
-
+import ui.binding.{BindingItem,INotifyPropertyChanged,BindingSource,DataBindingManager}
 
 class BaseControl extends INotifyPropertyChanged with Cloneable {
     var templateOwner:Option[BaseControl] = None;
@@ -16,17 +16,33 @@ class BaseControl extends INotifyPropertyChanged with Cloneable {
     protected var parent:Option[BaseControl] = None;
     protected var childrenList: ArrayList[BaseControl] = new ArrayList[BaseControl]();
     protected var bindItemList:ArrayList[BindingItem] = ArrayList();
-    protected var bindObjectList:ArrayList[INotifyPropertyChanged] = ArrayList()
-    protected var _dataContext:Any = null;
     
+    protected var _dataContext:Any = null;
     def dataContext = this._dataContext;
     def dataContext_=(value:Any) = {
         this._dataContext = value;
-    } 
+        this.onDataContextChanged();
+        this.childrenList.forEach{child => {
+          if(child.dataContext == null) {
+            child.onDataContextChanged()
+          }
+        }};
+    }
 
     def setParent(parent:Option[BaseControl]) = this.parent = parent;
 
     def getEntity():Option[Entity] = this.entity
+
+    def Enter():Unit = {
+        if(!this.isEntered) {
+          this.isEntered = true;
+          this.applyBindItems();
+          this.OnEnter();
+        }
+        this.childrenList.forEach(_.Enter());
+    }
+
+     def OnEnter() = {}
 
     def AddChild(child:BaseControl,isEnter:Boolean = true) = {
         child.setParent(Some(this));
@@ -50,17 +66,13 @@ class BaseControl extends INotifyPropertyChanged with Cloneable {
         println(s"onPropertyChanged:${propertyName}")
     }
 
+    def onDataContextChanged():Unit = {
+      if(!this.isEntered) return;
+      this.updateDataContextBinding();
+    }
+
     def addBindItem(item: BindingItem): Unit = {
         this.bindItemList.add(item);
-    }
-    
-    def Enter():Unit = {
-        if(!this.isEntered) {
-          this.isEntered = true;
-          this.applyBindItems();
-          this.OnEnter();
-        }
-        this.childrenList.forEach(_.Enter());
     }
 
     def findDataContext():Any = {
@@ -72,8 +84,41 @@ class BaseControl extends INotifyPropertyChanged with Cloneable {
         return this._dataContext;
     }
 
+    def updateDataContextBinding():Unit = {
+       for(idx <- 0 until this.bindItemList.size()) {
+          val curItem = this.bindItemList.get(idx);
+          DataBindingManager.removeByDst(this);
+          if(curItem.sourceType == BindingSource.Data) {
+              this.bindingDataContext(curItem);
+          }
+       }
+    }
+
+    def bindingOwner(item:BindingItem):Unit = {
+        if(this.templateOwner.isDefined) {
+          DataBindingManager.binding(this.templateOwner.get,Some(item.sourceKey),this,item.dstKey,item.conv);
+        }
+    }
+
+    def bindingDataContext(item:BindingItem):Unit = {
+        val dataCtx = this.findDataContext();
+        if(dataCtx != null) {
+          DataBindingManager.binding(dataCtx,Some(item.sourceKey),this,item.dstKey,item.conv);
+        }
+    }
+
     def applyBindItems():Unit = {
         if(this.bindItemList.size() == 0) return;
+        for(idx <- 0 until this.bindItemList.size()) {
+          val curItem = this.bindItemList.get(idx);
+          curItem.sourceType match
+            case BindingSource.Owner => this.bindingOwner(curItem)
+            case BindingSource.Data => this.bindingDataContext(curItem)
+          
+        }
+        //TODO Owner 绑定
+        /*
+        this.updateDataContextBinding();
         for(idx <- 0 until this.bindItemList.size()) {
            val curItem = this.bindItemList.get(idx);
            curItem.sourceType match {
@@ -86,21 +131,13 @@ class BaseControl extends INotifyPropertyChanged with Cloneable {
                    val srcValue = srcField.map(_.get(this.templateOwner.get));
                    this.onBindSourceChanged(this.templateOwner.get,curItem.sourceKey,srcValue.getOrElse(null),curItem);
                 }
-             } 
-             case BindingSource.Data => {
-                val dataCtx = this.findDataContext();
-                if(dataCtx != null) {
-                  val srcField = Assembly.getTypeInfo(dataCtx).flatMap(_.GetField(curItem.sourceKey));
-                  val srcValue = srcField.map(_.get(dataCtx));
-                  if(srcValue.isDefined) {
-                    this.onBindSourceChanged(null,curItem.sourceKey,srcValue.get,curItem);
-                  }
-                }
-                
              }
+             case _ => {}
            }
-        }
+        }*/
     }
+
+    
 
     def onBindSourceChanged(src:INotifyPropertyChanged,name:String,newValue:Any,param:Any):Unit = {
        val curItem = param.asInstanceOf[BindingItem];
@@ -116,9 +153,9 @@ class BaseControl extends INotifyPropertyChanged with Cloneable {
        };
     }
 
-    def OnEnter() = {}
+   
 
     def Exit():Unit = {
-        this.bindObjectList.forEach(item => item.removePropertyChangedHandler(this.onBindSourceChanged));
+
     }
 }

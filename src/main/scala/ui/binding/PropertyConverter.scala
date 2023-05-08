@@ -1,6 +1,5 @@
-package ui
-
-import input.KeyCode.N
+package ui.binding
+import ui.{Atlas,AtlasSprite}
 import _root_.core.reflect.ReflectType
 import _root_.core.reflect.TypeInfo
 
@@ -8,7 +7,6 @@ trait PropertyConverter {
   def init(args:Array[String]):Unit;
   def conv(form:Any):Any;
 }
-
 
 class BoolAtlasSprite extends PropertyConverter {
     var trueSprite:Option[AtlasSprite] = None;

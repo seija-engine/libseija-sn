@@ -1,6 +1,6 @@
 package ui.controls
 import ui.core._
-import ui.INotifyPropertyChanged
+import ui.binding.INotifyPropertyChanged
 import ui.core.given;
 import ui.BaseControl
 import core.Entity

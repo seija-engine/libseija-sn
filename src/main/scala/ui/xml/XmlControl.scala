@@ -8,7 +8,7 @@ import ui.controls.BaseLayout
 import scala.util.Try
 import scala.util.Failure
 import scala.util.Success
-import ui.BindingItem
+import ui.binding.BindingItem
 
 trait IControlFromXml[T <: BaseControl] {
     val name:String;

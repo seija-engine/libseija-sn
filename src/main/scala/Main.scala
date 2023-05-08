@@ -17,15 +17,14 @@ import ui.controls.given
 import scala.util.Failure
 import scala.util.Success
 import ui.UICanvas
-import Main.testXml
-import ui.{Atlas,BoolAtlasSprite,given}
+import ui.{Atlas,given}
+import ui.binding.given;
+import ui.binding.BoolAtlasSprite
 import ui.core.Thickness
 import scala.deriving.Mirror
 import ui.BaseControl
 import core.reflect.Assembly
 import _root_.core.reflect.*
-
-
 
 object Main {
   val testXml = """
@@ -44,7 +43,7 @@ object Main {
     Assembly.add[Image]()
     Assembly.add[BoolAtlasSprite]();
     Assembly.add[TestViewModel]()
-   
+    
     runSeija(); 
   }
 
@@ -97,7 +96,7 @@ class DemoGame extends IGameApp {
 
 
     var testViewModel = new TestViewModel();
-    val uiControl = XmlControl.fromString(testXml).get;
+    val uiControl = XmlControl.fromString(Main.testXml).get;
     uiControl.dataContext = testViewModel;
     canvas.addControl(uiControl);
   }

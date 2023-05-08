@@ -1,6 +1,6 @@
 package ui.controls
 import ui.BaseControl
-import ui.INotifyPropertyChanged
+import ui.binding.INotifyPropertyChanged
 import ui.xml.IControlFromXml
 import scala.util.Try
 import core.xml.XmlReader
