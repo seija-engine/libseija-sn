@@ -12,6 +12,7 @@ import ui.core.FFISeijaUI
 import ui.core.SpriteSheet
 import ui.AtlasSprite
 import _root_.core.App;
+import math.Color
 
 class Sprite;
 
@@ -36,16 +37,16 @@ enum SpriteType {
 class SpriteBuilder extends RawComponentBuilder {
     var spriteIndex:Int = -1;
     var atlas:Option[Handle[SpriteSheet]] = None;
-    var color:Vector4 = Vector4.one;
+    var color:Color = Color.white;
     var typ:SpriteType = SpriteType.Simple
     def build(entity: Entity): Unit = {
         val atlasIndex:Long = atlas.map(_.id.id).getOrElse(0L);
         typ match
           case SpriteType.Simple => {
-            FFISeijaUI.entityAddSpriteSimple(App.worldPtr,entity.id,spriteIndex,atlasIndex,color);
+            FFISeijaUI.entityAddSpriteSimple(App.worldPtr,entity.id,spriteIndex,atlasIndex,this.color.toVector4());
           }
           case SpriteType.Slice(border) => {
-            FFISeijaUI.entityAddSpriteSlice(App.worldPtr,entity.id,spriteIndex,atlasIndex,border,color)
+            FFISeijaUI.entityAddSpriteSlice(App.worldPtr,entity.id,spriteIndex,atlasIndex,border,this.color.toVector4())
           }
     }
 }

@@ -17,6 +17,7 @@ import ui.controls.given
 import scala.util.Failure
 import scala.util.Success
 import ui.UICanvas
+import math.{Color,given};
 import ui.{Atlas,given}
 import ui.binding.given;
 import ui.binding.BoolAtlasSprite
@@ -26,7 +27,6 @@ import ui.BaseControl
 import core.reflect.Assembly
 import _root_.core.reflect.*
 import math.Vector4
-import java.awt.Color
 
 object Main {
   val testXml = """
@@ -52,7 +52,7 @@ object Main {
   def runSeija() = {
     val file = java.io.File("");
     val app = core.App;
-    FFISeijaCore.initLog("INFO");
+    FFISeijaCore.initLog("ERROR");
     app.addModule(CoreModule());
     app.addModule(AssetModule("example/assets"));
     app.addModule(TransformModule());
@@ -88,14 +88,15 @@ class DemoGame extends IGameApp {
   def OnStart() = {
 
     val canvas = ui.UICanvas.create();
-    Atlas.load("default","ui/Orchis.json").get
+    Atlas.load("default","ui/default.json").get
     val bgSprite = Atlas.getPath("default.white").get;
     val sprite2 = Atlas.getPath("default.button").get;
     sprite2.sliceInfo = Some(Thickness(5,5,5,5));
 
     val image = Image();
     image.sprite = Some(bgSprite)
-    image.color = Vector4(0.949,0.949,0.949,1);
+    image.color = Color.formHex("#e8e8e7").get;
+    
     canvas.addControl(image);
 
     val image2 = Image();
@@ -103,6 +104,8 @@ class DemoGame extends IGameApp {
     image2.sprite = Some(sprite2)
     image2.width = ui.core.SizeValue.Pixel(100);
     image2.height = ui.core.SizeValue.Pixel(30);
+    image2.color = Color.formHex("#2e3436").get;
+    println(image2.color)
     canvas.addControl(image2);
 
 

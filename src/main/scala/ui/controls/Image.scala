@@ -10,6 +10,7 @@ import core.IFromString
 import ui.xml.IControlFromXml
 import ui.Atlas
 import math.Vector4
+import math.Color
 
 enum ImageType(val value:Int)  {
   case Simple extends ImageType(0)
@@ -19,7 +20,7 @@ enum ImageType(val value:Int)  {
 class Image extends BaseLayout with Cloneable  {
   protected var _sprite:Option[AtlasSprite] = None
   protected var _imageType:ImageType = ImageType.Simple
-  protected var _color:Vector4 = Vector4.one
+  protected var _color:Color = Color.white;
 
   def imageType = this._imageType
   def imageType_= (value:ImageType):Unit = { 
@@ -34,7 +35,7 @@ class Image extends BaseLayout with Cloneable  {
   }
 
   def color = this._color
-  def color_=(value:Vector4) = {
+  def color_=(value:Color) = {
     this._color = value;
     this.callPropertyChanged("color",this._color)
   }
