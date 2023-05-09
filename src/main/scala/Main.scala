@@ -12,7 +12,7 @@ import asset.HandleUntyped
 import asset.Handle
 import ui.core.SpriteSheet
 import ui.core.Font
-import ui.controls.{CheckBox,Image,BaseLayout}
+import ui.controls.{CheckBox,Image,BaseLayout,ImageType}
 import ui.controls.given
 import scala.util.Failure
 import scala.util.Success
@@ -25,12 +25,14 @@ import scala.deriving.Mirror
 import ui.BaseControl
 import core.reflect.Assembly
 import _root_.core.reflect.*
+import math.Vector4
+import java.awt.Color
 
 object Main {
   val testXml = """
       <CheckBox hor='Center' checked="{Binding Data isTest}" ver='Center' width='25' height='25' >
         <CheckBox.Template>
-          <Image sprite="{Binding Owner checked ui.BoolAtlasSprite(default.duihao,default.duikong)}"  />
+          <Image sprite="{Binding Owner checked ui.BoolAtlasSprite(Orchis.checkbox-checked,Orchis.checkbox-unchecked)}"  />
         </CheckBox.Template>
       </CheckBox>
   """
@@ -50,7 +52,7 @@ object Main {
   def runSeija() = {
     val file = java.io.File("");
     val app = core.App;
-    FFISeijaCore.initLog("ERROR");
+    FFISeijaCore.initLog("INFO");
     app.addModule(CoreModule());
     app.addModule(AssetModule("example/assets"));
     app.addModule(TransformModule());
@@ -84,21 +86,30 @@ class DemoGame extends IGameApp {
   var btnSpriteIndex: Int = 0;
   var font: Handle[Font] = null;
   def OnStart() = {
+
     val canvas = ui.UICanvas.create();
-    Atlas.load("default","ui/default.json").get
-    val bgSprite = Atlas.getPath("default.dk2").get;
-    bgSprite.sliceInfo = Some(Thickness(30))
+    Atlas.load("default","ui/Orchis.json").get
+    val bgSprite = Atlas.getPath("default.white").get;
+    val sprite2 = Atlas.getPath("default.button").get;
+    sprite2.sliceInfo = Some(Thickness(5,5,5,5));
 
     val image = Image();
     image.sprite = Some(bgSprite)
-    image.imageType = ui.controls.ImageType.Slice;
+    image.color = Vector4(0.949,0.949,0.949,1);
     canvas.addControl(image);
 
+    val image2 = Image();
+    image2.imageType = ImageType.Slice;
+    image2.sprite = Some(sprite2)
+    image2.width = ui.core.SizeValue.Pixel(100);
+    image2.height = ui.core.SizeValue.Pixel(30);
+    canvas.addControl(image2);
 
-    var testViewModel = new TestViewModel();
-    val uiControl = XmlControl.fromString(Main.testXml).get;
-    uiControl.dataContext = testViewModel;
-    canvas.addControl(uiControl);
+
+    //var testViewModel = new TestViewModel();
+    //val uiControl = XmlControl.fromString(Main.testXml).get;
+    //uiControl.dataContext = testViewModel;
+    //canvas.addControl(uiControl);
   }
 
   def OnUpdate() = {}
