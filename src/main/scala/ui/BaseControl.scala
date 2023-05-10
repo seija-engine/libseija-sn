@@ -36,7 +36,7 @@ class BaseControl extends INotifyPropertyChanged with Cloneable {
     def Enter():Unit = {
         if(!this.isEntered) {
           this.isEntered = true;
-          this.applyBindItems();
+          this.enterBindItems();
           this.OnEnter();
         }
         this.childrenList.forEach(_.Enter());
@@ -62,9 +62,6 @@ class BaseControl extends INotifyPropertyChanged with Cloneable {
         cloneObject
     }
 
-    override def onPropertyChanged(propertyName: String): Unit = {
-        println(s"onPropertyChanged:${propertyName}")
-    }
 
     def onDataContextChanged():Unit = {
       if(!this.isEntered) return;
@@ -96,45 +93,25 @@ class BaseControl extends INotifyPropertyChanged with Cloneable {
 
     def bindingOwner(item:BindingItem):Unit = {
         if(this.templateOwner.isDefined) {
-          DataBindingManager.binding(this.templateOwner.get,Some(item.sourceKey),this,item.dstKey,item.conv);
+          DataBindingManager.binding(this.templateOwner.get,this,item);
         }
     }
 
     def bindingDataContext(item:BindingItem):Unit = {
         val dataCtx = this.findDataContext();
         if(dataCtx != null) {
-          DataBindingManager.binding(dataCtx,Some(item.sourceKey),this,item.dstKey,item.conv);
+          DataBindingManager.binding(dataCtx,this,item);
         }
     }
 
-    def applyBindItems():Unit = {
-        if(this.bindItemList.size() == 0) return;
-        for(idx <- 0 until this.bindItemList.size()) {
-          val curItem = this.bindItemList.get(idx);
-          curItem.sourceType match
-            case BindingSource.Owner => this.bindingOwner(curItem)
-            case BindingSource.Data => this.bindingDataContext(curItem)
-          
+    def enterBindItems():Unit = {
+      for(idx <- 0 until this.bindItemList.size()) {
+        val curItem = this.bindItemList.get(idx);
+        curItem.sourceType match {
+          case BindingSource.Owner => this.bindingOwner(curItem)
+          case BindingSource.Data => this.bindingDataContext(curItem)
         }
-        //TODO Owner 绑定
-        /*
-        this.updateDataContextBinding();
-        for(idx <- 0 until this.bindItemList.size()) {
-           val curItem = this.bindItemList.get(idx);
-           curItem.sourceType match {
-             case BindingSource.Owner => {
-                if(this.templateOwner.isDefined) {
-                   this.bindObjectList.add(this.templateOwner.get);
-                   this.templateOwner.get.addPropertyChangedHandler(this.onBindSourceChanged,curItem);
-
-                   val srcField = Assembly.getTypeInfo(this.templateOwner.get).flatMap(_.GetField(curItem.sourceKey));
-                   val srcValue = srcField.map(_.get(this.templateOwner.get));
-                   this.onBindSourceChanged(this.templateOwner.get,curItem.sourceKey,srcValue.getOrElse(null),curItem);
-                }
-             }
-             case _ => {}
-           }
-        }*/
+      }
     }
 
     

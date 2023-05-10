@@ -71,7 +71,6 @@ class Image extends BaseLayout with Cloneable  {
 
   override def onPropertyChanged(propertyName: String): Unit = {
     if(!this.isEntered) return;
-    println(s"onPropertyChanged:${propertyName}")
     propertyName match
       case "sprite" => {
         this.entity.foreach(v => {

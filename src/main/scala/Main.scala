@@ -30,9 +30,9 @@ import math.Vector4
 
 object Main {
   val testXml = """
-      <CheckBox hor='Center' checked="{Binding Data isTest}" ver='Center' width='25' height='25' >
+      <CheckBox hor='Center' checked="true" ver='Center' width='25' height='25' >
         <CheckBox.Template>
-          <Image sprite="{Binding Owner checked ui.BoolAtlasSprite(Orchis.checkbox-checked,Orchis.checkbox-unchecked)}"  />
+          <Image sprite="{Binding Owner checked Conv=ui.BoolAtlasSprite(default.checkbox-checked,default.checkbox-unchecked) Type=Src2Dst}"  />
         </CheckBox.Template>
       </CheckBox>
   """
@@ -95,10 +95,10 @@ class DemoGame extends IGameApp {
 
     val image = Image();
     image.sprite = Some(bgSprite)
-    image.color = Color.formHex("#e8e8e7").get;
-    
+    image.color = Color.formHex("#e8e8e7").get;    
     canvas.addControl(image);
 
+    /*
     val image2 = Image();
     image2.imageType = ImageType.Slice;
     image2.sprite = Some(sprite2)
@@ -106,13 +106,13 @@ class DemoGame extends IGameApp {
     image2.height = ui.core.SizeValue.Pixel(30);
     image2.color = Color.formHex("#2e3436").get;
     println(image2.color)
-    canvas.addControl(image2);
+    canvas.addControl(image2);*/
 
 
-    //var testViewModel = new TestViewModel();
-    //val uiControl = XmlControl.fromString(Main.testXml).get;
-    //uiControl.dataContext = testViewModel;
-    //canvas.addControl(uiControl);
+    var testViewModel = new TestViewModel();
+    val uiControl = XmlControl.fromString(Main.testXml).get;
+    uiControl.dataContext = testViewModel;
+    canvas.addControl(uiControl);
   }
 
   def OnUpdate() = {}

@@ -7,7 +7,6 @@ import scala.util.Failure
 import scala.util.Success
 import ui.binding.BindingItem
 
-
 case class XmlControlReader(val reader:XmlReader,val templateOwner:Option[BaseControl]) {
 
     def read():Try[BaseControl] =  this.readControl()
@@ -65,11 +64,12 @@ case class XmlControlReader(val reader:XmlReader,val templateOwner:Option[BaseCo
          val k = curAttr.get._1;
          val v = curAttr.get._2;
          if(v.startsWith("{Binding")) {
-           val bindingItem = BindingItem.parse(v,k);
-           control.control.addBindItem(bindingItem);
-
-           val item = BindingItem.parse2(v);
-           println(item)
+           BindingItem.parse(k,v) match {
+             case Success(bindingItem) => {
+                control.control.addBindItem(bindingItem)
+             };
+             case Failure(e) => System.err.println(s"parse binding error:${e.getMessage}");
+           }
          } else {
             val curControl = control.control;
             control.setter.setStringPropery(curControl,k,v);
