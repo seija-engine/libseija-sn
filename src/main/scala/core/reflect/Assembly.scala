@@ -12,9 +12,14 @@ object Assembly {
     
     def getTypeInfo(obj:Any):Option[TypeInfo] = Option(this.typeMap.get(obj.getClass().getName()))
 
+    def getTypeInfo_?(obj:Any):TypeInfo = this.getTypeInfo(obj).getOrElse(throw NotFoundTypeInfoException(obj.getClass().getName()))
+
     def createInstance(name:String):Option[Any] = {
        val typInfo = this.typeMap.get(name);
        if(typInfo == null) return None;
        Some(typInfo.create())
     }
 }
+
+case class NotFoundTypeInfoException(name:String) extends Exception(s"not found type info: ${name}")
+case class NotFoundFieldException(className:String,name:String) extends Exception(s"not found field: ${className}.${name}")

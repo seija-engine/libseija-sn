@@ -93,7 +93,7 @@ class BaseControl extends INotifyPropertyChanged with Cloneable {
 
     def bindingOwner(item:BindingItem):Unit = {
         if(this.templateOwner.isDefined) {
-          DataBindingManager.binding(this.templateOwner.get,this,item);
+          DataBindingManager.binding(this.templateOwner.get,this,item).failed.foreach(System.err.println);
         }
     }
 

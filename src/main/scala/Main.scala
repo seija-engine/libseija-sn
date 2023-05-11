@@ -27,10 +27,9 @@ import ui.BaseControl
 import core.reflect.Assembly
 import _root_.core.reflect.*
 import math.Vector4
-
 object Main {
   val testXml = """
-      <CheckBox hor='Center' checked="true" ver='Center' width='25' height='25' >
+      <CheckBox hor='Center' checked="true" ver='Center' width='16' height='16' >
         <CheckBox.Template>
           <Image sprite="{Binding Owner checked Conv=ui.BoolAtlasSprite(default.checkbox-checked,default.checkbox-unchecked) Type=Src2Dst}"  />
         </CheckBox.Template>
@@ -45,7 +44,6 @@ object Main {
     Assembly.add[Image]()
     Assembly.add[BoolAtlasSprite]();
     Assembly.add[TestViewModel]()
-    
     runSeija(); 
   }
 

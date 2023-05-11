@@ -20,12 +20,20 @@ case class TypeInfo(val name:String,
          case Some(value) => Some(value.get(obj))
    }
 
+   def GetValue_?(obj:Any,fieldName:String):Any = {
+      this.GetValue(obj,fieldName).getOrElse(throw new NotFoundFieldException(this.name,fieldName))
+   }
+
    def GetField(fieldName:String):Option[FieldInfo] = {
       if(base.isDefined) {
          val baseField = base.get.GetField(fieldName);
          if(baseField.isDefined) return baseField;
       }
       this.fieldMap.get(fieldName)
+   }
+
+   def GetField_?(fieldName:String):FieldInfo = {
+      this.GetField(fieldName).getOrElse(throw new NotFoundFieldException(this.name,fieldName))
    }
 }
 
