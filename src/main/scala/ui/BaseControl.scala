@@ -118,7 +118,7 @@ class BaseControl extends INotifyPropertyChanged with Cloneable {
 
     def onBindSourceChanged(src:INotifyPropertyChanged,name:String,newValue:Any,param:Any):Unit = {
        val curItem = param.asInstanceOf[BindingItem];
-       val dstField = Assembly.getTypeInfo(this).flatMap(_.GetField(curItem.dstKey));
+       val dstField = Assembly.getTypeInfo(this).flatMap(_.getField(curItem.dstKey));
        if(dstField.isEmpty) return;
        var realValue = newValue;
        if(curItem.conv.isDefined) {

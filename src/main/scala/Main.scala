@@ -83,6 +83,9 @@ class DemoGame extends IGameApp {
   var bgSprite2Index: Int = 0;
   var btnSpriteIndex: Int = 0;
   var font: Handle[Font] = null;
+
+  var frameIndex = 0;
+  var testViewMode = new TestViewModel();
   def OnStart() = {
 
     val canvas = ui.UICanvas.create();
@@ -96,15 +99,18 @@ class DemoGame extends IGameApp {
     image.color = Color.formHex("#e8e8e7").get;    
     canvas.addControl(image);
 
-    var testViewModel = new TestViewModel();
     val uiControl = XmlControl.fromString(Main.testXml).get;
-    uiControl.dataContext = testViewModel;
+    uiControl.dataContext = this.testViewMode;
     canvas.addControl(uiControl);
 
-    println(s"testViewModel.isTest = ${testViewModel.isTest}")
   }
 
-  def OnUpdate() = {}
+  def OnUpdate() = {
+    val step = this.frameIndex / 60;
+    println(this.testViewMode.isTest)
+    println(step)
+    this.frameIndex += 1;
+  }
 }
 
 import ui.binding.INotifyPropertyChanged;
@@ -113,7 +119,7 @@ class TestViewModel extends INotifyPropertyChanged {
   def isTest = this._isTest;
   def isTest_=(value:Boolean) = {
     this._isTest = value;
-    this.callPropertyChanged("isTest",value);
+    this.callPropertyChanged("isTest",this);
   }
 }
 
@@ -121,7 +127,7 @@ given ReflectType[TestViewModel] with {
   override def info: TypeInfo = TypeInfo("TestViewModel",
   () => new TestViewModel(),None,List(
     FieldInfo("isTest",
-     (a,b) => a.asInstanceOf[TestViewModel].isTest = b.asInstanceOf[Boolean],
+     (a,b) => a.asInstanceOf[TestViewModel]._isTest = b.asInstanceOf[Boolean],
      (a) => a.asInstanceOf[TestViewModel].isTest
     )
   ))

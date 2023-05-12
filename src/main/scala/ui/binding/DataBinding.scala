@@ -43,7 +43,7 @@ object DataBindingManager {
         var srcValue = srcObject;
         if(item.sourceKey != "this") {
           val srcTypeInfo = Assembly.getTypeInfo_?(srcObject);
-          srcValue = srcTypeInfo.GetValue_?(srcObject,item.sourceKey);
+          srcValue = srcTypeInfo.getValue_?(srcObject,item.sourceKey);
         }
         if(item.conv.isDefined) { srcValue = item.conv.get.conv(srcValue) }
         val dstTypeInfo = Assembly.getTypeInfo_?(dstObject);
@@ -52,7 +52,7 @@ object DataBindingManager {
         var dstValue = dstObject;
         if(item.dstKey != "this") {
           val dstTypeInfo = Assembly.getTypeInfo_?(dstObject);
-          dstValue = dstTypeInfo.GetValue_?(dstObject,item.dstKey);
+          dstValue = dstTypeInfo.getValue_?(dstObject,item.dstKey);
         }
         if(item.conv.isDefined) { dstValue = item.conv.get.conv(dstValue) }
         val srcTypeInfo = Assembly.getTypeInfo_?(srcObject);
@@ -82,15 +82,15 @@ case class BindingInst(
       case BindingType.Src2Dst => {
         val srcNotity = srcObject.asInstanceOf[INotifyPropertyChanged];
         srcNotity.addPropertyChangedHandler(this.onSrcPropertyChanged,null)
-        this.setSrc2Dst();
+        this.setSrc2Dst(srcObject);
       }
       case BindingType.Dst2Src => {
         val dstNotity = dstObject.asInstanceOf[INotifyPropertyChanged];
         dstNotity.addPropertyChangedHandler(this.onDstPropertyChanged,null)
-        this.setDst2Src();
+        this.setDst2Src(dstObject);
       }        
       case BindingType.Both => {
-        this.setSrc2Dst();
+        this.setSrc2Dst(srcObject);
          val srcNotity = srcObject.asInstanceOf[INotifyPropertyChanged];
          val dstNotity = dstObject.asInstanceOf[INotifyPropertyChanged];
          srcNotity.addPropertyChangedHandler(this.onSrcPropertyChanged,null);
@@ -98,28 +98,35 @@ case class BindingInst(
       }
   }
 
-  def onSrcPropertyChanged(sender:INotifyPropertyChanged,name:String,newValue:Any,param:Any): Unit = {
-      this.setSrc2Dst();
+  def onSrcPropertyChanged(sender:INotifyPropertyChanged,name:String,sourceObj:Any,param:Any): Unit = {
+      this.setSrc2Dst(sourceObj);
   }
 
-  def onDstPropertyChanged(sender:INotifyPropertyChanged,name:String,newValue:Any,param:Any): Unit = {
-      this.setDst2Src();
+  def onDstPropertyChanged(sender:INotifyPropertyChanged,name:String,sourceObj:Any,param:Any): Unit = {
+    
+      this.setDst2Src(sourceObj);
   }
 
-  def setSrc2Dst():Unit = {
+  def setSrc2Dst(sourceObj:Any):Unit = {
       var setValue = this.srcField.get(this.srcObject);
       if(this.item.conv.isDefined) {
         setValue = this.item.conv.get.conv(setValue)
       }
       dstTypeInfo.setValue(dstObject,this.item.dstKey,setValue)
+      if(dstObject != sourceObj && dstObject.isInstanceOf[INotifyPropertyChanged]) {
+          dstObject.asInstanceOf[INotifyPropertyChanged].callPropertyChanged(item.dstKey,sourceObj)
+      }
   }
 
-  def setDst2Src():Unit = {
+  def setDst2Src(sourceObj:Any):Unit = {
       var setValue = this.dstField.get(this.dstObject);
       if(this.item.conv.isDefined) {
         setValue = this.item.conv.get.conv(setValue)
       }
       srcTypeInfo.setValue(srcObject,this.item.sourceKey,setValue)
+      if(srcObject != sourceObj && srcObject.isInstanceOf[INotifyPropertyChanged]) {
+          srcObject.asInstanceOf[INotifyPropertyChanged].callPropertyChanged(item.sourceKey,sourceObj)
+      }
   }
 
   def release(): Unit = {
@@ -137,8 +144,8 @@ object BindingInst {
   def create(src:Any,dst:Any,item:BindingItem):Try[BindingInst] = Try {
     val srcTypeInfo = Assembly.getTypeInfo_?(src);
     val dstTypeInfo = Assembly.getTypeInfo_?(dst);
-    val srcField = srcTypeInfo.GetField_?(item.sourceKey);
-    val dstField = dstTypeInfo.GetField_?(item.dstKey);
+    val srcField = srcTypeInfo.getField_?(item.sourceKey);
+    val dstField = dstTypeInfo.getField_?(item.dstKey);
     BindingInst(item,src,dst,srcTypeInfo,dstTypeInfo,srcField,dstField)
   }
 }

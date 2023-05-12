@@ -10,9 +10,9 @@ case class TypeInfo(val name:String,
       map.updated(info.Name,info)
    };
 
-   def GetValue(obj:Any,fieldName:String):Option[Any] = {
+   def getValue(obj:Any,fieldName:String):Option[Any] = {
       if(base.isDefined) {
-         val baseValue = base.get.GetValue(obj,fieldName);
+         val baseValue = base.get.getValue(obj,fieldName);
          if(baseValue.isDefined) return baseValue;
       }
       this.fieldMap.get(fieldName) match
@@ -20,8 +20,8 @@ case class TypeInfo(val name:String,
          case Some(value) => Some(value.get(obj))
    }
 
-   def GetValue_?(obj:Any,fieldName:String):Any = {
-      this.GetValue(obj,fieldName).getOrElse(throw new NotFoundFieldException(this.name,fieldName))
+   def getValue_?(obj:Any,fieldName:String):Any = {
+      this.getValue(obj,fieldName).getOrElse(throw new NotFoundFieldException(this.name,fieldName))
    }
 
    def setValue(obj:Any,fieldName:String,value:Any):Boolean = {
@@ -36,16 +36,16 @@ case class TypeInfo(val name:String,
          }
    }
 
-   def GetField(fieldName:String):Option[FieldInfo] = {
+   def getField(fieldName:String):Option[FieldInfo] = {
       if(base.isDefined) {
-         val baseField = base.get.GetField(fieldName);
+         val baseField = base.get.getField(fieldName);
          if(baseField.isDefined) return baseField;
       }
       this.fieldMap.get(fieldName)
    }
 
-   def GetField_?(fieldName:String):FieldInfo = {
-      this.GetField(fieldName).getOrElse(throw new NotFoundFieldException(this.name,fieldName))
+   def getField_?(fieldName:String):FieldInfo = {
+      this.getField(fieldName).getOrElse(throw new NotFoundFieldException(this.name,fieldName))
    }
 }
 

@@ -14,10 +14,10 @@ trait INotifyPropertyChanged {
     this.handles.remove(handler)
   }
 
-  def callPropertyChanged(propertyName: String,newValue:Any): Unit = {
+  def callPropertyChanged(propertyName: String,sourceObj:Any): Unit = {
     this.onPropertyChanged(propertyName)
     for(kv <- this.handles) {
-       kv._1.apply(this,propertyName,newValue,kv._2)
+       kv._1.apply(this,propertyName,sourceObj,kv._2)
     }
   }
 

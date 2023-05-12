@@ -9,30 +9,30 @@ import ui.xml.IControlFromXml
 import core.reflect.{TypeInfo,FieldInfo,ReflectType}
 
 class BaseLayout extends BaseControl with Cloneable {
-    protected var _hor:LayoutAlignment = LayoutAlignment.Stretch
-    protected  var _ver:LayoutAlignment = LayoutAlignment.Stretch
-    protected  var _width:SizeValue = SizeValue.Auto
-    protected  var _height:SizeValue = SizeValue.Auto
+    var _hor:LayoutAlignment = LayoutAlignment.Stretch
+    var _ver:LayoutAlignment = LayoutAlignment.Stretch
+    var _width:SizeValue = SizeValue.Auto
+    var _height:SizeValue = SizeValue.Auto
     
     def width = this._width;
     def width_= (value:SizeValue):Unit = { 
       this._width = value; 
-      this.callPropertyChanged("width",this._width)
+      this.callPropertyChanged("width",this)
     }
     def height = this._height;
     def height_= (value:SizeValue):Unit = { 
      this._height = value; 
-     this.callPropertyChanged("height",this._height)
+     this.callPropertyChanged("height",this)
     }
     def hor = this._hor
     def hor_=(value:LayoutAlignment):Unit = { 
       this._hor = value;
-      this.callPropertyChanged("hor",this._hor) 
+      this.callPropertyChanged("hor",this) 
     }
     def ver = this._ver
     def ver_=(value:LayoutAlignment):Unit = { 
       this._ver = value;
-      this.callPropertyChanged("ver",this._ver) 
+      this.callPropertyChanged("ver",this) 
     }
 
     override def clone():BaseLayout = {
@@ -51,10 +51,10 @@ given IControlFromXml[BaseLayout] with {
        import ui.core._
        import ui.core.given;
        name match
-        case "width"  => control.width = core.formString[SizeValue](value).get
-        case "height" => control.height = core.formString[SizeValue](value).get
-        case "hor" => control.hor = core.formString[LayoutAlignment](value).get
-        case "ver" => control.ver = core.formString[LayoutAlignment](value).get
+        case "width"  => control._width = core.formString[SizeValue](value).get
+        case "height" => control._height = core.formString[SizeValue](value).get
+        case "hor" => control._hor = core.formString[LayoutAlignment](value).get
+        case "ver" => control._ver = core.formString[LayoutAlignment](value).get
         case _ => {}
     }
 }

@@ -16,13 +16,13 @@ import ui.core.given;
 import ui.EventManager
 
 class CheckBox extends BaseLayout {
-    protected var _checked: Boolean = false;
+    var _checked: Boolean = false;
     protected var _template:Option[Template] = None;
 
     def checked = this._checked
     def checked_=(value: Boolean): Unit = {
         this._checked = value;
-        this.callPropertyChanged("checked",this._checked)
+        this.callPropertyChanged("checked",this)
     }
 
     def template = this._template
@@ -83,7 +83,7 @@ import core.reflect.*;
 given ReflectType[CheckBox] with {
   override def info: TypeInfo = TypeInfo("ui.controls.CheckBox",() => CheckBox(),Some(typeInfoOf[BaseLayout]),List(
      FieldInfo("checked",
-                (a,b) => { a.asInstanceOf[CheckBox].checked = b.asInstanceOf[Boolean] },
+                (a,b) => { a.asInstanceOf[CheckBox]._checked = b.asInstanceOf[Boolean] },
                 _.asInstanceOf[CheckBox].checked),
   ))
 }

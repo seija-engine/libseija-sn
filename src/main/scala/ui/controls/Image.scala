@@ -25,19 +25,19 @@ class Image extends BaseLayout with Cloneable  {
   def imageType = this._imageType
   def imageType_= (value:ImageType):Unit = { 
     this._imageType = value; 
-    this.callPropertyChanged("imageType",this._imageType)
+    this.callPropertyChanged("imageType",this)
   }
 
   def sprite = this._sprite
   def sprite_= (value:Option[AtlasSprite]):Unit = { 
     this._sprite = value; 
-    this.callPropertyChanged("sprite",this._sprite)
+    this.callPropertyChanged("sprite",this)
   }
 
   def color = this._color
   def color_=(value:Color) = {
     this._color = value;
-    this.callPropertyChanged("color",this._color)
+    this.callPropertyChanged("color",this)
   }
 
   override def OnEnter(): Unit = {
