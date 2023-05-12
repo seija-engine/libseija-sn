@@ -29,7 +29,7 @@ import _root_.core.reflect.*
 import math.Vector4
 object Main {
   val testXml = """
-      <CheckBox hor='Center' checked="true" ver='Center' width='16' height='16' >
+      <CheckBox hor='Center' checked="{Binding Data isTest Type=Both}" ver='Center' width='16' height='16' >
         <CheckBox.Template>
           <Image sprite="{Binding Owner checked Conv=ui.BoolAtlasSprite(default.checkbox-checked,default.checkbox-unchecked) Type=Src2Dst}"  />
         </CheckBox.Template>
@@ -96,28 +96,25 @@ class DemoGame extends IGameApp {
     image.color = Color.formHex("#e8e8e7").get;    
     canvas.addControl(image);
 
-    /*
-    val image2 = Image();
-    image2.imageType = ImageType.Slice;
-    image2.sprite = Some(sprite2)
-    image2.width = ui.core.SizeValue.Pixel(100);
-    image2.height = ui.core.SizeValue.Pixel(30);
-    image2.color = Color.formHex("#2e3436").get;
-    println(image2.color)
-    canvas.addControl(image2);*/
-
-
     var testViewModel = new TestViewModel();
     val uiControl = XmlControl.fromString(Main.testXml).get;
     uiControl.dataContext = testViewModel;
     canvas.addControl(uiControl);
+
+    println(s"testViewModel.isTest = ${testViewModel.isTest}")
   }
 
   def OnUpdate() = {}
 }
 
-class TestViewModel {
-  var isTest:Boolean = true;
+import ui.binding.INotifyPropertyChanged;
+class TestViewModel extends INotifyPropertyChanged {
+  var _isTest:Boolean = true;
+  def isTest = this._isTest;
+  def isTest_=(value:Boolean) = {
+    this._isTest = value;
+    this.callPropertyChanged("isTest",value);
+  }
 }
 
 given ReflectType[TestViewModel] with {
