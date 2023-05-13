@@ -27,6 +27,7 @@ import ui.BaseControl
 import core.reflect.Assembly
 import _root_.core.reflect.*
 import math.Vector4
+
 object Main {
   val testXml = """
       <CheckBox hor='Center' checked="{Binding Data isTest Type=Both}" ver='Center' width='16' height='16' >
@@ -44,7 +45,9 @@ object Main {
     Assembly.add[Image]()
     Assembly.add[BoolAtlasSprite]();
     Assembly.add[TestViewModel]()
-    runSeija(); 
+    val text = new ui.controls.Text();
+    
+    //runSeija(); 
   }
 
   def runSeija() = {
@@ -102,14 +105,11 @@ class DemoGame extends IGameApp {
     val uiControl = XmlControl.fromString(Main.testXml).get;
     uiControl.dataContext = this.testViewMode;
     canvas.addControl(uiControl);
-
+    uiControl.dataContext = this.testViewMode;
   }
 
   def OnUpdate() = {
-    val step = this.frameIndex / 60;
-    println(this.testViewMode.isTest)
-    println(step)
-    this.frameIndex += 1;
+   
   }
 }
 

@@ -5,7 +5,10 @@ import _root_.core.IFromString
 import java.util.ArrayList;
 import java.util.HashMap
 import _root_.core.reflect.Assembly;
-import ui.binding.{BindingItem,INotifyPropertyChanged,BindingSource,DataBindingManager}
+import ui.binding.{BindingItem,BindingInst,INotifyPropertyChanged,BindingSource,DataBindingManager}
+import scala.collection.mutable.ArrayBuffer
+import scala.util.Success
+import scala.util.Failure
 
 class BaseControl extends INotifyPropertyChanged with Cloneable {
     var templateOwner:Option[BaseControl] = None;
@@ -16,7 +19,8 @@ class BaseControl extends INotifyPropertyChanged with Cloneable {
     protected var parent:Option[BaseControl] = None;
     protected var childrenList: ArrayList[BaseControl] = new ArrayList[BaseControl]();
     protected var bindItemList:ArrayList[BindingItem] = ArrayList();
-    
+    protected var bindingInstList:ArrayBuffer[BindingInst] = ArrayBuffer.empty
+
     protected var _dataContext:Any = null;
     def dataContext = this._dataContext;
     def dataContext_=(value:Any) = {
@@ -84,23 +88,21 @@ class BaseControl extends INotifyPropertyChanged with Cloneable {
     def updateDataContextBinding():Unit = {
        for(idx <- 0 until this.bindItemList.size()) {
           val curItem = this.bindItemList.get(idx);
-          DataBindingManager.removeByDst(this);
           if(curItem.sourceType == BindingSource.Data) {
               this.bindingDataContext(curItem);
           }
        }
     }
 
-    def bindingOwner(item:BindingItem):Unit = {
-        if(this.templateOwner.isDefined) {
-          DataBindingManager.binding(this.templateOwner.get,this,item).failed.foreach(System.err.println);
-        }
-    }
-
     def bindingDataContext(item:BindingItem):Unit = {
         val dataCtx = this.findDataContext();
         if(dataCtx != null) {
-          DataBindingManager.binding(dataCtx,this,item);
+          this.bindingInstList.find(_.item == item).foreach(DataBindingManager.removeInst);
+          DataBindingManager.binding(dataCtx,this,item) match {
+            case Success(Some(inst)) => this.bindingInstList += inst
+            case Failure(exception) => System.err.println(exception)
+            case _ => {}
+          }
         }
     }
 
@@ -108,7 +110,14 @@ class BaseControl extends INotifyPropertyChanged with Cloneable {
       for(idx <- 0 until this.bindItemList.size()) {
         val curItem = this.bindItemList.get(idx);
         curItem.sourceType match {
-          case BindingSource.Owner => this.bindingOwner(curItem)
+          case BindingSource.Owner => 
+            if(this.templateOwner.isDefined) {
+              DataBindingManager.binding(this.templateOwner.get,this,curItem) match {
+                case Success(Some(inst)) => this.bindingInstList += inst
+                case Failure(exception) => System.err.println(exception)
+                case _ => {}
+              }
+            }
           case BindingSource.Data => this.bindingDataContext(curItem)
         }
       }
@@ -133,6 +142,7 @@ class BaseControl extends INotifyPropertyChanged with Cloneable {
    
 
     def Exit():Unit = {
-
+      this.bindingInstList.foreach(DataBindingManager.removeInst);
+      this.bindingInstList.clear();
     }
 }

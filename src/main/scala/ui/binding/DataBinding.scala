@@ -11,14 +11,16 @@ import core.reflect.{TypeInfo,FieldInfo}
 object DataBindingManager {
   var instList:ArrayBuffer[BindingInst] = ArrayBuffer.empty
 
-  def binding(srcObject:Any,dstObject:Any,item:BindingItem): Try[Unit] = Try {
+  def binding(srcObject:Any,dstObject:Any,item:BindingItem): Try[Option[BindingInst]] = Try {
     assert(srcObject != null && dstObject != null);
+    var retInst:Option[BindingInst] = None;
     item.typ match {
       case BindingType.Src2Dst => {
         if(srcObject.isInstanceOf[INotifyPropertyChanged]) {
           var inst = BindingInst.create(srcObject, dstObject, item).get;
           inst.init();
           this.instList.addOne(inst);
+          retInst = Some(inst)
         } else { this.applyOnce(srcObject,dstObject,item) }
       }
       case BindingType.Dst2Src => {
@@ -26,6 +28,7 @@ object DataBindingManager {
           var inst = BindingInst.create(srcObject, dstObject, item).get;
           inst.init();
           this.instList.addOne(inst);
+          retInst = Some(inst)
         } else { this.applyOnce(srcObject,dstObject,item) }
       }
       case BindingType.Both => {
@@ -33,9 +36,11 @@ object DataBindingManager {
           var inst = BindingInst.create(srcObject, dstObject, item).get;
           inst.init();
           this.instList.addOne(inst);
+          retInst = Some(inst)
         } else { this.applyOnce(srcObject,dstObject,item) }
       }
     }
+    retInst
   }
 
   def applyOnce(srcObject:Any,dstObject:Any,item:BindingItem):Unit = {
@@ -62,7 +67,20 @@ object DataBindingManager {
 
 
   def removeByDst(dstObject:Any): Unit = {
-      
+     for(idx <- this.instList.length - 1 to 0 by -1) {
+       if(this.instList(idx).dstObject == dstObject) {
+         this.instList(idx).release();
+         this.instList.remove(idx);
+       }
+     }
+  }
+
+  def removeInst(inst:BindingInst):Unit = {
+    val idx = this.instList.indexOf(inst);
+    if(idx >= 0) {
+      this.instList(idx).release();
+      this.instList.remove(idx);
+    }
   }
 }
 
