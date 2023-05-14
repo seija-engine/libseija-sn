@@ -40,13 +40,18 @@ object Main {
     XmlControl.register[CheckBox]();
     XmlControl.register[Image]();
 
+    Assembly.add[ui.controls.Text]()
     Assembly.add[BaseLayout]();
     Assembly.add[CheckBox]()
     Assembly.add[Image]()
     Assembly.add[BoolAtlasSprite]();
     Assembly.add[TestViewModel]()
+
     val text = new ui.controls.Text();
-    
+    val typInfo = Assembly.getTypeInfo_?(text);
+    typInfo.setValue(text,"text","sttter")
+    val textValue = typInfo.getValue_?(text,"text");
+    println(textValue)
     //runSeija(); 
   }
 

@@ -9,6 +9,7 @@ object Assembly {
         this.typeMap.put(typInfo.name,typInfo);
     }
 
+    def get(name:String):Option[TypeInfo] = Option(this.typeMap.get(name))
     
     def getTypeInfo(obj:Any):Option[TypeInfo] = Option(this.typeMap.get(obj.getClass().getName()))
 

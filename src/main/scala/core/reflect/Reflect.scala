@@ -1,6 +1,8 @@
 package core.reflect
 import scala.collection.immutable.HashMap;
-
+import scala.deriving.Mirror
+import scala.quoted.*
+import scala.annotation.internal.Body
 
 case class TypeInfo(val name:String,
                     val create:() => Any,
@@ -51,8 +53,58 @@ case class TypeInfo(val name:String,
 
 case class FieldInfo(val Name:String,set:(Any,Any) => Unit,get:(Any) => Any);
 
+
+
+def typeInfoOf[T](using t:ReflectType[T]):TypeInfo = t.info
+
 trait ReflectType[T] {
    def info:TypeInfo;
 }
 
-def typeInfoOf[T](using t:ReflectType[T]):TypeInfo = t.info
+object ReflectType {
+   inline def derived[T]: ReflectType[T] = ${ derivedMacro[T] };
+
+   def derivedMacro[T: Type](using Quotes): Expr[ReflectType[T]] = {
+      import quotes.reflect.*
+      val typRepr: TypeRepr = TypeRepr.of[T]
+      val typ = typRepr.asType;
+      val typClassSym = typRepr.classSymbol.get;
+      val typeSym = typRepr.typeSymbol;
+      val fullName:Expr[String] = Expr(typClassSym.fullName);
+      val init = typeSym.declarations.find(_.name=="<init>").get
+      val newExpr = Apply(Select(New(TypeTree.of[T]),init),List()).asExprOf[T]
+      val baseTypeName = if(typRepr.baseClasses.length >= 2) { 
+         Expr(typRepr.baseClasses(1).fullName) 
+      } else {  null };
+      val allFields:List[Expr[FieldInfo]] = typClassSym.declaredFields.map(fieldSym => {
+         val memberType = typRepr.memberType(fieldSym);
+         val fieldName = if(fieldSym.name.charAt(0) == '_') { fieldSym.name.tail } else { fieldSym.name };
+         (memberType.asType,typRepr.asType) match {
+            case ('[ft],'[t]) => {
+                  '{
+                     FieldInfo(
+                        ${Expr(fieldName)}
+                        ,(a,b) => {
+                            ${
+                               val selectField = Select('{a.asInstanceOf[t]}.asTerm,fieldSym);
+                               Assign(selectField,'{b.asInstanceOf[ft]}.asTerm).asExpr
+                            }
+                         },
+                         (obj:Any) => ${Select('{obj.asInstanceOf[t]}.asTerm,fieldSym).asExpr}
+                     )
+                  }
+            }
+         }
+         
+      });
+      val fieldList:Expr[List[FieldInfo]] = Expr.ofList(allFields);
+      val ret = '{
+         val baseTypeInfo = Assembly.get($baseTypeName);
+         new ReflectType[T] {
+            override def info: TypeInfo = TypeInfo($fullName,() => ${newExpr},baseTypeInfo,${fieldList})
+         }
+      }
+      ret
+   }
+
+}
