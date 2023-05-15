@@ -6,29 +6,31 @@ import scala.util.Try
 import scala.util.Failure
 import scala.util.Success
 import ui.binding.BindingItem
+import scala.util.boundary, boundary.break
 
 case class XmlControlReader(val reader:XmlReader,val templateOwner:Option[BaseControl]) {
 
     def read():Try[BaseControl] =  this.readControl()
 
-    def readControl():Try[BaseControl] = Try {
+    def readControl():Try[BaseControl] =  Try {
+        
         val readEvent = reader.nextEvent().get;
         readEvent match {
             case XmlEvent.EmptyElement(name) => {
                 val pair = XmlControl.tryCreate(name).get;
                 readStringProperty(reader,pair);
-                return Success(pair.control);
+                pair.control
             }
             case XmlEvent.StartElement(name) => {
                 val pair = XmlControl.tryCreate(name).get;
                 val curControlName = pair.setter.name;
                 readStringProperty(reader,pair);
-                
+              
                 while(true) {
                     val nextEvent = reader.lookNext().get;
                     if(nextEvent.IsEnd(pair.setter.name) || nextEvent.IsEOF()) {
                         reader.nextEvent();
-                        return Success(pair.control)
+                        return Success(pair.control);
                     }
                     //Start
                     val startEvent = nextEvent.castStart();

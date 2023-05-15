@@ -27,10 +27,11 @@ import ui.BaseControl
 import core.reflect.Assembly
 import _root_.core.reflect.*
 import math.Vector4
+import scala.util.boundary
 
 object Main {
   val testXml = """
-      <CheckBox hor='Center' checked="{Binding Data isTest Type=Both}" ver='Center' width='16' height='16' >
+      <CheckBox hor='Center' checked="true" ver='Center' width='16' height='16' >
         <CheckBox.Template>
           <Image sprite="{Binding Owner checked Conv=ui.BoolAtlasSprite(default.checkbox-checked,default.checkbox-unchecked) Type=Src2Dst}"  />
         </CheckBox.Template>
@@ -40,19 +41,14 @@ object Main {
     XmlControl.register[CheckBox]();
     XmlControl.register[Image]();
 
-    Assembly.add[ui.controls.Text]()
+    //Assembly.add[ui.controls.Text]()
     Assembly.add[BaseLayout]();
     Assembly.add[CheckBox]()
     Assembly.add[Image]()
     Assembly.add[BoolAtlasSprite]();
     Assembly.add[TestViewModel]()
 
-    val text = new ui.controls.Text();
-    val typInfo = Assembly.getTypeInfo_?(text);
-    typInfo.setValue(text,"text","sttter")
-    val textValue = typInfo.getValue_?(text,"text");
-    println(textValue)
-    //runSeija(); 
+    runSeija(); 
   }
 
   def runSeija() = {
@@ -95,13 +91,13 @@ class DemoGame extends IGameApp {
   var frameIndex = 0;
   var testViewMode = new TestViewModel();
   def OnStart() = {
-
     val canvas = ui.UICanvas.create();
     Atlas.load("default","ui/default.json").get
+    ui.Font.load("default","ui/WenQuanYiMicroHei.ttf",true).get
     val bgSprite = Atlas.getPath("default.white").get;
     val sprite2 = Atlas.getPath("default.button").get;
     sprite2.sliceInfo = Some(Thickness(5,5,5,5));
-
+  
     val image = Image();
     image.sprite = Some(bgSprite)
     image.color = Color.formHex("#e8e8e7").get;    
@@ -110,7 +106,6 @@ class DemoGame extends IGameApp {
     val uiControl = XmlControl.fromString(Main.testXml).get;
     uiControl.dataContext = this.testViewMode;
     canvas.addControl(uiControl);
-    uiControl.dataContext = this.testViewMode;
   }
 
   def OnUpdate() = {

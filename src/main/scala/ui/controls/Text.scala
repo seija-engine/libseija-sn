@@ -24,3 +24,4 @@ class Text extends BaseLayout with Cloneable derives ReflectType {
 
   override def OnEnter(): Unit = {}
 };
+

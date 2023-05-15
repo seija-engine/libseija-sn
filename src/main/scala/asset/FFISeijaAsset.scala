@@ -2,6 +2,7 @@ package asset
 import core.LibSeija;
 import scalanative.unsafe._
 import asset.HandleUntyped
+import scala.util.boundary
 
 
 object FFISeijaAsset {
@@ -20,18 +21,18 @@ object FFISeijaAsset {
     val ta = stackalloc[Long]()
     val tb = stackalloc[Long]()
     if(assetGetHandlePtr(worldPtr,toCString(assetPath),isWeak,id,ta,tb)) {
-      return Some(HandleUntyped(!id,!ta,!tb));
+      Some(HandleUntyped(!id,!ta,!tb));
     } else {
-      return None;
+      None
     }
   }
 
   def assetLoadSync(worldPtr:Ptr[Byte],assetPath:String,ta:Long,tb:Long):Option[HandleUntyped] = Zone { implicit z =>
     val id = stackalloc[Long]()
     if(assetLoadSyncPtr(worldPtr,toCString(assetPath),ta,tb,id)) {
-      return Some(HandleUntyped(!id,ta,tb));
+      Some(HandleUntyped(!id,ta,tb));
     } else {
-      return None;
+      None
     }
   }
 
@@ -41,9 +42,9 @@ object FFISeijaAsset {
     val ta = stackalloc[Long]()
     val tb = stackalloc[Long]()
     if(stringToUUIDPtr(toCString(str),ta,tb)) {
-      return Some(AssetTypeId(!ta,!tb));
+      Some(AssetTypeId(!ta,!tb));
     } else {
-      return None;
+      None
     }
   }
 
