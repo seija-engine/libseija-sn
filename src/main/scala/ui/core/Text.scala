@@ -49,10 +49,12 @@ class TextBuilder extends RawComponentBuilder {
   }
 }
 
-given TextComponent: RawComponent[Text] with {
-  type BuilderType = TextBuilder;
-  type RawType = Ptr[Byte];
+object Text {
+  given TextComponent: RawComponent[Text] with {
+    type BuilderType = TextBuilder;
+    type RawType = Ptr[Byte];
 
-  def builder(): BuilderType = new TextBuilder();
-  def getRaw(entity: Entity): RawType = ???;
+    def builder(): BuilderType = new TextBuilder();
+    def getRaw(entity: Entity): RawType = ???;
+  }
 }

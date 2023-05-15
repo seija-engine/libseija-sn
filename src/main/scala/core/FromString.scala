@@ -6,11 +6,13 @@ trait IFromString[T] {
 
 def formString[T](str:String)(using v:IFromString[T]):Option[T] = v.from(str)
 
-given IFromString[Boolean] with {
-    def from(strValue:String):Option[Boolean] = {
-        strValue match
-            case "true" => Some(true)
-            case "false" => Some(false)
-            case _ => None
+object IFromString {
+    given IFromString[Boolean] with {
+        def from(strValue:String):Option[Boolean] = strValue.toBooleanOption
+    }
+
+    given IFromString[Int] with {
+        def from(strValue:String):Option[Int] = strValue.toIntOption
     }
 }
+

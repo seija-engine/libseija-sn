@@ -11,16 +11,17 @@ import ui.xml.IControlFromXml
 import ui.Atlas
 import math.Vector4
 import math.Color
+import core.reflect.ReflectType
 
 enum ImageType(val value:Int)  {
   case Simple extends ImageType(0)
   case Slice extends ImageType(1)
 }
 
-class Image extends BaseLayout with Cloneable  {
-  protected var _sprite:Option[AtlasSprite] = None
-  protected var _imageType:ImageType = ImageType.Simple
-  protected var _color:Color = Color.white;
+class Image extends BaseLayout with Cloneable derives ReflectType {
+  var _sprite:Option[AtlasSprite] = None
+  var _imageType:ImageType = ImageType.Simple
+  var _color:Color = Color.white;
 
   def imageType = this._imageType
   def imageType_= (value:ImageType):Unit = { 
@@ -92,7 +93,7 @@ given IControlFromXml[Image] with {
     val name:String = "Image"
     def create():Image = new Image()
     def setStringPropery(control:Image,name:String,value:String):Unit = {
-      given_IControlFromXml_BaseLayout.setStringPropery(control,name,value)
+      BaseLayout.given_IControlFromXml_BaseLayout.setStringPropery(control,name,value)
       name match
         case "sprite" => { 
           control.sprite = Atlas.getPath(value); 
@@ -101,7 +102,7 @@ given IControlFromXml[Image] with {
         case _ => {} 
     }
 }
-
+/*
 import core.reflect.*;
 given ReflectType[Image] with {
   override def info: TypeInfo = TypeInfo("ui.controls.Image",() => Image(),Some(typeInfoOf[BaseLayout]),List(
@@ -112,4 +113,4 @@ given ReflectType[Image] with {
      (a,b) => a.asInstanceOf[Image].imageType = b.asInstanceOf[ImageType],
      _.asInstanceOf[Image].imageType)
   ))
-}
+}*/

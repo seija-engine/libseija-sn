@@ -17,6 +17,10 @@ trait IControlFromXml[T <: BaseControl] {
     def readXmlProperty(control:T,reader:XmlReader):Try[Unit] = { Failure(NotImplementedError()) }
 }
 
+def setXmlStringPropery[T <: BaseControl](control:T,name:String,value:String)(using v:IControlFromXml[T]) = {
+    v.setStringPropery(control,name,value)
+}
+
 case class FromXmlValuePair(control:BaseControl,setter:IControlFromXml[BaseControl])
 
 object XmlControl {

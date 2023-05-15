@@ -21,12 +21,15 @@ class Rect2DBuilder extends RawComponentBuilder {
     
 }
 
-given Rect2dComponent:RawComponent[Rect2D] with {
-  type BuilderType = Rect2DBuilder;
-  type RawType = Rect2D;
+object Rect2D {
+  given Rect2dComponent:RawComponent[Rect2D] with {
+    type BuilderType = Rect2DBuilder;
+    type RawType = Rect2D;
 
-  override def builder(): BuilderType = new Rect2DBuilder()
+    override def builder(): BuilderType = new Rect2DBuilder()
 
-  override def getRaw(entity: Entity): RawType = ???
+    override def getRaw(entity: Entity): RawType = ???
    
+  }
 }
+

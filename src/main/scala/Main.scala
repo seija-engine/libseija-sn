@@ -34,14 +34,20 @@ object Main {
       <CheckBox hor='Center' checked="true" ver='Center' width='16' height='16' >
         <CheckBox.Template>
           <Image sprite="{Binding Owner checked Conv=ui.BoolAtlasSprite(default.checkbox-checked,default.checkbox-unchecked) Type=Src2Dst}"  />
+          
         </CheckBox.Template>
       </CheckBox>
   """
+  val testXml2 = """
+    <Text fontSize="20" color="#ff0000" text="{Binding Data testText}"  />
+  """
+
   def main(args: Array[String]): Unit = {
     XmlControl.register[CheckBox]();
     XmlControl.register[Image]();
+    XmlControl.register[ui.controls.Text]();
 
-    //Assembly.add[ui.controls.Text]()
+    Assembly.add[ui.controls.Text]()
     Assembly.add[BaseLayout]();
     Assembly.add[CheckBox]()
     Assembly.add[Image]()
@@ -103,32 +109,32 @@ class DemoGame extends IGameApp {
     image.color = Color.formHex("#e8e8e7").get;    
     canvas.addControl(image);
 
-    val uiControl = XmlControl.fromString(Main.testXml).get;
+    val uiControl = XmlControl.fromString(Main.testXml2).get;
     uiControl.dataContext = this.testViewMode;
     canvas.addControl(uiControl);
   }
 
+  var index = 0;
   def OnUpdate() = {
-   
+    //this.testViewMode.testText = "Inc:" + index.toString();
+    //index += 1;
   }
 }
 
 import ui.binding.INotifyPropertyChanged;
-class TestViewModel extends INotifyPropertyChanged {
+class TestViewModel extends INotifyPropertyChanged derives ReflectType {
   var _isTest:Boolean = true;
   def isTest = this._isTest;
   def isTest_=(value:Boolean) = {
     this._isTest = value;
     this.callPropertyChanged("isTest",this);
   }
-}
 
-given ReflectType[TestViewModel] with {
-  override def info: TypeInfo = TypeInfo("TestViewModel",
-  () => new TestViewModel(),None,List(
-    FieldInfo("isTest",
-     (a,b) => a.asInstanceOf[TestViewModel]._isTest = b.asInstanceOf[Boolean],
-     (a) => a.asInstanceOf[TestViewModel].isTest
-    )
-  ))
+  var _testText = "TestViewModel";
+
+  def testText = this._testText;
+  def testText_=(value:String) = {
+    this._testText = value;
+    this.callPropertyChanged("testText",this);
+  }
 }

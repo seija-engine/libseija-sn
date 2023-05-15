@@ -1,7 +1,7 @@
 package ui.controls
 import ui.BaseControl
 import ui.binding.INotifyPropertyChanged
-import ui.xml.IControlFromXml
+import ui.xml.{IControlFromXml,setXmlStringPropery}
 import scala.util.Try
 import core.xml.XmlReader
 import scala.util.Failure
@@ -9,7 +9,7 @@ import ui.Template
 import ui.xml.XmlTemplateReader
 import scala.util.Success
 import core.Entity
-import transform.{Transform,TransformComponent}
+import transform.{Transform}
 import ui.core.Rect2D
 import ui.core.ItemLayout
 import ui.core.given;
@@ -65,7 +65,7 @@ given IControlFromXml[CheckBox] with {
     def create():CheckBox = new CheckBox()
     def setStringPropery(control:CheckBox,name:String,value:String):Unit = {
         import core.given
-        given_IControlFromXml_BaseLayout.setStringPropery(control,name,value)
+        setXmlStringPropery[BaseLayout](control,name,value)
         name match
          case "checked" => control.checked = core.formString[Boolean](value).getOrElse(false)
          case _ => 

@@ -14,11 +14,15 @@ class ItemLayoutBuilder extends RawComponentBuilder {
   }
 }
 
-given ItemLayoutComponent:RawComponent[ItemLayout] with {
-  type BuilderType = ItemLayoutBuilder;
-  override def builder(): BuilderType = new ItemLayoutBuilder()
+object ItemLayout {
+  given ItemLayoutComponent:RawComponent[ItemLayout] with {
+    type BuilderType = ItemLayoutBuilder;
+    override def builder(): BuilderType = new ItemLayoutBuilder()
 
-  override def getRaw(entity: Entity): RawType = ???
+    override def getRaw(entity: Entity): RawType = ???
 
 
+  }
 }
+
+

@@ -19,6 +19,7 @@ given IFromString[Color] with {
 object Color {
 
   val white = Color(1,1,1,1);
+  val black = Color(0,0,0,1)
 
   def formHex(strValue: String): Option[Color] = {
     var curValue = strValue;

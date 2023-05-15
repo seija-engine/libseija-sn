@@ -42,9 +42,8 @@ class BaseLayout extends BaseControl with Cloneable {
     }
 }
 
-
-
-given IControlFromXml[BaseLayout] with {
+object BaseLayout {
+  given IControlFromXml[BaseLayout] with {
     val name:String = "BaseLayout"
     def create():BaseLayout = new BaseLayout()
     def setStringPropery(control:BaseLayout,name:String,value:String):Unit = {
@@ -57,6 +56,7 @@ given IControlFromXml[BaseLayout] with {
         case "ver" => control._ver = core.formString[LayoutAlignment](value).get
         case _ => {}
     }
+  }
 }
 
 
