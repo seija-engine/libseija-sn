@@ -37,7 +37,12 @@ object Main {
             <Image sprite="{Binding Owner checked Conv=ui.BoolAtlasSprite(default.checkbox-checked,default.checkbox-unchecked) Type=Src2Dst}"  />
           </CheckBox.Template>
         </CheckBox>
-        <Button />
+        <Button width="120" height="30">
+          <Button.Template>
+            <Image imageType="Slice" sprite="default.button" />
+            <Text fontSize="18" height="30" width="30"  color="#000000" text="{Binding Owner content}"  />
+          </Button.Template>
+        </Button>
       </StackLayout>
   """
   val testXml2 = """

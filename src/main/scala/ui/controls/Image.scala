@@ -12,10 +12,22 @@ import ui.Atlas
 import math.Vector4
 import math.Color
 import core.reflect.ReflectType
+import core.formString
 
 enum ImageType(val value:Int)  {
   case Simple extends ImageType(0)
   case Slice extends ImageType(1)
+}
+
+object ImageType {
+  given IFromString[ImageType] with {
+
+    override def from(strValue: String): Option[ImageType] = strValue match {
+      case "Simple" => Some(ImageType.Simple)
+      case "Slice" => Some(ImageType.Slice)
+      case _: String => None
+    }
+  }
 }
 
 class Image extends BaseLayout with Cloneable derives ReflectType {
@@ -95,10 +107,8 @@ given IControlFromXml[Image] with {
     def setStringPropery(control:Image,name:String,value:String):Unit = {
       BaseLayout.given_IControlFromXml_BaseLayout.setStringPropery(control,name,value)
       name match
-        case "sprite" => { 
-          control.sprite = Atlas.getPath(value); 
-          
-        }
+        case "sprite" => {  control.sprite = Atlas.getPath(value);  }
+        case "imageType" => { control.imageType = formString(value).getOrElse(ImageType.Simple) }
         case _ => {} 
     }
 }
