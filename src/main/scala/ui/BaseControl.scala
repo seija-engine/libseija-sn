@@ -58,10 +58,11 @@ class BaseControl extends INotifyPropertyChanged with Cloneable {
 
     override def clone():BaseControl = {
         val cloneObject:BaseControl = super.clone().asInstanceOf[BaseControl]
-        cloneObject.childrenList.clear();
+        cloneObject.childrenList = new ArrayList[BaseControl]();
         this.childrenList.forEach(v => {
-            v.setParent(Some(cloneObject))
-            cloneObject.childrenList.add(v.clone())
+            val cloneChild = v.clone();
+            cloneChild.setParent(Some(cloneObject))
+            cloneObject.childrenList.add(cloneChild)
         });
         cloneObject
     }

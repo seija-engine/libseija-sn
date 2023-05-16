@@ -7,12 +7,14 @@ import ui.core.SizeValue
 import ui.core.{given_IFromString_LayoutAlignment};
 import ui.xml.IControlFromXml
 import core.reflect.{TypeInfo,FieldInfo,ReflectType}
+import ui.core.Thickness
 
 class BaseLayout extends BaseControl with Cloneable {
     var _hor:LayoutAlignment = LayoutAlignment.Stretch
     var _ver:LayoutAlignment = LayoutAlignment.Stretch
     var _width:SizeValue = SizeValue.Auto
     var _height:SizeValue = SizeValue.Auto
+    var _padding:Thickness = Thickness(0,0,0,0)
     
     def width = this._width;
     def width_= (value:SizeValue):Unit = { 
@@ -34,6 +36,12 @@ class BaseLayout extends BaseControl with Cloneable {
       this._ver = value;
       this.callPropertyChanged("ver",this) 
     }
+    
+    def padding = this._padding
+    def padding_=(value:Thickness):Unit = { 
+      this._padding = value;
+      this.callPropertyChanged("padding",this) 
+    }
 
     override def clone():BaseLayout = {
         val control:BaseLayout = super.clone().asInstanceOf[BaseLayout];
@@ -54,6 +62,7 @@ object BaseLayout {
         case "height" => control._height = core.formString[SizeValue](value).get
         case "hor" => control._hor = core.formString[LayoutAlignment](value).get
         case "ver" => control._ver = core.formString[LayoutAlignment](value).get
+        case "padding" => control._padding = core.formString[Thickness](value).get
         case _ => {}
     }
   }

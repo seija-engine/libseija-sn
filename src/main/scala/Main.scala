@@ -12,7 +12,7 @@ import asset.HandleUntyped
 import asset.Handle
 import ui.core.SpriteSheet
 import ui.core.Font
-import ui.controls.{CheckBox,Image,BaseLayout,ImageType}
+import ui.controls.{CheckBox,Image,BaseLayout,ImageType,StackLayout}
 import ui.controls.given
 import scala.util.Failure
 import scala.util.Success
@@ -31,7 +31,7 @@ import scala.util.boundary
 
 object Main {
   val testXml = """
-      <CheckBox hor='Center' checked="true" ver='Center' width='16' height='16' >
+      <CheckBox ' checked="true" hor='Center ver='Center' width='16' height='16' >
         <CheckBox.Template>
           <Image sprite="{Binding Owner checked Conv=ui.BoolAtlasSprite(default.checkbox-checked,default.checkbox-unchecked) Type=Src2Dst}"  />
           
@@ -39,17 +39,23 @@ object Main {
       </CheckBox>
   """
   val testXml2 = """
-    <Text fontSize="20" color="#ff0000" text="{Binding Data testText}"  />
+    <StackLayout orientation="Hor" spacing="10" padding="20,0,0,0">
+       <Text fontSize="16"  ver="Start" height="30" width="30"  color="#000000" text="场景"  />
+       <Text fontSize="16"  ver="Start" height="30" width="30"  color="#000000" text="项目"  />
+    </StackLayout>
+    
   """
 
   def main(args: Array[String]): Unit = {
     XmlControl.register[CheckBox]();
     XmlControl.register[Image]();
     XmlControl.register[ui.controls.Text]();
+    XmlControl.register[StackLayout]()
 
     Assembly.add[ui.controls.Text]()
     Assembly.add[BaseLayout]();
     Assembly.add[CheckBox]()
+    Assembly.add[StackLayout]();
     Assembly.add[Image]()
     Assembly.add[BoolAtlasSprite]();
     Assembly.add[TestViewModel]()
@@ -60,7 +66,7 @@ object Main {
   def runSeija() = {
     val file = java.io.File("");
     val app = core.App;
-    FFISeijaCore.initLog("ERROR");
+    FFISeijaCore.initLog("INFO");
     app.addModule(CoreModule());
     app.addModule(AssetModule("example/assets"));
     app.addModule(TransformModule());

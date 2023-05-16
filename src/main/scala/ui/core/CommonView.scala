@@ -41,12 +41,16 @@ enum Orientation(val v:Byte) {
     case Vertical extends Orientation(1)
 }
 
-given IFromString[Orientation] with {
+object Orientation {
+  given IFromString[Orientation] with {
   override def from(strValue: String): Option[Orientation] = strValue match
     case "Hor" => Some(Orientation.Horizontal)
     case "Ver"   => Some(Orientation.Vertical)
     case _            => None
+  }
 }
+
+
 
 case class UISize(var width: SizeValue, var height: SizeValue)
 

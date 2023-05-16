@@ -23,6 +23,20 @@ case class RawStackLayout(val view:Ptr[RawCommonView],val stack:CStruct2[CFloat,
 
 class StackLayout;
 
+object StackLayout {
+    given StackLayoutComponent:RawComponent[StackLayout] with {
+    type BuilderType = StackLayoutBuilder;
+    type RawType = RawStackLayout
+    override def builder(): BuilderType = new StackLayoutBuilder()
+
+    override def getRaw(entity: Entity): RawType = {
+      val stack = FFISeijaUI.entityGetStackView(core.App.worldPtr,entity.id);
+      val commonView = FFISeijaUI.entityGetCommonView(core.App.worldPtr,entity.id);
+      RawStackLayout(commonView,stack)
+    } 
+  }
+}
+
 class StackLayoutBuilder extends RawComponentBuilder {
   var common:CommonView = CommonView()
   var spacing:Float = 0
@@ -32,14 +46,4 @@ class StackLayoutBuilder extends RawComponentBuilder {
   }
 }
 
-given StackLayoutComponent:RawComponent[StackLayout] with {
-  type BuilderType = StackLayoutBuilder;
-  type RawType = RawStackLayout
-  override def builder(): BuilderType = new StackLayoutBuilder()
 
-  override def getRaw(entity: Entity): RawType = {
-    val stack = FFISeijaUI.entityGetStackView(core.App.worldPtr,entity.id);
-    val commonView = FFISeijaUI.entityGetCommonView(core.App.worldPtr,entity.id);
-    RawStackLayout(commonView,stack)
-  } 
-}
