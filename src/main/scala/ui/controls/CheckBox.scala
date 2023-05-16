@@ -14,8 +14,9 @@ import ui.core.Rect2D
 import ui.core.ItemLayout
 import ui.core.given;
 import ui.EventManager
+import core.reflect.ReflectType
 
-class CheckBox extends BaseLayout {
+class CheckBox extends BaseLayout derives ReflectType {
     var _checked: Boolean = false;
     protected var _template:Option[Template] = None;
 
@@ -77,13 +78,4 @@ given IControlFromXml[CheckBox] with {
           Success(())
         }
     }
-}
-
-import core.reflect.*;
-given ReflectType[CheckBox] with {
-  override def info: TypeInfo = TypeInfo("ui.controls.CheckBox",() => CheckBox(),Some(typeInfoOf[BaseLayout]),List(
-     FieldInfo("checked",
-                (a,b) => { a.asInstanceOf[CheckBox]._checked = b.asInstanceOf[Boolean] },
-                _.asInstanceOf[CheckBox].checked),
-  ))
 }

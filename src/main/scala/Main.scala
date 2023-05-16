@@ -12,7 +12,7 @@ import asset.HandleUntyped
 import asset.Handle
 import ui.core.SpriteSheet
 import ui.core.Font
-import ui.controls.{CheckBox,Image,BaseLayout,ImageType,StackLayout}
+import ui.controls.{CheckBox,Button,Image,BaseLayout,ImageType,StackLayout}
 import ui.controls.given
 import scala.util.Failure
 import scala.util.Success
@@ -31,12 +31,14 @@ import scala.util.boundary
 
 object Main {
   val testXml = """
-      <CheckBox ' checked="true" hor='Center ver='Center' width='16' height='16' >
-        <CheckBox.Template>
-          <Image sprite="{Binding Owner checked Conv=ui.BoolAtlasSprite(default.checkbox-checked,default.checkbox-unchecked) Type=Src2Dst}"  />
-          
-        </CheckBox.Template>
-      </CheckBox>
+      <StackLayout orientation="Ver" spacing="10" padding="20,0,0,0">
+        <CheckBox checked="true" hor="Center" ver="Center" width='16' height='16' >
+          <CheckBox.Template>
+            <Image sprite="{Binding Owner checked Conv=ui.BoolAtlasSprite(default.checkbox-checked,default.checkbox-unchecked) Type=Src2Dst}"  />
+          </CheckBox.Template>
+        </CheckBox>
+        <Button />
+      </StackLayout>
   """
   val testXml2 = """
     <StackLayout orientation="Hor" spacing="10" padding="20,0,0,0">
@@ -51,6 +53,7 @@ object Main {
     XmlControl.register[Image]();
     XmlControl.register[ui.controls.Text]();
     XmlControl.register[StackLayout]()
+    XmlControl.register[Button]()
 
     Assembly.add[ui.controls.Text]()
     Assembly.add[BaseLayout]();
@@ -58,6 +61,7 @@ object Main {
     Assembly.add[StackLayout]();
     Assembly.add[Image]()
     Assembly.add[BoolAtlasSprite]();
+    Assembly.add[Button]()
     Assembly.add[TestViewModel]()
 
     runSeija(); 
@@ -66,7 +70,7 @@ object Main {
   def runSeija() = {
     val file = java.io.File("");
     val app = core.App;
-    FFISeijaCore.initLog("INFO");
+    FFISeijaCore.initLog("ERROR");
     app.addModule(CoreModule());
     app.addModule(AssetModule("example/assets"));
     app.addModule(TransformModule());
@@ -115,9 +119,13 @@ class DemoGame extends IGameApp {
     image.color = Color.formHex("#e8e8e7").get;    
     canvas.addControl(image);
 
-    val uiControl = XmlControl.fromString(Main.testXml2).get;
-    uiControl.dataContext = this.testViewMode;
-    canvas.addControl(uiControl);
+    XmlControl.fromString(Main.testXml) match {
+      case Success(uiControl) => {
+        uiControl.dataContext = this.testViewMode;
+        canvas.addControl(uiControl)
+      }
+      case Failure(exception) => println(exception);
+    }
   }
 
   var index = 0;

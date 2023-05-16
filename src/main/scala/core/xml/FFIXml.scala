@@ -19,6 +19,7 @@ object FFIXml {
     val ptrLen = stackalloc[Int]()
     val ptrptrByte = stackalloc[Ptr[Byte]]()
     val isSucc = stringReaderReadEventPtr(reader,ptrType,ptrLen,ptrptrByte);
+    //TODO 处理isSucc == false
     val event = !ptrType match {
       case 1 => XmlEvent.StartElement(fromRustString(!ptrptrByte,!ptrLen))
       case 2 => XmlEvent.EndElement(fromRustString(!ptrptrByte,!ptrLen))
