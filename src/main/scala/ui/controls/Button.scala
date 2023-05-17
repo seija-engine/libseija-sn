@@ -12,6 +12,7 @@ import scala.util.Try
 import core.xml.XmlReader
 import ui.xml.XmlTemplateReader
 import scala.util.Success
+import ui.core.CommonViewStates
 
 class Button extends BaseLayout derives ReflectType {
     protected var _template:Option[Template] = None;
@@ -22,6 +23,8 @@ class Button extends BaseLayout derives ReflectType {
     def content_=(value:String) = {
         this._content = value; this.callPropertyChanged("content",this)
     }
+
+    private var _viewState:CommonViewStates = CommonViewStates.Normal;
 
     override def OnEnter(): Unit = {
         if(this.template.isEmpty) { return; }

@@ -5,9 +5,7 @@ import scala.scalanative.unsafe.{CFloat,CStruct4}
 import scala.scalanative.unsafe.Ptr
 type RawThickness = CStruct4[CFloat, CFloat, CFloat, CFloat];
 
-case class Thickness(val left:Float,top:Float,right:Float,bottom:Float) {
-    
-}
+case class Thickness(val left:Float,top:Float,right:Float,bottom:Float);
 
 object Thickness {
     def apply(v:Float):Thickness = Thickness(v,v,v,v)
@@ -40,4 +38,11 @@ given ThicknessRawFFI:RawFFI[Thickness,Ptr[RawThickness]] with {
         ptr._3 = value.right;
         ptr._4 = value.bottom;
     }
+}
+
+enum CommonViewStates(val v:Byte) {
+    case Normal extends CommonViewStates(0)
+    case Hover  extends CommonViewStates(1)
+    case Pressed extends CommonViewStates(2)
+    case Disabled extends CommonViewStates(3)
 }

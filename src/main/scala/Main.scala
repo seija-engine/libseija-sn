@@ -68,7 +68,6 @@ object Main {
     Assembly.add[BoolAtlasSprite]();
     Assembly.add[Button]()
     Assembly.add[TestViewModel]()
-
     runSeija(); 
   }
 

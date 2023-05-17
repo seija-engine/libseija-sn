@@ -104,6 +104,7 @@ object ReflectType {
             override def info: TypeInfo = TypeInfo($fullName,() => ${newExpr},baseTypeInfo,${fieldList})
          }
       }
+      //report.info(ret.show)
       ret
    }
 
