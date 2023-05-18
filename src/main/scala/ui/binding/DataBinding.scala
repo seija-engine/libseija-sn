@@ -95,7 +95,6 @@ case class BindingInst(
 ) {
   
   def init(): Unit = {
-     println(s"init ${item}")
      item.typ match
       case BindingType.Src2Dst => {
         val srcNotity = srcObject.asInstanceOf[INotifyPropertyChanged];

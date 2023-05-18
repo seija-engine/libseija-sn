@@ -36,20 +36,3 @@ class StackLayout extends BaseLayout derives ReflectType {
         this.entity = Some(entity);
     }
 }
-
-import ui.xml.{IControlFromXml,setXmlStringPropery};
-import core.formString;
-object StackLayout {
-    given IControlFromXml[StackLayout] with {
-      val name:String = "StackLayout"
-      def create():StackLayout = new StackLayout()
-
-      def setStringPropery(control:StackLayout,name:String,value:String):Unit = {
-        setXmlStringPropery[BaseLayout](control,name,value);
-        name match
-          case "orientation" => {  control._orientation = formString[Orientation](value).getOrElse(Orientation.Vertical) ; }
-          case "spacing" => { control._spacing = value.toFloatOption.getOrElse(0); }
-          case _ => {} 
-      }
-    }   
-}

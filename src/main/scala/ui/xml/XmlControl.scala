@@ -9,32 +9,21 @@ import scala.util.Try
 import scala.util.Failure
 import scala.util.Success
 import ui.binding.BindingItem
+import core.reflect.TypeInfo
+import core.reflect.Assembly
 
-trait IControlFromXml[T <: BaseControl] {
-    val name:String;
-    def create():T;
-    def setStringPropery(control:T,name:String,value:String):Unit;
-    def readXmlProperty(control:T,reader:XmlReader):Try[Unit] = { Failure(NotImplementedError()) }
-}
 
-def setXmlStringPropery[T <: BaseControl](control:T,name:String,value:String)(using v:IControlFromXml[T]) = {
-    v.setStringPropery(control,name,value)
-}
-
-case class FromXmlValuePair(control:BaseControl,setter:IControlFromXml[BaseControl])
+case class FromXmlValuePair(control:BaseControl,info:TypeInfo)
 
 object XmlControl {
-    private val _controlCreator = new mutable.HashMap[String,IControlFromXml[_]]();
 
-    def register[T <: BaseControl]()(using v:IControlFromXml[T]) = {
-        _controlCreator.put(v.name,v);
-    }
+   
 
     def create(name:String):Option[FromXmlValuePair] = {
-        _controlCreator.get(name).map(x => {
-            val control = x.create();
-            FromXmlValuePair(control,x.asInstanceOf[IControlFromXml[BaseControl]])
-        })
+        Assembly.get(name,true).map { info =>
+           val newControl = info.create().asInstanceOf[BaseControl];
+           FromXmlValuePair(newControl,info)
+        }
     }
 
     def tryCreate(name:String):Try[FromXmlValuePair] = {

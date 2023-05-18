@@ -12,7 +12,7 @@ import asset.HandleUntyped
 import asset.Handle
 import ui.core.SpriteSheet
 import ui.core.Font
-import ui.controls.{CheckBox,Button,Image,BaseLayout,ImageType,StackLayout}
+import ui.controls.{CheckBox,Button,Image,BaseLayout,ImageType,StackLayout,Text}
 import ui.controls.given
 import scala.util.Failure
 import scala.util.Success
@@ -34,7 +34,7 @@ object Main {
       <StackLayout orientation="Ver" spacing="10" padding="20,0,0,0">
         <CheckBox checked="true" hor="Center" ver="Center" width='16' height='16' >
           <CheckBox.Template>
-            <Image sprite="{Binding Owner checked Conv=ui.BoolAtlasSprite(default.checkbox-checked,default.checkbox-unchecked) Type=Src2Dst}"  />
+            <Image sprite="{Binding Owner checked Conv=BoolAtlasSprite(default.checkbox-checked,default.checkbox-unchecked) Type=Src2Dst}"  />
           </CheckBox.Template>
         </CheckBox>
         <Button width="120" height="30">
@@ -54,13 +54,6 @@ object Main {
   """
 
   def main(args: Array[String]): Unit = {
-    XmlControl.register[CheckBox]();
-    XmlControl.register[Image]();
-    XmlControl.register[ui.controls.Text]();
-    XmlControl.register[StackLayout]()
-    XmlControl.register[Button]()
-
-    Assembly.add[ui.controls.Text]()
     Assembly.add[BaseLayout]();
     Assembly.add[CheckBox]()
     Assembly.add[StackLayout]();
@@ -68,6 +61,9 @@ object Main {
     Assembly.add[BoolAtlasSprite]();
     Assembly.add[Button]()
     Assembly.add[TestViewModel]()
+    Assembly.add[Text]()
+    
+    
     runSeija(); 
   }
 

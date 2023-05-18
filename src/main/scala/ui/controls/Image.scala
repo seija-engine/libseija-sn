@@ -7,7 +7,6 @@ import core.Entity
 import transform.{Transform,given}
 import ui.AtlasSprite
 import core.IFromString
-import ui.xml.IControlFromXml
 import ui.Atlas
 import math.Vector4
 import math.Color
@@ -100,27 +99,3 @@ class Image extends BaseLayout with Cloneable derives ReflectType {
     control
   }
 }
-
-given IControlFromXml[Image] with {
-    val name:String = "Image"
-    def create():Image = new Image()
-    def setStringPropery(control:Image,name:String,value:String):Unit = {
-      BaseLayout.given_IControlFromXml_BaseLayout.setStringPropery(control,name,value)
-      name match
-        case "sprite" => {  control.sprite = Atlas.getPath(value);  }
-        case "imageType" => { control.imageType = formString(value).getOrElse(ImageType.Simple) }
-        case _ => {} 
-    }
-}
-/*
-import core.reflect.*;
-given ReflectType[Image] with {
-  override def info: TypeInfo = TypeInfo("ui.controls.Image",() => Image(),Some(typeInfoOf[BaseLayout]),List(
-     FieldInfo("sprite",
-     (a,b) => a.asInstanceOf[Image].sprite = b.asInstanceOf[Option[AtlasSprite]],
-     _.asInstanceOf[Image].sprite),
-     FieldInfo("imageType",
-     (a,b) => a.asInstanceOf[Image].imageType = b.asInstanceOf[ImageType],
-     _.asInstanceOf[Image].imageType)
-  ))
-}*/

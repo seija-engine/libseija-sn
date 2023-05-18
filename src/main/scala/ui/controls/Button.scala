@@ -1,7 +1,5 @@
 package ui.controls
 import core.reflect.ReflectType;
-import ui.xml.IControlFromXml
-import ui.xml.setXmlStringPropery
 import core.formString;
 import math.Color
 import ui.Template
@@ -32,6 +30,8 @@ class Button extends BaseLayout derives ReflectType {
         this.template.get.applyTo(this);
     }
 
+    
+
     def createEntity():Entity = {
         val parentEntity = this.parent.flatMap(_.getEntity());
         val entity = Entity.spawnEmpty()
@@ -46,25 +46,11 @@ class Button extends BaseLayout derives ReflectType {
         this.entity = Some(entity)
         return entity;
     }
-}
 
-
-object Button {
-    given IControlFromXml[Button] with {
-        val name:String = "Button"
-        def create():Button = new Button()
-
-        override def setStringPropery(control:Button,name:String,value:String):Unit = {
-            setXmlStringPropery[BaseLayout](control,name,value);
-            name match
-                case _ => {} 
-        }
-
-        override def readXmlProperty(control: Button, reader: XmlReader): Try[Unit] = {
-            XmlTemplateReader(reader,control).read().flatMap {tmpl =>
-                control.template = tmpl;
-                Success(())
-            }
+    override def readXmlProperty(startName: String, reader: XmlReader): Unit = {
+        XmlTemplateReader(reader,this).read().flatMap { template =>
+          this.template = template;
+          Success(())
         }
     }
 }

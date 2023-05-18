@@ -1,7 +1,6 @@
 package ui.controls
 import ui.BaseControl
 import ui.binding.INotifyPropertyChanged
-import ui.xml.{IControlFromXml,setXmlStringPropery}
 import scala.util.Try
 import core.xml.XmlReader
 import scala.util.Failure
@@ -58,23 +57,10 @@ class CheckBox extends BaseLayout derives ReflectType {
         this.entity = Some(entity)
         return entity;
     }
-}
 
-
-given IControlFromXml[CheckBox] with {
-    val name:String = "CheckBox"
-    def create():CheckBox = new CheckBox()
-    def setStringPropery(control:CheckBox,name:String,value:String):Unit = {
-        import core.given
-        setXmlStringPropery[BaseLayout](control,name,value)
-        name match
-         case "checked" => control.checked = core.formString[Boolean](value).getOrElse(false)
-         case _ => 
-    }
-
-    override def readXmlProperty(control: CheckBox, reader: XmlReader): Try[Unit] = {
-        XmlTemplateReader(reader,control).read().flatMap { template =>
-          control.template = template;
+    override def readXmlProperty(startName: String, reader: XmlReader): Unit = {
+        XmlTemplateReader(reader,this).read().flatMap { template =>
+          this.template = template;
           Success(())
         }
     }

@@ -46,3 +46,17 @@ enum CommonViewStates(val v:Byte) {
     case Pressed extends CommonViewStates(2)
     case Disabled extends CommonViewStates(3)
 }
+
+object CommonViewStates {
+    given IFromString[CommonViewStates] with {
+        def from(value:String):Option[CommonViewStates] = {
+            value match {
+                case "Normal" => Some(CommonViewStates.Normal)
+                case "Hover" => Some(CommonViewStates.Hover)
+                case "Pressed" => Some(CommonViewStates.Pressed)
+                case "Disabled" => Some(CommonViewStates.Disabled)
+                case _ => None
+            }
+        }
+    }
+}

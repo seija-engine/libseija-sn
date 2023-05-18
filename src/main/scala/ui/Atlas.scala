@@ -8,6 +8,7 @@ import ui.core.{FFISeijaUI,Thickness,given}
 import java.util.HashMap;
 import scala.scalanative.unsigned._
 import scala.scalanative.runtime.libc
+import _root_.core.IFromString
 case class Atlas(val sheet:Handle[SpriteSheet]) {
   private var sprites = new HashMap[String,AtlasSprite]();
 
@@ -52,4 +53,10 @@ object Atlas {
 
 
 case class AtlasSprite(val index:Int,val atlas:Atlas, val name:String,var sliceInfo:Option[Thickness]);
+
+object AtlasSprite {
+    given IFromString[AtlasSprite] with {
+        override def from(strValue: String): Option[AtlasSprite] = Atlas.getPath(strValue)
+    }
+}
 

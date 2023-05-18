@@ -3,8 +3,14 @@ import scala.collection.immutable.HashMap;
 import scala.deriving.Mirror
 import scala.quoted.*
 import scala.annotation.internal.Body
+import input.KeyCode.I
+import core.formString
+import input.KeyCode.N
+import scala.util.Try
+import scala.util.Success
 
 case class TypeInfo(val name:String,
+                    val shortName:String,
                     val create:() => Any,
                     val base:Option[TypeInfo],
                     val fieldList:List[FieldInfo]) {
@@ -38,6 +44,11 @@ case class TypeInfo(val name:String,
          }
    }
 
+   def setStringValue(obj:Any,fieldName:String,str:String):Try[Boolean] = Try {
+      val convValue = this.fieldFromString_?(fieldName,str).get;
+      this.setValue(obj,fieldName,convValue)
+   }
+
    def getField(fieldName:String):Option[FieldInfo] = {
       if(base.isDefined) {
          val baseField = base.get.getField(fieldName);
@@ -49,10 +60,22 @@ case class TypeInfo(val name:String,
    def getField_?(fieldName:String):FieldInfo = {
       this.getField(fieldName).getOrElse(throw new NotFoundFieldException(this.name,fieldName))
    }
+
+   def fieldFromString_?(fieldName:String,str:String):Try[Any] = {
+      val getFied =  this.getField_?(fieldName);
+      getFied.fromString match {
+         case None => throw new Exception(s"not found fromString: ${this.name}.${fieldName}")
+         case Some(conv) => Try(conv(str))
+      }
+   }
+
+  
 }
 
-case class FieldInfo(val Name:String,set:(Any,Any) => Unit,get:(Any) => Any);
-
+case class FieldInfo(val Name:String,
+                     set:(Any,Any) => Unit,
+                     get:(Any) => Any,
+                     val fromString:Option[(String) => Any] = None);
 
 
 def typeInfoOf[T](using t:ReflectType[T]):TypeInfo = t.info
@@ -71,6 +94,7 @@ object ReflectType {
       val typClassSym = typRepr.classSymbol.get;
       val typeSym = typRepr.typeSymbol;
       val fullName:Expr[String] = Expr(typClassSym.fullName);
+      val shortName:Expr[String] = Expr(typClassSym.name);
       val init = typeSym.declarations.find(_.name=="<init>").get
       val newExpr = Apply(Select(New(TypeTree.of[T]),init),List()).asExprOf[T]
       val baseTypeName = if(typRepr.baseClasses.length >= 2) { 
@@ -79,9 +103,17 @@ object ReflectType {
       val allFields:List[Expr[FieldInfo]] = typClassSym.declaredFields.map(fieldSym => {
          val memberType = typRepr.memberType(fieldSym);
          val fieldName = if(fieldSym.name.charAt(0) == '_') { fieldSym.name.tail } else { fieldSym.name };
+         
+
          (memberType.asType,typRepr.asType) match {
             case ('[ft],'[t]) => {
+                  val exprGetString = getFormStringExpr[ft]();
+                  val exprFromString:Expr[Option[(String) => Any]] = exprGetString match {
+                     case None => '{None}
+                     case Some(value) => '{Some($value)}
+                  }
                   '{
+                     
                      FieldInfo(
                         ${Expr(fieldName)}
                         ,(a,b) => {
@@ -90,7 +122,8 @@ object ReflectType {
                                Assign(selectField,'{b.asInstanceOf[ft]}.asTerm).asExpr
                             }
                          },
-                         (obj:Any) => ${Select('{obj.asInstanceOf[t]}.asTerm,fieldSym).asExpr}
+                         (obj:Any) => ${Select('{obj.asInstanceOf[t]}.asTerm,fieldSym).asExpr},
+                         ${exprFromString}
                      )
                   }
             }
@@ -99,13 +132,50 @@ object ReflectType {
       });
       val fieldList:Expr[List[FieldInfo]] = Expr.ofList(allFields);
       val ret = '{
-         val baseTypeInfo = Assembly.get($baseTypeName);
+         val baseTypeInfo = Assembly.get($baseTypeName,false);
          new ReflectType[T] {
-            override def info: TypeInfo = TypeInfo($fullName,() => ${newExpr},baseTypeInfo,${fieldList})
+            override def info: TypeInfo = TypeInfo($fullName,$shortName,() => ${newExpr},baseTypeInfo,${fieldList})
          }
       }
       //report.info(ret.show)
       ret
    }
 
+   def getFormStringExpr[T:Type]()(using Quotes):Option[Expr[(String) => Any]] = {
+      import quotes.reflect.*
+      val typRepr: TypeRepr = TypeRepr.of[T]
+      typRepr.asType match {
+         case '[Boolean] => Some('{str2Bool })
+         case '[Byte] => Some('{str2Byte })
+         case '[Int] =>  Some('{str2Int})
+         case '[Float] => Some('{str2Float })
+         case '[String] => Some('{ str2str})
+         case '[ui.Template] => None
+         case '[Option[tt]] => {
+            val expr = getFormStringExpr[tt](); 
+            expr match {
+               case None => None
+               case Some(value) => Some('{ s => Some(${value}(s)) })
+            }
+         }
+         case '[t] => {
+            var allString = "";
+            val fromStringSymLst = typRepr.typeSymbol.companionModule.declarations.filter(_.name.startsWith("given_IFromString"));
+            if(fromStringSymLst.isEmpty) return None;
+            val fromStringSym = fromStringSymLst.head;
+            val from = fromStringSym.declaredMethod("from");
+            val select =  Select(Ident(fromStringSym.termRef),from(0));
+            val lambda = select.etaExpand(fromStringSym.owner).asExprOf[String => Option[t]];
+            val typName = Expr(typRepr.typeSymbol.fullName);
+            val ret = '{ (s:String) => ${lambda}(s).getOrElse(throw new Exception( "parse '" + s + "' to " + ${typName} + " error ")) }
+            Some(ret)
+         }
+      }
+   }
+
+   protected def str2Bool(str:String):Boolean = str.toBooleanOption.getOrElse(false)
+   protected def str2Int(str:String):Int = str.toIntOption.getOrElse(0)
+   protected def str2Byte(str:String):Byte = str.toByteOption.getOrElse(0)
+   protected def str2Float(str:String):Float = str.toFloatOption.getOrElse(0.0f)
+   protected def str2str(str:String):String = str
 }

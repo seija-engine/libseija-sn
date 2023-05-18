@@ -8,7 +8,7 @@ trait PropertyConverter {
   def conv(form:Any):Any;
 }
 
-class BoolAtlasSprite extends PropertyConverter {
+class BoolAtlasSprite extends PropertyConverter derives ReflectType {
     var trueSprite:Option[AtlasSprite] = None;
     var falseSprite:Option[AtlasSprite] = None;
     override def init(args:Array[String]):Unit = {
@@ -19,9 +19,4 @@ class BoolAtlasSprite extends PropertyConverter {
         val b = form.asInstanceOf[Boolean];
         if(b) this.trueSprite else this.falseSprite;
     }
-}
-import _root_.core.reflect.ReflectType;
-
-given ReflectType[BoolAtlasSprite] with {
-  override def info: TypeInfo = TypeInfo("ui.BoolAtlasSprite", ()=> BoolAtlasSprite(),None,List())
 }

@@ -9,6 +9,7 @@ import ui.binding.{BindingItem,BindingInst,INotifyPropertyChanged,BindingSource,
 import scala.collection.mutable.ArrayBuffer
 import scala.util.Success
 import scala.util.Failure
+import _root_.core.xml.XmlReader
 
 class BaseControl extends INotifyPropertyChanged with Cloneable {
     var templateOwner:Option[BaseControl] = None;
@@ -140,7 +141,9 @@ class BaseControl extends INotifyPropertyChanged with Cloneable {
        };
     }
 
-   
+    def readXmlProperty(startName:String,reader:XmlReader) = {
+       
+    }
 
     def Exit():Unit = {
       this.bindingInstList.foreach(DataBindingManager.removeInst);

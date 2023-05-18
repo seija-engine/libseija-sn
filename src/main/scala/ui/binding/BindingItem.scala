@@ -98,7 +98,7 @@ object BindingItem {
       nextChar = this.nextChar();
     }
     this.charIndex += 1;
-    val converter = Assembly.createInstance(convName.get).get.asInstanceOf[PropertyConverter];
+    val converter = Assembly.createInstance(convName.get,true).get.asInstanceOf[PropertyConverter];
     converter.init(args.toArray);
     converter
   }  
