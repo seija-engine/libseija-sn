@@ -40,7 +40,6 @@ class Text extends BaseLayout with Cloneable derives ReflectType {
 
   override def OnEnter(): Unit = {
     val parentEntity = this.parent.flatMap(_.getEntity());
-    println(s"text parentEntity: ${parentEntity}")
     val entity = Entity.spawnEmpty()
           .add[Transform](_.parent = parentEntity)
           .add[Rect2D]()

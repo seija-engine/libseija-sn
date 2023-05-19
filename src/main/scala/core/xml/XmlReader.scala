@@ -51,7 +51,6 @@ class XmlReader(private val rawPtr:Ptr[Byte]) extends Iterable[XmlEvent] {
          return Success(ret)
       }
       FFIXml.stringReaderReadEvent(rawPtr).left.map(new Throwable(_)).toTry
-      
    }
 
    def lookNext():Try[XmlEvent] = {
@@ -64,9 +63,7 @@ class XmlReader(private val rawPtr:Ptr[Byte]) extends Iterable[XmlEvent] {
       }
    }
 
-   def nextAttr():Option[(String,String)] = {
-     FFIXml.readerReadAttr(rawPtr)
-   }
+   def nextAttr():Try[Option[(String,String)]] = FFIXml.readerReadAttr(rawPtr)
 }
 
 case class XmlReaderIter(private val rawPtr:Ptr[Byte]) extends Iterator[XmlEvent] {

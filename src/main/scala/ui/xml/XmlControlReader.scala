@@ -68,11 +68,15 @@ case class XmlControlReader(
   private def readStringProperty(
       reader: XmlReader,
       control: FromXmlValuePair
-  ) = {
-    var curAttr = reader.nextAttr();
-    while (curAttr.isDefined) {
-      val k = curAttr.get._1;
-      val v = curAttr.get._2;
+  ):Unit = {
+    var curAttr = reader.nextAttr()
+    if(curAttr.isFailure) {
+       System.err.println(s"Xml readStringProperty error:${curAttr.failed.get.getMessage}");
+       return;
+    }
+    while (curAttr.get.isDefined) {
+      val k = curAttr.get.get._1;
+      val v = curAttr.get.get._2;
       if (v.startsWith("{Binding")) {
         BindingItem.parse(k, v) match {
           case Success(bindingItem) => {
@@ -90,7 +94,10 @@ case class XmlControlReader(
         }
       }
       curAttr = reader.nextAttr();
+      if(curAttr.isFailure) {
+        System.err.println(s"Xml readStringProperty error:${curAttr.failed.get.getMessage}");
+        return;
+      }
     }
   }
-
 }

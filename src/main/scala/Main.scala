@@ -119,7 +119,7 @@ class DemoGame extends IGameApp {
     image.color = Color.formHex("#e8e8e7").get;    
     canvas.addControl(image);
 
-    XmlControl.fromString(Main.testXml) match {
+    XmlControl.fromString(Main.testXml2) match {
       case Success(uiControl) => {
         uiControl.dataContext = this.testViewMode;
         canvas.addControl(uiControl)
