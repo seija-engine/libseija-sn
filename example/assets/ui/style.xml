@@ -1,31 +1,32 @@
 <StyleList>
     <Style ForType="Button">
-        <Setter Name="Template">
+        <Setter Key="width" Value="120" />
+        <Setter Key="Template">
             <Image TName="Image" imageType="Slice" sprite="default.button" />
             <Text TName="Label" fontSize="{Binding Owner fontSize}" height="30" width="30" color="#000000"
                 text="{Binding Owner content}" />
         </Setter>
-        <Setter Name="ViewState">
-            <Group Name="CommonStates">
+        <Setter Key="ViewState">
+            <Group Key="CommonStates">
                 <Normal>
-                    <Setter Name="Image" Property="sprite" Value="default.button" />
-                    <Setter Name="Image" Property="color" Value="#ffffff" />
-                    <Setter Name="Label" Property="color" Value="#000000" />
+                    <Setter Name="Image" Key="sprite" Value="default.button" />
+                    <Setter Name="Image" Key="color" Value="#ffffff" />
+                    <Setter Name="Label" Key="color" Value="#000000" />
                 </Normal>
                 <MouseOver>
-                    <Setter Name="Image" Property="sprite" Value="default.button-hover" />
-                    <Setter Name="Image" Property="color" Value="#ffffff" />
-                    <Setter Name="Label" Property="color" Value="#000000" />
+                    <Setter Name="Image" Key="sprite" Value="default.button-hover" />
+                    <Setter Name="Image" Key="color" Value="#ffffff" />
+                    <Setter Name="Label" Key="color" Value="#000000" />
                 </MouseOver>
                 <Pressed>
-                    <Setter Name="Image" Property="sprite" Value="default.button-active" />
-                    <Setter Name="Image" Property="color" Value="#0000ff" />
-                    <Setter Name="Label" Property="color" Value="#ffffff" />
+                    <Setter Name="Image" Key="sprite" Value="default.button-active" />
+                    <Setter Name="Image" Key="color" Value="#0000ff" />
+                    <Setter Name="Label" Key="color" Value="#ffffff" />
                 </Pressed>
                 <Disable>
-                    <Setter Name="Image" Property="sprite" Value="default.button-disable" />
-                    <Setter Name="Image" Property="color" Value="#ffffff" />
-                    <Setter Name="Label" Property="color" Value="#000000" />
+                    <Setter Name="Image" Key="sprite" Value="default.button-disable" />
+                    <Setter Name="Image" Key="color" Value="#ffffff" />
+                    <Setter Name="Label" Key="color" Value="#000000" />
                 </Disable>
             </Group>
         </Setter>

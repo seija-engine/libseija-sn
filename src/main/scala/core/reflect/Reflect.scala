@@ -45,7 +45,7 @@ case class TypeInfo(val name:String,
    }
 
    def setStringValue(obj:Any,fieldName:String,str:String):Try[Boolean] = Try {
-      val convValue = this.fieldFromString_?(fieldName,str).get;
+      val convValue = this.fieldFromString(fieldName,str).get;
       this.setValue(obj,fieldName,convValue)
    }
 
@@ -61,7 +61,7 @@ case class TypeInfo(val name:String,
       this.getField(fieldName).getOrElse(throw new NotFoundFieldException(this.name,fieldName))
    }
 
-   def fieldFromString_?(fieldName:String,str:String):Try[Any] = {
+   def fieldFromString(fieldName:String,str:String):Try[Any] = {
       val getFied =  this.getField_?(fieldName);
       getFied.fromString match {
          case None => throw new Exception(s"not found fromString: ${this.name}.${fieldName}")

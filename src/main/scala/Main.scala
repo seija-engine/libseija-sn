@@ -64,9 +64,10 @@ object Main {
     Assembly.add[TestViewModel]()
     Assembly.add[Text]()
     
-    XmlElement.fromFile("example/assets/ui/test.xml") match
-      case Failure(exception) => println(exception.toString())
-      case Success(value) => println(value.toString())
+    
+    ui.style.StyleManager.loadFile("example/assets/ui/style.xml") match
+      case Failure(exception) => println(exception)
+      case Success(value) =>
     
     //runSeija();
   }

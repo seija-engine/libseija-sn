@@ -29,7 +29,6 @@ object FFIXml {
       if(ptrReader == null) {
         Failure(new Throwable(s"xml not found path ${path}"))
       } else {
-        println(ptrReader)
         Success(ptrReader)
       }
   }
