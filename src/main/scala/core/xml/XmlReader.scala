@@ -39,9 +39,8 @@ enum XmlEvent {
   }
 }
 
-
-class XmlReader(private val rawPtr:Ptr[Byte]) extends Iterable[XmlEvent] {
-   override def iterator: Iterator[XmlEvent] = new XmlReaderIter(rawPtr)
+ 
+case class XmlReader(private val rawPtr:Ptr[Byte],isString:Boolean) {
    var cacheEvent:Option[XmlEvent] = None;
 
    def nextEvent():Try[XmlEvent] = {
@@ -50,7 +49,7 @@ class XmlReader(private val rawPtr:Ptr[Byte]) extends Iterable[XmlEvent] {
          this.cacheEvent = None;
          return Success(ret)
       }
-      FFIXml.stringReaderReadEvent(rawPtr).left.map(new Throwable(_)).toTry
+      FFIXml.xmlReaderReadEvent(rawPtr,isString).left.map(new Throwable(_)).toTry
    }
 
    def lookNext():Try[XmlEvent] = {
@@ -64,43 +63,25 @@ class XmlReader(private val rawPtr:Ptr[Byte]) extends Iterable[XmlEvent] {
    }
 
    def nextAttr():Try[Option[(String,String)]] = FFIXml.readerReadAttr(rawPtr)
+
+   def release() = {
+      FFIXml.releaseReader(rawPtr,isString)
+   }
 }
-
-case class XmlReaderIter(private val rawPtr:Ptr[Byte]) extends Iterator[XmlEvent] {
-  var cacheEvent:XmlEvent = null;
-  override def hasNext: Boolean = {
-    if(cacheEvent != null) return true;
-    FFIXml.stringReaderReadEvent(rawPtr) match {
-      case Right(XmlEvent.EOF) => false
-      case Left(value) => false
-      case Right(value) => { this.cacheEvent = value; true }
-    }
-  }
-
-  
-
-  override def next(): XmlEvent = {
-      if(this.cacheEvent != null) {
-         val ret = this.cacheEvent;
-         this.cacheEvent = null;
-         return ret;
-      }
-      FFIXml.stringReaderReadEvent(rawPtr) match {
-        case Right(XmlEvent.EOF) => null
-        case Left(value) => null
-        case Right(value) => value
-      }
-  }
-
-
-}
-
 
 object XmlReader {
   def fromString(str:String):XmlReader = {
     val rawPtr = FFIXml.xmlReaderFromString(str);
-    new XmlReader(rawPtr)
+    new XmlReader(rawPtr,true)
   }
 
+  def fromFile(filePath:String):Try[XmlReader] = {
+     val rawPtr = FFIXml.xmlRederFromFile(filePath);
+     rawPtr match
+      case Failure(exception) => Failure(exception)
+      case Success(value) => {
+        Success(XmlReader(value,false))
+      }
+  }
   
 }

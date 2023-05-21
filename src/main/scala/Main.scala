@@ -28,6 +28,7 @@ import core.reflect.Assembly
 import _root_.core.reflect.*
 import math.Vector4
 import scala.util.boundary
+import _root_.core.xml.XmlElement
 
 object Main {
   val testXml = """
@@ -63,8 +64,11 @@ object Main {
     Assembly.add[TestViewModel]()
     Assembly.add[Text]()
     
+    XmlElement.fromFile("example/assets/ui/test.xml") match
+      case Failure(exception) => println(exception.toString())
+      case Success(value) => println(value.toString())
     
-    runSeija(); 
+    //runSeija();
   }
 
   def runSeija() = {

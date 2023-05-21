@@ -16,9 +16,6 @@ import core.reflect.Assembly
 case class FromXmlValuePair(control:BaseControl,info:TypeInfo)
 
 object XmlControl {
-
-   
-
     def create(name:String):Option[FromXmlValuePair] = {
         Assembly.get(name,true).map { info =>
            val newControl = info.create().asInstanceOf[BaseControl];
@@ -34,7 +31,10 @@ object XmlControl {
     }
 
     def fromString(xmlString:String):Try[BaseControl] = {
-        fromXmlReader(XmlReader.fromString(xmlString))
+        val reader = XmlReader.fromString(xmlString);
+        val control = fromXmlReader(reader)
+        reader.release();
+        control
     }
 
     def fromXmlReader(reader:XmlReader):Try[BaseControl] = XmlControlReader(reader,None).read()
