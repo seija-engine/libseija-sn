@@ -16,6 +16,7 @@ object StyleManager {
            Style.fromXmlElement(styleElement) match
             case Failure(exception) => System.err.println(exception.toString());
             case Success(style) => {
+                println(style)
                 this.addStyle(style);
             }
            

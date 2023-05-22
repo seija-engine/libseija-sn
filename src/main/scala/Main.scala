@@ -17,7 +17,7 @@ import ui.controls.given
 import scala.util.Failure
 import scala.util.Success
 import ui.UICanvas
-import math.{Color,given};
+import math.Color;
 import ui.{Atlas,given}
 import ui.binding.given;
 import ui.binding.BoolAtlasSprite
@@ -63,11 +63,13 @@ object Main {
     Assembly.add[Button]()
     Assembly.add[TestViewModel]()
     Assembly.add[Text]()
+    DynTypeConv.init();
+    DynTypeConv.scanPackage(ui.core.Thickness);
+    //ui.style.StyleManager.loadFile("example/assets/ui/style.xml") match
+    //  case Failure(exception) => println(exception)
+    //  case Success(value) =>
     
     
-    ui.style.StyleManager.loadFile("example/assets/ui/style.xml") match
-      case Failure(exception) => println(exception)
-      case Success(value) =>
     
     //runSeija();
   }
@@ -145,11 +147,12 @@ class TestViewModel extends INotifyPropertyChanged derives ReflectType {
   var _isTest:Boolean = true;
   def isTest = this._isTest;
   def isTest_=(value:Boolean) = {
+   
     this._isTest = value;
     this.callPropertyChanged("isTest",this);
   }
 
-  var _testText = "TestViewModel";
+  var _testText:String = "TestViewModel";
 
   def testText = this._testText;
   def testText_=(value:String) = {

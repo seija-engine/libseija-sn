@@ -7,7 +7,7 @@ import ui.core.SizeValue
 import core.reflect.{TypeInfo,FieldInfo,ReflectType}
 import ui.core.Thickness
 
-class BaseLayout extends BaseControl with Cloneable derives ReflectType {
+class BaseLayout extends BaseControl with Cloneable derives ReflectType { 
     var _hor:LayoutAlignment = LayoutAlignment.Stretch
     var _ver:LayoutAlignment = LayoutAlignment.Stretch
     var _width:SizeValue = SizeValue.Auto

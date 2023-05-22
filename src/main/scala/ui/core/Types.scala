@@ -1,8 +1,10 @@
 package ui.core
 import _root_.core.RawFFI
+import core.reflect.{Into,TypeCastException};
 import core.IFromString;
 import scala.scalanative.unsafe.{CFloat,CStruct4}
 import scala.scalanative.unsafe.Ptr
+import core.reflect.DynTypeConv
 type RawThickness = CStruct4[CFloat, CFloat, CFloat, CFloat];
 
 case class Thickness(val left:Float,top:Float,right:Float,bottom:Float);
@@ -27,6 +29,22 @@ object Thickness {
             } else {
                 None
             }
+        }
+    }
+
+    given Into[String, Thickness] with {
+        override def into(value: String): Thickness = {
+            val parts = value.split(",");
+            if (parts.length == 4) {
+                val left = parts(0).toFloatOption;
+                val top = parts(1).toFloatOption;
+                val right = parts(2).toFloatOption;
+                val bottom = parts(3).toFloatOption;
+                if (left.isDefined && top.isDefined && right.isDefined && bottom.isDefined) {
+                   return Thickness(left.get,top.get,right.get,bottom.get)
+                }
+            }
+            throw new TypeCastException(s"Cannot convert $value to Thickness")
         }
     }
 }

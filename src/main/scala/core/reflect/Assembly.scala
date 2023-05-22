@@ -1,5 +1,6 @@
 package core.reflect
 import java.util.HashMap
+import scala.quoted.*
 
 object Assembly {
   private var typeMap: HashMap[String, TypeInfo] = HashMap()
@@ -29,6 +30,10 @@ object Assembly {
     if (typInfo == null) return None;
     Some(typInfo.create())
   }
+
+  inline def nameOf[T] = ${nameOfImpl[T]}
+
+  private def nameOfImpl[T:Type](using Quotes):Expr[String] = Expr(quotes.reflect.TypeRepr.of[T].typeSymbol.fullName)
 }
 
 case class NotFoundTypeInfoException(name: String)

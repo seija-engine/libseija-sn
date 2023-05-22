@@ -10,6 +10,8 @@ object Color {
   val white = Color(1, 1, 1, 1);
   val black = Color(0, 0, 0, 1)
 
+ 
+
   def formHex(strValue: String): Option[Color] = {
     var curValue = strValue;
 
@@ -29,6 +31,7 @@ object Color {
   }
 
   given IFromString[Color] with {
+    
     def from(strValue: String): Option[Color] = {
       if (strValue.startsWith("rgb(")) {} else if (
         strValue.startsWith("rgba(")
@@ -38,4 +41,7 @@ object Color {
       None
     }
   }
+
+  println("color be import")
+
 }

@@ -8,6 +8,8 @@ import core.formString
 import input.KeyCode.N
 import scala.util.Try
 import scala.util.Success
+import scala.quoted.ToExpr.ClassTagToExpr
+import scala.reflect.ClassTag
 
 case class TypeInfo(val name:String,
                     val shortName:String,
@@ -27,7 +29,7 @@ case class TypeInfo(val name:String,
          case None => None
          case Some(value) => Some(value.get(obj))
    }
-
+  
    def getValue_?(obj:Any,fieldName:String):Any = {
       this.getValue(obj,fieldName).getOrElse(throw new NotFoundFieldException(this.name,fieldName))
    }
@@ -56,7 +58,7 @@ case class TypeInfo(val name:String,
       }
       this.fieldMap.get(fieldName)
    }
-
+ 
    def getField_?(fieldName:String):FieldInfo = {
       this.getField(fieldName).getOrElse(throw new NotFoundFieldException(this.name,fieldName))
    }
@@ -73,6 +75,7 @@ case class TypeInfo(val name:String,
 }
 
 case class FieldInfo(val Name:String,
+                     val typName:String,
                      set:(Any,Any) => Unit,
                      get:(Any) => Any,
                      val fromString:Option[(String) => Any] = None);
@@ -100,11 +103,13 @@ object ReflectType {
       val baseTypeName = if(typRepr.baseClasses.length >= 2) { 
          Expr(typRepr.baseClasses(1).fullName) 
       } else {  null };
+      
+      var allFildTypes = "";
       val allFields:List[Expr[FieldInfo]] = typClassSym.declaredFields.map(fieldSym => {
          val memberType = typRepr.memberType(fieldSym);
          val fieldName = if(fieldSym.name.charAt(0) == '_') { fieldSym.name.tail } else { fieldSym.name };
-         
-
+         val typNameExpr = Expr(memberType.typeSymbol.fullName);
+         allFildTypes += memberType.typeSymbol.fullName + "\n";
          (memberType.asType,typRepr.asType) match {
             case ('[ft],'[t]) => {
                   val exprGetString = getFormStringExpr[ft]();
@@ -112,11 +117,13 @@ object ReflectType {
                      case None => '{None}
                      case Some(value) => '{Some($value)}
                   }
+                  
                   '{
-                     
+                    
                      FieldInfo(
-                        ${Expr(fieldName)}
-                        ,(a,b) => {
+                        ${Expr(fieldName)},
+                        ${typNameExpr},
+                        (a,b) => {
                             ${
                                val selectField = Select('{a.asInstanceOf[t]}.asTerm,fieldSym);
                                Assign(selectField,'{b.asInstanceOf[ft]}.asTerm).asExpr
@@ -137,7 +144,7 @@ object ReflectType {
             override def info: TypeInfo = TypeInfo($fullName,$shortName,() => ${newExpr},baseTypeInfo,${fieldList})
          }
       }
-      //report.info(ret.show)
+      //report.info(allFildTypes)
       ret
    }
 
