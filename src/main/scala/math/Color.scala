@@ -1,5 +1,5 @@
 package math
-import core.IFromString;
+import core.reflect.Into
 
 case class Color(val r: Float, val g: Float, val b: Float, val a: Float) {
   def toVector4(): Vector4 = Vector4(r, g, b, a)
@@ -30,18 +30,16 @@ object Color {
     Some(Color(r / 255f, g / 255f, b / 255f, 1))
   }
 
-  given IFromString[Color] with {
-    
-    def from(strValue: String): Option[Color] = {
-      if (strValue.startsWith("rgb(")) {} else if (
-        strValue.startsWith("rgba(")
-      ) {} else if (strValue.startsWith("#")) {
-        return Color.formHex(strValue);
+  given Into[String,Color] with {
+    override def into(fromValue: String): Color = {
+      if (fromValue.startsWith("rgb(")) {
+        
+      } else if (fromValue.startsWith("rgba(")) {
+       
+      } else if (fromValue.startsWith("#")) {
+        return Color.formHex(fromValue).getOrElse(throw new Exception(s"${fromValue} to color err"));
       }
-      None
+      ???
     }
   }
-
-  println("color be import")
-
 }

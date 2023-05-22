@@ -8,7 +8,7 @@ import ui.binding.autoProp
 import ui.core.Text as CoreText;
 import core.reflect._;
 import ui.Font
-import core.{formString,IFromString};
+import core.{formString};
 import core.Entity
 import transform.Transform
 import ui.core.Rect2D

@@ -63,15 +63,8 @@ object Main {
     Assembly.add[Button]()
     Assembly.add[TestViewModel]()
     Assembly.add[Text]()
-    DynTypeConv.init();
-    DynTypeConv.scanPackage(ui.core.Thickness);
-    //ui.style.StyleManager.loadFile("example/assets/ui/style.xml") match
-    //  case Failure(exception) => println(exception)
-    //  case Success(value) =>
     
-    
-    
-    //runSeija();
+    runSeija();
   }
 
   def runSeija() = {
@@ -153,6 +146,7 @@ class TestViewModel extends INotifyPropertyChanged derives ReflectType {
   }
 
   var _testText:String = "TestViewModel";
+  var _testOP:Option[String] = None;
 
   def testText = this._testText;
   def testText_=(value:String) = {

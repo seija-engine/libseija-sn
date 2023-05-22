@@ -1,7 +1,6 @@
 package ui
 import _root_.core.Entity;
 import java.util.ArrayList
-import _root_.core.IFromString
 import java.util.ArrayList;
 import java.util.HashMap
 import _root_.core.reflect.Assembly;

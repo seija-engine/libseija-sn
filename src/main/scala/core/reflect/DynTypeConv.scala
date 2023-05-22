@@ -4,9 +4,9 @@ import scala.util.Try
 import scala.reflect.{ClassTag,classTag}
 import scala.quoted.Expr
 import scala.annotation.internal.Body
-import scala.collection.mutable.ListBuffer
+import scala.collection.mutable.{ListBuffer,HashMap}
 
-case class TypeCastException(msg:String) extends Exception(msg)
+case class TypeCastException(from:String,to:String) extends Exception(s"${from} to ${to} err")
 
 trait Into[A,B] {
     def into(fromValue: A): B;
@@ -16,22 +16,27 @@ trait Into[A,B] {
 def convert[A,B](fromValue:A)(using into:Into[A,B]):Try[B] = into.tryInto(fromValue)
 
 object DynTypeConv {
-    private val convMap = collection.mutable.Map[(String,String),Into[_,_]]();
-    def init() = this.addInnerConv();
+    private val convMap = HashMap[(String,String),Into[_,_]]();
+    
+    def init() = {
+        register[String,Int]
+        register[String,Float]
+        register[String,Double]
+        register[String,Boolean]
+        register[String,String]
+    }
+    
     inline def register[A,B](using into: Into[A,B]): Unit = { 
         val aName = Assembly.nameOf[A];
         val bName = Assembly.nameOf[B];
         val key = (aName,bName);
-        println(s"registering $key")
         if(!this.convMap.contains(key)) {
             this.convMap.put(key,into);
         }
     }
 
-    def registerInto(fromType:String,toType:String,into:Into[_,_]) = {
-        
+    def registerString(fromType:String,toType:String,into:Into[_,_]) = {
         val key = (fromType,toType);
-        println(s"registering $key")
         if(!this.convMap.contains(key)) {
             this.convMap.put(key,into);
         }
@@ -54,16 +59,6 @@ object DynTypeConv {
         this.strConvert(fromType.getName(),toType.getName(),fromValue)
     }
 
-
-   
-    private def addInnerConv() = {
-        register[String,Int]
-        register[String,Float]
-        register[String,Double]
-        register[String,Boolean]
-        register[String,String]
-    }
-
     inline def scanPackage(inline sym:Any):Unit = ${ scanPackageImpl('sym) }
 
     protected def scanPackageImpl(symExpr:Expr[Any])(using Quotes):Expr[Unit] = {
@@ -73,11 +68,13 @@ object DynTypeConv {
       val allTypeList:ListBuffer[Statement] = ListBuffer();
       for(declSym <- givenIntoSymList) {
          if(!declSym.isType) {
+            val intoMethod = declSym.declaredMethod("into");
+            val signature = intoMethod(0).signature;
+            val fromType = Expr(signature.paramSigs(0).toString());
+            val toType = Expr(signature.resultSig);
             val ident = Ident(declSym.termRef);
             val identExpr = ident.asExprOf[Into[_,_]];
-            
-            val newExpr = '{ DynTypeConv.registerInto("","",$identExpr) }
-            
+            val newExpr = '{ DynTypeConv.registerString($fromType,$toType,$identExpr) }
             allTypeList.addOne(newExpr.asTerm);
          }
       }
@@ -106,3 +103,8 @@ given Into[String, String] with {
   override def into(a: String): String = a
 }
 
+given [T](using t:Into[T,String]):Into[Option[T],String] with {
+  override def into(value: Option[T]): String = value match
+    case None => ""
+    case Some(value) => t.into(value)
+}

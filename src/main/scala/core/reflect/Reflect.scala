@@ -2,14 +2,9 @@ package core.reflect
 import scala.collection.immutable.HashMap;
 import scala.deriving.Mirror
 import scala.quoted.*
-import scala.annotation.internal.Body
-import input.KeyCode.I
 import core.formString
-import input.KeyCode.N
 import scala.util.Try
 import scala.util.Success
-import scala.quoted.ToExpr.ClassTagToExpr
-import scala.reflect.ClassTag
 
 case class TypeInfo(val name:String,
                     val shortName:String,
@@ -103,15 +98,14 @@ object ReflectType {
       val baseTypeName = if(typRepr.baseClasses.length >= 2) { 
          Expr(typRepr.baseClasses(1).fullName) 
       } else {  null };
-      
-      var allFildTypes = "";
+
       val allFields:List[Expr[FieldInfo]] = typClassSym.declaredFields.map(fieldSym => {
          val memberType = typRepr.memberType(fieldSym);
+         
          val fieldName = if(fieldSym.name.charAt(0) == '_') { fieldSym.name.tail } else { fieldSym.name };
-         val typNameExpr = Expr(memberType.typeSymbol.fullName);
-         allFildTypes += memberType.typeSymbol.fullName + "\n";
          (memberType.asType,typRepr.asType) match {
             case ('[ft],'[t]) => {
+                  val fullTypeName = Assembly.fullTypeName[ft];
                   val exprGetString = getFormStringExpr[ft]();
                   val exprFromString:Expr[Option[(String) => Any]] = exprGetString match {
                      case None => '{None}
@@ -122,7 +116,7 @@ object ReflectType {
                     
                      FieldInfo(
                         ${Expr(fieldName)},
-                        ${typNameExpr},
+                        ${fullTypeName},
                         (a,b) => {
                             ${
                                val selectField = Select('{a.asInstanceOf[t]}.asTerm,fieldSym);
@@ -144,7 +138,6 @@ object ReflectType {
             override def info: TypeInfo = TypeInfo($fullName,$shortName,() => ${newExpr},baseTypeInfo,${fieldList})
          }
       }
-      //report.info(allFildTypes)
       ret
    }
 

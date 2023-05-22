@@ -7,6 +7,9 @@ import scala.util.Failure
 import scala.util.Success
 import ui.binding.BindingItem
 import scala.util.boundary, boundary.break
+import core.reflect.Assembly
+import core.reflect.DynTypeConv
+import core.reflect.Assembly.nameOf
 
 case class XmlControlReader(
     val reader: XmlReader,
@@ -87,7 +90,7 @@ case class XmlControlReader(
         }
       } else {
         val curControl = control.control;
-        control.info.setStringValue(curControl, k, v) match {
+        setStringProperty(curControl, k, v) match {
             case Success(_) => {}
             case Failure(e) =>
                 System.err.println(s"set property error:${e.getMessage} k:$k v:$v");
@@ -99,5 +102,17 @@ case class XmlControlReader(
         return;
       }
     }
+  }
+
+  private def setStringProperty(control:BaseControl,fieldName:String,value:String):Try[Unit] = {
+    val typInfo = Assembly.getTypeInfo_?(control);
+    val fieldType = typInfo.getField_?(fieldName);
+    val convValue = DynTypeConv.strConvert(nameOf[String],fieldType.typName,value);
+    convValue match
+      case None => throw Exception(s"not found conv typ ${fieldType.typName} ${fieldType.Name}")
+      case Some(value) => {
+          fieldType.set(control,value.get)
+      }
+    Success(())
   }
 }

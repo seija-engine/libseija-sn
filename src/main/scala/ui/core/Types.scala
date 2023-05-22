@@ -1,7 +1,6 @@
 package ui.core
 import _root_.core.RawFFI
 import core.reflect.{Into,TypeCastException};
-import core.IFromString;
 import scala.scalanative.unsafe.{CFloat,CStruct4}
 import scala.scalanative.unsafe.Ptr
 import core.reflect.DynTypeConv
@@ -12,25 +11,6 @@ case class Thickness(val left:Float,top:Float,right:Float,bottom:Float);
 object Thickness {
     def apply(v:Float):Thickness = Thickness(v,v,v,v)
     final val zero = Thickness(0,0,0,0)
-
-    given IFromString[Thickness] with {
-        def from(value:String):Option[Thickness] = {
-            val parts = value.split(",");
-            if (parts.length == 4) {
-                val left = parts(0).toFloatOption;
-                val top = parts(1).toFloatOption;
-                val right = parts(2).toFloatOption;
-                val bottom = parts(3).toFloatOption;
-                if (left.isDefined && top.isDefined && right.isDefined && bottom.isDefined) {
-                    Some(Thickness(left.get,top.get,right.get,bottom.get))
-                } else {
-                    None
-                }
-            } else {
-                None
-            }
-        }
-    }
 
     given Into[String, Thickness] with {
         override def into(value: String): Thickness = {
@@ -44,7 +24,7 @@ object Thickness {
                    return Thickness(left.get,top.get,right.get,bottom.get)
                 }
             }
-            throw new TypeCastException(s"Cannot convert $value to Thickness")
+            throw new TypeCastException("String","Thickness")
         }
     }
 }
@@ -66,14 +46,14 @@ enum CommonViewStates(val v:Byte) {
 }
 
 object CommonViewStates {
-    given IFromString[CommonViewStates] with {
-        def from(value:String):Option[CommonViewStates] = {
-            value match {
-                case "Normal" => Some(CommonViewStates.Normal)
-                case "Hover" => Some(CommonViewStates.Hover)
-                case "Pressed" => Some(CommonViewStates.Pressed)
-                case "Disabled" => Some(CommonViewStates.Disabled)
-                case _ => None
+    given Into[String,CommonViewStates] with {
+        override def into(fromValue: String): CommonViewStates = {
+            fromValue match {
+                case "Normal" => CommonViewStates.Normal
+                case "Hover" => CommonViewStates.Hover
+                case "Pressed" => CommonViewStates.Pressed
+                case "Disabled" => CommonViewStates.Disabled
+                case _ => throw TypeCastException("String","CommonViewStates")
             }
         }
     }

@@ -1,7 +1,5 @@
 package ui.controls
-
 import ui.BaseControl
-import core.IFromString
 import ui.core.LayoutAlignment
 import ui.core.SizeValue
 import core.reflect.{TypeInfo,FieldInfo,ReflectType}

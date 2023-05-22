@@ -31,9 +31,22 @@ object Assembly {
     Some(typInfo.create())
   }
 
-  inline def nameOf[T] = ${nameOfImpl[T]}
 
-  private def nameOfImpl[T:Type](using Quotes):Expr[String] = Expr(quotes.reflect.TypeRepr.of[T].typeSymbol.fullName)
+  inline def nameOf[T] = ${fullTypeName[T]}
+
+
+  def fullTypeName[T:Type](using Quotes):Expr[String] = {
+    import quotes.reflect.*;
+    def getReprName(repr:TypeRepr):String = {
+      val childNameLst  = repr.typeArgs.map(getReprName);
+      if(childNameLst.length > 0) {
+        s"${repr.dealias.typeSymbol.fullName}[${childNameLst.mkString(",")}]"
+      } else {
+        repr.dealias.typeSymbol.fullName
+      }
+    }
+    Expr(getReprName(TypeRepr.of[T]))
+  }
 }
 
 case class NotFoundTypeInfoException(name: String)

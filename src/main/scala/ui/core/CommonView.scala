@@ -2,8 +2,10 @@ package ui.core
 import core.RawFFI;
 import scala.scalanative.unsafe._
 import ui.core.Thickness
-import core.IFromString
 import core.formString
+import core.reflect.Into
+import scala.util.Try
+import core.reflect.TypeCastException
 
 type RawUISize = CStruct4[Byte, Byte, CFloat, CFloat]
 
@@ -14,11 +16,11 @@ enum SizeValue extends Cloneable {
 }
 
 object SizeValue {
-  given IFromString[SizeValue] with {
-  override def from(strValue: String): Option[SizeValue] = strValue match
-    case "*" => Some(SizeValue.Auto)
-    case "-" => Some(SizeValue.FormRect)
-    case _ => strValue.toFloatOption.map(SizeValue.Pixel(_))
+  given Into[String,SizeValue] with {
+    override def into(fromValue: String): SizeValue = fromValue match
+      case "*" => SizeValue.Auto
+      case "-" => SizeValue.FormRect
+      case _ => SizeValue.Pixel(fromValue.toFloat)    
   }
 }
 
@@ -32,13 +34,16 @@ enum LayoutAlignment(val v:Byte) {
 }
 
 object LayoutAlignment {
-  given IFromString[LayoutAlignment] with {
-    override def from(strValue: String): Option[LayoutAlignment] = strValue match
-      case "Start"   => Some(LayoutAlignment.Start)
-      case "Center"  => Some(LayoutAlignment.Center)
-      case "End"     => Some(LayoutAlignment.End)
-      case "Stretch" => Some(LayoutAlignment.Stretch)
-      case _         => None
+  
+
+    given Into[String,LayoutAlignment] with {
+      override def into(fromValue: String): LayoutAlignment = fromValue match {
+        case "Start" => LayoutAlignment.Start
+        case "Center" => LayoutAlignment.Center
+        case "End" => LayoutAlignment.End
+        case "Stretch" => LayoutAlignment.Stretch
+        case _: String => throw ClassCastException("LayoutAlignment");
+      }
     }
 }
 
@@ -51,11 +56,12 @@ enum Orientation(val v:Byte) {
 }
 
 object Orientation {
-  given IFromString[Orientation] with {
-  override def from(strValue: String): Option[Orientation] = strValue match
-    case "Hor" => Some(Orientation.Horizontal)
-    case "Ver"   => Some(Orientation.Vertical)
-    case _            => None
+  given Into[String,Orientation] with {
+    override def into(fromValue: String): Orientation = fromValue match {
+      case "Hor" => Orientation.Horizontal
+      case "Ver" => Orientation.Vertical
+      case _: String => throw TypeCastException("String","Orientation")
+    }
   }
 }
 
@@ -64,16 +70,17 @@ object Orientation {
 case class UISize(var width: SizeValue, var height: SizeValue)
 
 object UISize {
-  given IFromString[UISize] with {
-  override def from(strValue: String): Option[UISize] = {
-    val values = strValue.split("x");
-    if(values.length == 2) {
-      val width:Option[SizeValue] = formString[SizeValue](values(0))
-      val height:Option[SizeValue] = formString[SizeValue](values(1))
-      if(width.isDefined && height.isDefined) {
-        Some(UISize(width.get,height.get))
-      } else None
-    } else None
+
+  given Into[String,UISize] with {
+    override def into(fromValue: String): UISize = {
+        val values = fromValue.split("x");
+        if(values.length == 2) {
+            val width:SizeValue = formString[SizeValue](values(0)).get
+            val height:SizeValue = formString[SizeValue](values(1)).get
+            UISize(width,height)
+        } else {
+          throw TypeCastException("String","UISize")
+        }
     }
   }
 }

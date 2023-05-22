@@ -6,12 +6,13 @@ import ui.BaseControl
 import core.Entity
 import transform.{Transform,given}
 import ui.AtlasSprite
-import core.IFromString
 import ui.Atlas
 import math.Vector4
 import math.Color
 import core.reflect.ReflectType
 import core.formString
+import core.reflect.Into
+import core.reflect.TypeCastException
 
 enum ImageType(val value:Int)  {
   case Simple extends ImageType(0)
@@ -19,12 +20,11 @@ enum ImageType(val value:Int)  {
 }
 
 object ImageType {
-  given IFromString[ImageType] with {
-
-    override def from(strValue: String): Option[ImageType] = strValue match {
-      case "Simple" => Some(ImageType.Simple)
-      case "Slice" => Some(ImageType.Slice)
-      case _: String => None
+  given Into[String,ImageType] with {
+    override def into(fromValue: String): ImageType = fromValue match {
+      case "Simple" => ImageType.Simple
+      case "Slice" => ImageType.Slice
+      case _: String => throw TypeCastException("String","ImageType")
     }
   }
 }

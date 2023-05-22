@@ -8,7 +8,8 @@ import ui.core.{FFISeijaUI,Thickness,given}
 import java.util.HashMap;
 import scala.scalanative.unsigned._
 import scala.scalanative.runtime.libc
-import _root_.core.IFromString
+import _root_.core.reflect.Into
+import _root_.core.reflect.TypeCastException
 case class Atlas(val sheet:Handle[SpriteSheet]) {
   private var sprites = new HashMap[String,AtlasSprite]();
 
@@ -55,8 +56,10 @@ object Atlas {
 case class AtlasSprite(val index:Int,val atlas:Atlas, val name:String,var sliceInfo:Option[Thickness]);
 
 object AtlasSprite {
-    given IFromString[AtlasSprite] with {
-        override def from(strValue: String): Option[AtlasSprite] = Atlas.getPath(strValue)
+    given Into[String,AtlasSprite] with {
+        override def into(fromValue: String): AtlasSprite = {
+            Atlas.getPath(fromValue).getOrElse(throw TypeCastException("String","AtlasSprite"))
+        }
     }
 }
 
