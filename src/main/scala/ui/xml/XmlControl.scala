@@ -11,9 +11,10 @@ import scala.util.Success
 import ui.binding.BindingItem
 import core.reflect.TypeInfo
 import core.reflect.Assembly
+import core.xml.XmlElement
 
-
-case class FromXmlValuePair(control:BaseControl,info:TypeInfo)
+ 
+private case class FromXmlValuePair(control:BaseControl,info:TypeInfo)
 
 object XmlControl {
     def create(name:String):Option[FromXmlValuePair] = {
@@ -24,10 +25,7 @@ object XmlControl {
     }
 
     def tryCreate(name:String):Try[FromXmlValuePair] = {
-        create(name) match
-            case None => Failure(Exception(s"not found control:$name"))
-            case Some(value) => Success(value)
-        
+        create(name).toRight(Exception(s"not found control:$name")).toTry
     }
 
     def fromString(xmlString:String):Try[BaseControl] = {
@@ -37,8 +35,9 @@ object XmlControl {
         control
     }
 
-    def fromXmlReader(reader:XmlReader):Try[BaseControl] = XmlControlReader(reader,None).read()
-   
+    def fromXmlReader(reader:XmlReader):Try[BaseControl] = XmlRawControlReader(reader,None).read()
+    
+    def fromXmlElement(xmlElem:XmlElement):Try[BaseControl] = XmlElemControlReader(xmlElem,None).read()
 }
 
 

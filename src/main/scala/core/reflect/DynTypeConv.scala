@@ -39,6 +39,7 @@ object DynTypeConv {
     }
 
     def registerString(fromType:String,toType:String,into:Into[_,_]) = {
+        println(s"register ${fromType} to ${toType}")
         val key = (fromType,toType);
         if(!this.convMap.contains(key)) {
             this.convMap.put(key,into);
@@ -73,18 +74,24 @@ object DynTypeConv {
       val parentSym = symExpr.asTerm.tpe.classSymbol.get.owner;
       val givenIntoSymList = parentSym.declaredTypes.flatten(_.declarations).filter(_.name.startsWith("given_Into"));
       val allTypeList:ListBuffer[Statement] = ListBuffer();
+      var allStrings ="";
       for(declSym <- givenIntoSymList) {
          if(!declSym.isType) {
             val intoMethod = declSym.declaredMethod("into");
             val signature = intoMethod(0).signature;
             val fromType = Expr(signature.paramSigs(0).toString());
-            val toType = Expr(signature.resultSig);
+            
+            val toType =  intoMethod(0).tree match
+              case DefDef(v1,v2,v3,v4) => v3.show
+              case _ => signature.resultSig
+            //allStrings += toType + "\n";
             val ident = Ident(declSym.termRef);
             val identExpr = ident.asExprOf[Into[_,_]];
-            val newExpr = '{ DynTypeConv.registerString($fromType,$toType,$identExpr) }
+            val newExpr = '{ DynTypeConv.registerString($fromType,${Expr(toType)},$identExpr) }
             allTypeList.addOne(newExpr.asTerm);
          }
       }
+      report.info(allStrings);
       val block = Block(allTypeList.toList,Literal(UnitConstant()));
       block.asExprOf[Unit]
     }

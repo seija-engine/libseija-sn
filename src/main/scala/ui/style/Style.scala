@@ -7,8 +7,6 @@ import scala.util.Failure
 import scala.collection.mutable.ListBuffer
 import core.reflect.*;
 import core.reflect.tryInto
-import core.reflect.Assembly.nameOf
-
 class MissRequiredFieldException(className:String,name:String) extends Exception(s"miss required field:${className}.${name}");
 class ReadSetterException(key:String,value:String) extends Exception(s"read setter error:${key} = ${value}");
 
@@ -27,6 +25,7 @@ object Style {
         val className:Option[String] = element.attributes.get("Class");
         val typInfo = Assembly.getOrThrow(forType,true);
         val propertyList:ListBuffer[PropertySet] = ListBuffer();
+       
         for(elem <- element.children) {
             elem.name match {
                 case "Setter" => {
@@ -40,7 +39,11 @@ object Style {
                         propertyList += newProprty.getOrElse(throw new ReadSetterException(setName,value));
                     }
                     case None => {
-                       
+                       val newProprty = for {
+                         info <- typInfo.getField(setName)
+                         convValue <- DynTypeConv.convertStrType(elem.getClass().getName(),info.typName,elem)
+                       } yield PropertySet(setName,convValue.get);
+                        propertyList += newProprty.getOrElse(throw new ReadSetterException(setName,elem.toString()));
                     }
                   }
                 }

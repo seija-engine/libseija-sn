@@ -120,11 +120,13 @@ class DemoGame extends IGameApp {
     canvas.addControl(image);
    
     ui.style.StyleManager.loadString("""
-    <<StyleList>
+    <StyleList>
       <Style ForType="Button">
         <Setter Key="width" Value="120" />
-        <Setter Key="height" Value="45" /> 
-        <Setter Key="sprite" Value="default.button" />
+        <Setter Key="height" Value="45" />
+        <Setter Key="template">
+          <Image imageType="Slice" sprite="default.button" />
+        </Setter>
       </Style>
     </StyleList>
     """).get

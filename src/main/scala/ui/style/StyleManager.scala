@@ -18,6 +18,7 @@ object StyleManager {
                 println(s"read style error ${exception}")
             }
             case Success(style) => {
+                println(s"read style ${style}")
                 this.addStyle(style);
             }
            

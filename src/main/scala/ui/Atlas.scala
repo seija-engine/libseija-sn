@@ -61,5 +61,8 @@ object AtlasSprite {
             Atlas.getPath(fromValue).getOrElse(throw TypeCastException("String","AtlasSprite"))
         }
     }
+    given Into[String,Option[AtlasSprite]] with {
+        override def into(fromValue: String): Option[AtlasSprite] = Some(given_Into_String_AtlasSprite.into(fromValue)) 
+    }
 }
 
