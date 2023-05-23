@@ -27,7 +27,7 @@ object FFIXml {
   def xmlRederFromFile(path:String):Try[Ptr[Byte]] = Zone { implicit z =>
       val ptrReader = xmlReaderFromFilePtr(toCString(path));
       if(ptrReader == null) {
-        Failure(new Throwable(s"xml not found path ${path}"))
+        Failure(new Exception(s"xml not found path ${path}"))
       } else {
         Success(ptrReader)
       }
@@ -63,7 +63,7 @@ object FFIXml {
     val ptrptrValue = stackalloc[Ptr[Byte]]()
     val isNotEnd = stringReadeReadAttrPtr(reader,ptrIsError,ptrKeyLen,ptrptrKey,ptrValueLen,ptrptrValue)
     if(!ptrIsError == true) {
-      return Failure(new Throwable(getLastError(reader)))
+      return Failure(new Exception(getLastError(reader)))
     }
     if(!isNotEnd) return Success(None);
     val tagString = fromRustString(!ptrptrKey,!ptrKeyLen);

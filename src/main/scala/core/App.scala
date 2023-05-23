@@ -43,8 +43,11 @@ object App {
   def OnStart(worldPtr:Ptr[Byte]) = {
     App.worldPtr = worldPtr;
     this.moduleList.foreach(_.updateECSPtr(worldPtr))
-
-    this.gameApp.OnStart();
+    try {
+      this.gameApp.OnStart();
+    } catch case e:Throwable => {
+        println(s"GameApp OnStart Error: ${e}");
+    }
   }
 
   def OnUpdate(worldPtr:Ptr[Byte]) = {

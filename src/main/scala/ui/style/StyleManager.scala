@@ -14,9 +14,10 @@ object StyleManager {
     def loadXmlElement(xmlElement:XmlElement) = {
         for(styleElement <- xmlElement.children) {
            Style.fromXmlElement(styleElement) match
-            case Failure(exception) => System.err.println(exception.toString());
+            case Failure(exception) => {
+                println(s"read style error ${exception}")
+            }
             case Success(style) => {
-                println(style)
                 this.addStyle(style);
             }
            

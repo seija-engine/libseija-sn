@@ -41,11 +41,6 @@ case class TypeInfo(val name:String,
          }
    }
 
-   def setStringValue(obj:Any,fieldName:String,str:String):Try[Boolean] = Try {
-      val convValue = this.fieldFromString(fieldName,str).get;
-      this.setValue(obj,fieldName,convValue)
-   }
-
    def getField(fieldName:String):Option[FieldInfo] = {
       if(base.isDefined) {
          val baseField = base.get.getField(fieldName);
@@ -57,23 +52,12 @@ case class TypeInfo(val name:String,
    def getField_?(fieldName:String):FieldInfo = {
       this.getField(fieldName).getOrElse(throw new NotFoundFieldException(this.name,fieldName))
    }
-
-   def fieldFromString(fieldName:String,str:String):Try[Any] = {
-      val getFied =  this.getField_?(fieldName);
-      getFied.fromString match {
-         case None => throw new Exception(s"not found fromString: ${this.name}.${fieldName}")
-         case Some(conv) => Try(conv(str))
-      }
-   }
-
-  
 }
 
 case class FieldInfo(val Name:String,
                      val typName:String,
                      set:(Any,Any) => Unit,
-                     get:(Any) => Any,
-                     val fromString:Option[(String) => Any] = None);
+                     get:(Any) => Any);
 
 
 def typeInfoOf[T](using t:ReflectType[T]):TypeInfo = t.info
@@ -105,13 +89,7 @@ object ReflectType {
          val fieldName = if(fieldSym.name.charAt(0) == '_') { fieldSym.name.tail } else { fieldSym.name };
          (memberType.asType,typRepr.asType) match {
             case ('[ft],'[t]) => {
-                  val fullTypeName = Assembly.fullTypeName[ft];
-                  val exprGetString = getFormStringExpr[ft]();
-                  val exprFromString:Expr[Option[(String) => Any]] = exprGetString match {
-                     case None => '{None}
-                     case Some(value) => '{Some($value)}
-                  }
-                  
+                  val fullTypeName = Assembly.fullTypeName[ft]; 
                   '{
                     
                      FieldInfo(
@@ -123,8 +101,7 @@ object ReflectType {
                                Assign(selectField,'{b.asInstanceOf[ft]}.asTerm).asExpr
                             }
                          },
-                         (obj:Any) => ${Select('{obj.asInstanceOf[t]}.asTerm,fieldSym).asExpr},
-                         ${exprFromString}
+                         (obj:Any) => ${Select('{obj.asInstanceOf[t]}.asTerm,fieldSym).asExpr}
                      )
                   }
             }
@@ -140,7 +117,7 @@ object ReflectType {
       }
       ret
    }
-
+   /*
    def getFormStringExpr[T:Type]()(using Quotes):Option[Expr[(String) => Any]] = {
       import quotes.reflect.*
       val typRepr: TypeRepr = TypeRepr.of[T]
@@ -177,5 +154,5 @@ object ReflectType {
    protected def str2Int(str:String):Int = str.toIntOption.getOrElse(0)
    protected def str2Byte(str:String):Byte = str.toByteOption.getOrElse(0)
    protected def str2Float(str:String):Float = str.toFloatOption.getOrElse(0.0f)
-   protected def str2str(str:String):String = str
+   protected def str2str(str:String):String = str*/
 }

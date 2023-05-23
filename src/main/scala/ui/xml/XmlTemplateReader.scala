@@ -13,7 +13,7 @@ case class XmlTemplateReader(val reader:XmlReader,val owner:BaseControl) {
         val event = reader.nextEvent().get;
         val paramName = event.castStart();
         if(paramName.isEmpty) {
-            return Failure(Throwable(s"err tag:${event}"))
+            return Failure(Exception(s"err tag:${event}"))
         }
         var template = Template();
         while(true) {

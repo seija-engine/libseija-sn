@@ -118,25 +118,26 @@ class DemoGame extends IGameApp {
     image.sprite = Some(bgSprite)
     image.color = Color.formHex("#e8e8e7").get;    
     canvas.addControl(image);
-
-    XmlControl.fromString(Main.testXml2) match {
-      case Success(uiControl) => {
-        uiControl.dataContext = this.testViewMode;
-        canvas.addControl(uiControl)
-      }
-      case Failure(exception) => println(exception);
-    }
+   
+    ui.style.StyleManager.loadString("""
+    <<StyleList>
+      <Style ForType="Button">
+        <Setter Key="width" Value="120" />
+        <Setter Key="height" Value="45" /> 
+        <Setter Key="sprite" Value="default.button" />
+      </Style>
+    </StyleList>
+    """).get
+   
   }
 
   var index = 0;
   def OnUpdate() = {
-    //this.testViewMode.testText = "Inc:" + index.toString();
-    //index += 1;
   }
 }
 
 import ui.binding.INotifyPropertyChanged;
-class TestViewModel extends INotifyPropertyChanged derives ReflectType {
+class TestViewModel extends INotifyPropertyChanged  derives ReflectType {
   var _isTest:Boolean = true;
   def isTest = this._isTest;
   def isTest_=(value:Boolean) = {
@@ -146,7 +147,6 @@ class TestViewModel extends INotifyPropertyChanged derives ReflectType {
   }
 
   var _testText:String = "TestViewModel";
-  var _testOP:Option[String] = None;
 
   def testText = this._testText;
   def testText_=(value:String) = {

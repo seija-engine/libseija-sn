@@ -25,7 +25,7 @@ object XmlControl {
 
     def tryCreate(name:String):Try[FromXmlValuePair] = {
         create(name) match
-            case None => Failure(Throwable(s"not found control:$name"))
+            case None => Failure(Exception(s"not found control:$name"))
             case Some(value) => Success(value)
         
     }

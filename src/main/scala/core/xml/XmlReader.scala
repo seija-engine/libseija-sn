@@ -49,7 +49,7 @@ case class XmlReader(private val rawPtr:Ptr[Byte],isString:Boolean) {
          this.cacheEvent = None;
          return Success(ret)
       }
-      FFIXml.xmlReaderReadEvent(rawPtr,isString).left.map(new Throwable(_)).toTry
+      FFIXml.xmlReaderReadEvent(rawPtr,isString).left.map(new Exception(_)).toTry
    }
 
    def lookNext():Try[XmlEvent] = {

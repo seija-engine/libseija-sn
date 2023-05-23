@@ -59,7 +59,7 @@ case class XmlControlReader(
         pair.control
       }
 
-      case ev => throw Throwable(s"error event ${ev.toString()}")
+      case ev => throw Exception(s"error event ${ev.toString()}")
     }
   }
 
@@ -107,7 +107,7 @@ case class XmlControlReader(
   private def setStringProperty(control:BaseControl,fieldName:String,value:String):Try[Unit] = {
     val typInfo = Assembly.getTypeInfo_?(control);
     val fieldType = typInfo.getField_?(fieldName);
-    val convValue = DynTypeConv.strConvert(nameOf[String],fieldType.typName,value);
+    val convValue = DynTypeConv.convertStrType(nameOf[String],fieldType.typName,value);
     convValue match
       case None => throw Exception(s"not found conv typ ${fieldType.typName} ${fieldType.Name}")
       case Some(value) => {

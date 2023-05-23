@@ -2,6 +2,8 @@ package core.reflect
 import java.util.HashMap
 import scala.quoted.*
 
+case class NotFoundReflectException(name: String) extends Exception(s"not found reflect: ${name}")
+
 object Assembly {
   private var typeMap: HashMap[String, TypeInfo] = HashMap()
   private var typeShortMap: HashMap[String, TypeInfo] = HashMap()
@@ -17,13 +19,17 @@ object Assembly {
     else { this.typeMap.get(name) }
   )
 
+  def getOrThrow(name: String, isShort: Boolean = false): TypeInfo =  {
+    this.get(name, isShort).getOrElse(throw new NotFoundReflectException(name))
+  }
+
   def getTypeInfo(obj: Any): Option[TypeInfo] = Option(
     this.typeMap.get(obj.getClass().getName())
   )
 
   def getTypeInfo_?(obj: Any): TypeInfo = this
     .getTypeInfo(obj)
-    .getOrElse(throw NotFoundTypeInfoException(obj.getClass().getName()))
+    .getOrElse(throw new NotFoundTypeInfoException(obj.getClass().getName()))
 
   def createInstance(name: String, isShort: Boolean = false): Option[Any] = {
     val typInfo = if (isShort) this.typeShortMap.get(name) else this.typeMap.get(name);

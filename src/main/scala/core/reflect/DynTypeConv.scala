@@ -5,6 +5,7 @@ import scala.reflect.{ClassTag,classTag}
 import scala.quoted.Expr
 import scala.annotation.internal.Body
 import scala.collection.mutable.{ListBuffer,HashMap}
+import core.reflect.Assembly.nameOf
 
 case class TypeCastException(from:String,to:String) extends Exception(s"${from} to ${to} err")
 
@@ -14,6 +15,8 @@ trait Into[A,B] {
 }
 
 def convert[A,B](fromValue:A)(using into:Into[A,B]):Try[B] = into.tryInto(fromValue)
+
+def tryInto[A,B](fromValue:A)(using into:Into[A,B]):Try[B] = into.tryInto(fromValue)
 
 object DynTypeConv {
     private val convMap = HashMap[(String,String),Into[_,_]]();
@@ -44,7 +47,7 @@ object DynTypeConv {
 
     
 
-    def strConvert(fromType:String,toType:String,fromValue:Any):Option[Try[Any]] = {
+    def convertStrType(fromType:String,toType:String,fromValue:Any):Option[Try[Any]] = {
         val key = (fromType,toType);
         if(this.convMap.contains(key)) {
             val conv = this.convMap(key);
@@ -55,8 +58,12 @@ object DynTypeConv {
         }
     }
 
+    def strConvertTo(toType:String,fromValue:String):Option[Try[Any]] = {
+        this.convertStrType(nameOf[String],toType,fromValue)
+    }
+
     def convert(fromType:Class[?],toType:Class[?],fromValue:Any):Option[Try[Any]] = {
-        this.strConvert(fromType.getName(),toType.getName(),fromValue)
+        this.convertStrType(fromType.getName(),toType.getName(),fromValue)
     }
 
     inline def scanPackage(inline sym:Any):Unit = ${ scanPackageImpl('sym) }
