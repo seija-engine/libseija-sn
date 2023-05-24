@@ -9,7 +9,6 @@ import ui.binding.BindingItem
 import scala.util.boundary, boundary.break
 import core.reflect.Assembly
 import core.reflect.DynTypeConv
-import core.reflect.Assembly.nameOf
 import core.xml.XmlElement
 import scala.collection.mutable.Stack
 import ui.Template

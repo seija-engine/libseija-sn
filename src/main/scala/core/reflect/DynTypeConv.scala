@@ -32,6 +32,7 @@ object DynTypeConv {
     inline def register[A,B](using into: Into[A,B]): Unit = { 
         val aName = Assembly.nameOf[A];
         val bName = Assembly.nameOf[B];
+       
         val key = (aName,bName);
         if(!this.convMap.contains(key)) {
             this.convMap.put(key,into);
@@ -91,7 +92,7 @@ object DynTypeConv {
             allTypeList.addOne(newExpr.asTerm);
          }
       }
-      report.info(allStrings);
+      //report.info(allStrings);
       val block = Block(allTypeList.toList,Literal(UnitConstant()));
       block.asExprOf[Unit]
     }

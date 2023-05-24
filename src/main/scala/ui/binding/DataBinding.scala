@@ -47,20 +47,20 @@ object DataBindingManager {
       if(item.typ == BindingType.Src2Dst || item.typ == BindingType.Both) {
         var srcValue = srcObject;
         if(item.sourceKey != "this") {
-          val srcTypeInfo = Assembly.getTypeInfo_?(srcObject);
+          val srcTypeInfo = Assembly.getTypeInfoOrThrow(srcObject);
           srcValue = srcTypeInfo.getValue_?(srcObject,item.sourceKey);
         }
         if(item.conv.isDefined) { srcValue = item.conv.get.conv(srcValue) }
-        val dstTypeInfo = Assembly.getTypeInfo_?(dstObject);
+        val dstTypeInfo = Assembly.getTypeInfoOrThrow(dstObject);
         dstTypeInfo.setValue(dstObject,item.dstKey,srcValue);
       } else {
         var dstValue = dstObject;
         if(item.dstKey != "this") {
-          val dstTypeInfo = Assembly.getTypeInfo_?(dstObject);
+          val dstTypeInfo = Assembly.getTypeInfoOrThrow(dstObject);
           dstValue = dstTypeInfo.getValue_?(dstObject,item.dstKey);
         }
         if(item.conv.isDefined) { dstValue = item.conv.get.conv(dstValue) }
-        val srcTypeInfo = Assembly.getTypeInfo_?(srcObject);
+        val srcTypeInfo = Assembly.getTypeInfoOrThrow(srcObject);
         srcTypeInfo.setValue(srcObject,item.sourceKey,dstValue);
       }
   }
@@ -159,8 +159,8 @@ case class BindingInst(
 
 object BindingInst {
   def create(src:Any,dst:Any,item:BindingItem):Try[BindingInst] = Try {
-    val srcTypeInfo = Assembly.getTypeInfo_?(src);
-    val dstTypeInfo = Assembly.getTypeInfo_?(dst);
+    val srcTypeInfo = Assembly.getTypeInfoOrThrow(src);
+    val dstTypeInfo = Assembly.getTypeInfoOrThrow(dst);
     val srcField = srcTypeInfo.getField_?(item.sourceKey);
     val dstField = dstTypeInfo.getField_?(item.dstKey);
     BindingInst(item,src,dst,srcTypeInfo,dstTypeInfo,srcField,dstField)

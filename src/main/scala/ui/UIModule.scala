@@ -4,6 +4,7 @@ import _root_.core.IModule
 import scalanative.unsafe._
 import ui.core.FFISeijaUI
 import _root_.core.reflect.DynTypeConv
+import _root_.core.reflect.Assembly
 
 
 final case class UIModule() extends IModule {
@@ -14,6 +15,7 @@ final case class UIModule() extends IModule {
         DynTypeConv.scanPackage(ui.Template);
         DynTypeConv.scanPackage(ui.core.Thickness);
         
+        Assembly.scanPackage(ui.controls2.Image); 
     }
 
     override def update(): Unit = {
