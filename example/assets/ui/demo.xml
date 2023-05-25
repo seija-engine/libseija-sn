@@ -11,5 +11,5 @@
         <Image  imageType="Slice" sprite="default.button" />
         <Text text="确定" />
     </Panel>
-    <Text height="40" color="#ffffff" text="汨罗渊中波涛动，巫山峰旁乱云飞"/>
+    <Text height="40" color="#ffffff" text="{Binding Data testString}"/>
 </StackPanel>

@@ -72,4 +72,15 @@ class Image extends UIElement derives ReflectType {
       }
     }
 
+    override def onPropertyChanged(propertyName: String): Unit = {
+      propertyName match
+        case "sprite" => {
+          this.entity.foreach(v => {
+             val rawSprite = v.get[Sprite]();
+             rawSprite.setSprite(this._sprite);
+          })
+        }
+        case _ => 
+  }
+
 }

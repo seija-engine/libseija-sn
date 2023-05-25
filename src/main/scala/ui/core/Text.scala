@@ -12,7 +12,7 @@ import asset.Handle
 
 class Text;
 
-type RawText = CStruct4[RawVector4,Byte, Byte, Boolean];
+type RawTextFFI = CStruct4[RawVector4,Byte, Byte, Boolean];
 
 enum AnchorAlign(val v: Byte) {
   case TopLeft extends AnchorAlign(0.toByte);
@@ -40,7 +40,7 @@ class TextBuilder extends RawComponentBuilder {
   var font: Handle[Font] = null;
   var text: String = "";
   override def build(entity: Entity): Unit = {
-    val ptrRawText = stackalloc[RawText]();
+    val ptrRawText:Ptr[RawTextFFI] = stackalloc[RawTextFFI]();
     ptrRawText._2 = this.anchor.v;
     ptrRawText._3 = this.lineMode.v;
     ptrRawText._4 = this.isAutoSize;
@@ -49,12 +49,18 @@ class TextBuilder extends RawComponentBuilder {
   }
 }
 
+case class RawText(val ptr:Ptr[RawTextFFI]) {
+  def setText(string:String) = {
+    FFISeijaUI.entityTextSetString(ptr,string)
+  }
+}
+
 object Text {
   given TextComponent: RawComponent[Text] with {
     type BuilderType = TextBuilder;
-    type RawType = Ptr[Byte];
+    type RawType = RawText;
 
     def builder(): BuilderType = new TextBuilder();
-    def getRaw(entity: Entity): RawType = ???;
+    def getRaw(entity: Entity): RawType = RawText(FFISeijaUI.entityGetText(core.App.worldPtr, entity.id))
   }
 }

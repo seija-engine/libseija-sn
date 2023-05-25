@@ -27,7 +27,7 @@ object XmlUIElement {
     protected def setElemetStringProps(typInfo:TypeInfo,ui:UIElement,xml:XmlElement) = {
         for((k,v) <- xml.attributes) {
           if (v.startsWith("{Binding")) {
-            BindingItem.parse(k, v).logError();
+            BindingItem.parse(k, v).logError().foreach(ui.addBindItem(_))
           } else {
             typInfo.getFieldTry(k).logError().foreach {field =>
                 DynTypeConv.strConvertToTry(field.typName,v).logError().foreach { value =>

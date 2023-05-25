@@ -10,4 +10,8 @@ class CoreModule extends IModule {
      DynTypeConv.init();
      DynTypeConv.scanPackage(math.Color);
   }
+
+  override def updateECSPtr(worldPtr: Ptr[Byte]): Unit = {
+    Time.timePtr = FFISeijaCore.coreWorldGetTime(worldPtr);
+  }
 }

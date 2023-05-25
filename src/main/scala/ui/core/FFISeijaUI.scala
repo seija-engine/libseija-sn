@@ -14,7 +14,7 @@ import ui.core.RawStackLayout
 import ui.core.RawUISize
 import ui.core.RawFlexLayout
 import ui.core.RawFlexItem
-import ui.core.RawText
+import ui.core.RawTextFFI
 import scala.scalanative.runtime.libc
 
 
@@ -46,10 +46,12 @@ object FFISeijaUI {
     type AddFlexType = CFuncPtr5[Ptr[Byte],Long,Ptr[RawCommonView],Ptr[RawUISize],Ptr[RawFlexLayout],Unit];
     private val entityAddFlexPtr = LibSeija.getFunc[AddFlexType]("entity_add_flex");
     private val entityAddFlexItemPtr = LibSeija.getFunc[CFuncPtr3[Ptr[Byte],Long,Ptr[RawFlexItem],Unit]]("entity_add_flexitem");
-    private val entityAddTextPtr = LibSeija.getFunc[CFuncPtr6[Ptr[Byte],Long,Ptr[RawText],Int,CString,Long,Unit]]("entity_add_text");
+    private val entityAddTextPtr = LibSeija.getFunc[CFuncPtr6[Ptr[Byte],Long,Ptr[RawTextFFI],Int,CString,Long,Unit]]("entity_add_text");
     private val spritesheetBeginReadPtr = LibSeija.getFunc[CFuncPtr3[RawSpriteSheet,Ptr[Int],Ptr[Int],Ptr[Byte]]]("spritesheet_begin_read");
     private val spritesheetGetInfoPtr = LibSeija.getFunc[CFuncPtr4[Ptr[Byte],Int,Ptr[Int],CString,Unit]]("spritesheet_get_info");
     private val spritesheetEndReadPtr = LibSeija.getFunc[CFuncPtr1[RawSpriteSheet,Unit]]("spritesheet_end_read");
+    private val entityGetTextPtr = LibSeija.getFunc[CFuncPtr2[Ptr[Byte],Long,Ptr[RawTextFFI]]]("entity_get_text");
+    private val entityTextSetStringPtr = LibSeija.getFunc[CFuncPtr2[Ptr[RawTextFFI],CString,Unit]]("entity_text_setstring");
 
     def addSpriteSheetModule(appPtr:Ptr[Byte]):Unit = addSpritesheetModulePtr(appPtr)
     def spriteSheetAssetGet(worldPtr:Ptr[Byte],id:Long):RawSpriteSheet = spriteSheetAssetGetPtr(worldPtr,id);
@@ -148,14 +150,14 @@ object FFISeijaUI {
         entityAddFlexItemPtr(worldPtr,entity,flexItemPtr)
     }
 
-    def entityAddText(worldPtr:Ptr[Byte],entity:Long,ptrText:Ptr[RawText],size:Int,text:String,fontId:Long) = Zone { implicit z =>
+    def entityAddText(worldPtr:Ptr[Byte],entity:Long,ptrText:Ptr[RawTextFFI],size:Int,text:String,fontId:Long) = Zone { implicit z =>
         entityAddTextPtr(worldPtr,entity,ptrText,size,toCString(text),fontId)
     }
 
     def spriteBeginRead(ptr:RawSpriteSheet):(Ptr[Byte],Int,Int) = {
         val ptrCount = stackalloc[Int]()
         val ptrMaxCharCount = stackalloc[Int]()
-        val ptrFFI = spritesheetBeginReadPtr(ptr,ptrCount,ptrMaxCharCount);
+        val ptrFFI = spritesheetBeginReadPtr(ptr,ptrCount,ptrMaxCharCount);     
         (ptrFFI,!ptrCount,!ptrMaxCharCount)
     }
 
@@ -168,4 +170,10 @@ object FFISeijaUI {
     }
 
     def spriteEndRead(ptr:RawSpriteSheet) = spritesheetEndReadPtr(ptr)
+
+    def entityGetText(worldPtr:Ptr[Byte],entity:Long):Ptr[RawTextFFI] = entityGetTextPtr(worldPtr,entity)
+
+    def entityTextSetString(textPtr:Ptr[RawTextFFI],text:String) = Zone { implicit z =>
+        entityTextSetStringPtr(textPtr,toCString(text))
+    }
 }

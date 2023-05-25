@@ -2,22 +2,24 @@ package ui.controls2
 import ui.style.Style;
 import core.Entity;
 import ui.binding.INotifyPropertyChanged
-import ui.core.LayoutAlignment
-import ui.core.SizeValue
-import ui.core.Thickness
+import ui.core.{LayoutAlignment,SizeValue,Thickness,Rect2D,ItemLayout}
 import core.reflect.{autoProps,AutoGetSetter,ReflectType};
 import scala.Conversion
+import core.logError;
 import scala.quoted.Expr
 import core.xml.XmlElement
 import scala.collection.mutable.ListBuffer
 import transform.Transform
-import ui.core.Rect2D
-import ui.core.ItemLayout
+import ui.binding.BindingItem
+import ui.binding.BindingSource
+import ui.binding.DataBindingManager
+import ui.binding.BindingInst
+import scala.util.Success
 
 class UIElement extends INotifyPropertyChanged derives ReflectType {
     protected var entity:Option[Entity] = None
     protected var style:Option[Style] = None
-    protected var dataContext:Option[Any] = None;
+    protected var _dataContext:Option[Any] = None;
 
     protected var _hor:LayoutAlignment = LayoutAlignment.Stretch
     protected var _ver:LayoutAlignment = LayoutAlignment.Stretch
@@ -26,8 +28,10 @@ class UIElement extends INotifyPropertyChanged derives ReflectType {
     protected var _padding:Thickness = Thickness.zero
     protected var _margin:Thickness = Thickness.zero
 
+    protected var bindItemList:ListBuffer[BindingItem] = ListBuffer.empty
+    protected var bindingInstList:ListBuffer[BindingInst] = ListBuffer.empty
     protected var parent:Option[UIElement] = None;
-    protected var children:ListBuffer[UIElement] = ListBuffer.empty[UIElement]
+    protected var children:ListBuffer[UIElement] = ListBuffer.empty
 
 
     def hor = this._hor;
@@ -42,6 +46,11 @@ class UIElement extends INotifyPropertyChanged derives ReflectType {
     def padding_=(value:Thickness) = { this._padding = value; this.callPropertyChanged("padding",this) }
     def margin = this._margin;
     def margin_=(value:Thickness) = { this._margin = value; this.callPropertyChanged("margin",this) }
+    def dataContext = this._dataContext;
+    def dataContext_=(value:Option[Any]) = {
+        this._dataContext = value;
+        this.callPropertyChanged("dataContext",this);
+    }
 
     def getEntity():Option[Entity] = this.entity;
 
@@ -51,14 +60,14 @@ class UIElement extends INotifyPropertyChanged derives ReflectType {
     }
 
     def Enter():Unit = {
+        this.applyBindItems();
         this.OnEnter();
         this.children.foreach(_.Enter());
     }
 
     def OnEnter(): Unit = { this.createBaseEntity(true); }
 
-    def Exit() = {
-    }
+    
 
     protected def createBaseEntity(addBaseLayout:Boolean = true):Entity = {
         val parentEntity = this.parent.flatMap(_.getEntity());
@@ -77,5 +86,40 @@ class UIElement extends INotifyPropertyChanged derives ReflectType {
         newEntity
     }
 
+    def addBindItem(bindItem:BindingItem) = {
+        println(s"addBindItem: $bindItem")
+        this.bindItemList.addOne(bindItem);
+    }
+    def applyBindItems():Unit = {
+       for(bindItem <- this.bindItemList) {
+            bindItem.sourceType match
+                case BindingSource.Owner => {}
+                case BindingSource.Data => {
+                    this.findDataContext().foreach{dataContext =>
+                        DataBindingManager.binding(dataContext,this,bindItem).logError() match {
+                            case Success(Some(inst)) => this.bindingInstList.addOne(inst)
+                            case _ => {}
+                        }
+                    }
+                }
+            
+       }
+    }
+
+    def findDataContext():Option[Any] = {
+        if(this._dataContext.isEmpty) {
+            if(this.parent.isDefined) {
+               return this.parent.get.findDataContext();
+            }
+        }
+        return this._dataContext;
+    }
+
     def handleXMLContent(xmlElement:ListBuffer[XmlElement]) = {  }
+
+
+    def Exit() = {
+        this.bindingInstList.foreach(DataBindingManager.removeInst);
+        this.bindingInstList.clear();
+    }
 }

@@ -9,7 +9,7 @@ class Panel extends UIElement derives ReflectType {
 
     override def OnEnter(): Unit = {
       this.createBaseEntity(true);
-      println(s"Panel OnEnter ${this.getEntity()} ${this.parent}")
+      //println(s"Panel OnEnter ${this.getEntity()} ${this.parent}")
     }
 
     override def handleXMLContent(elemList: ListBuffer[XmlElement]) = {

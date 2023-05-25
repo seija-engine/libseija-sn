@@ -37,4 +37,17 @@ class Text extends UIElement derives ReflectType {
         })
     }
   }
+
+  override def onPropertyChanged(propertyName: String): Unit = {
+    propertyName match
+      case "text" => {
+        this.entity.foreach(e => {
+           val rawText = e.get[CoreText]();
+           rawText.setText(this._text);
+        })
+      }
+      case _: String => 
+  }
+
+   
 }
