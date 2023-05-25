@@ -9,15 +9,18 @@ import scala.util.Success
 case class TypeInfo(val name:String,
                     val shortName:String,
                     val create:() => Any,
-                    val base:Option[TypeInfo],
+                    val base:Option[String],
                     val fieldList:List[FieldInfo]) {
    val fieldMap:HashMap[String,FieldInfo] = fieldList.foldLeft(HashMap[String,FieldInfo]()){(map,info) =>
       map.updated(info.Name,info)
    };
 
+   def getBaseType():Option[TypeInfo] = base.flatMap(Assembly.get(_,false));
+
    def getValue(obj:Any,fieldName:String):Option[Any] = {
-      if(base.isDefined) {
-         val baseValue = base.get.getValue(obj,fieldName);
+      val baseType = getBaseType();
+      if(baseType.isDefined) {
+         val baseValue = baseType.get.getValue(obj,fieldName);
          if(baseValue.isDefined) return baseValue;
       }
       this.fieldMap.get(fieldName) match
@@ -30,8 +33,9 @@ case class TypeInfo(val name:String,
    }
 
    def setValue(obj:Any,fieldName:String,value:Any):Boolean = {
-      if(base.isDefined) {
-         if(base.get.setValue(obj,fieldName,value)) { return true; }
+      val baseType = getBaseType();
+      if(baseType.isDefined) {
+         if(baseType.get.setValue(obj,fieldName,value)) { return true; }
       }
       this.fieldMap.get(fieldName) match
          case None => false
@@ -42,15 +46,17 @@ case class TypeInfo(val name:String,
    }
 
    def getField(fieldName:String):Option[FieldInfo] = {
-      if(base.isDefined) {
-         val baseField = base.get.getField(fieldName);
+      //println(s"TypeInfo.getField($fieldName) ${this.name} ${this.fieldMap.keySet.mkString(",")}}")
+      val baseType = getBaseType();
+      if(baseType.isDefined) {
+         val baseField = baseType.get.getField(fieldName);
          if(baseField.isDefined) return baseField;
       }
       this.fieldMap.get(fieldName)
    }
  
-   def getField_?(fieldName:String):FieldInfo = {
-      this.getField(fieldName).getOrElse(throw new NotFoundFieldException(this.name,fieldName))
+   def getFieldTry(fieldName:String):Try[FieldInfo] = {
+      this.getField(fieldName).toRight(NotFoundFieldException(this.name,fieldName)).toTry
    }
 }
 
@@ -79,9 +85,9 @@ object ReflectType {
       val shortName:Expr[String] = Expr(typClassSym.name);
       val init = typeSym.declarations.find(_.name=="<init>").get
       val newExpr = Apply(Select(New(TypeTree.of[T]),init),List()).asExprOf[T]
-      val baseTypeName = if(typRepr.baseClasses.length >= 2) { 
-         Expr(typRepr.baseClasses(1).fullName) 
-      } else {  null };
+      val baseTypeName:Expr[Option[String]] = if(typRepr.baseClasses.length >= 2) { 
+         Expr(Some(typRepr.baseClasses(1).fullName)) 
+      } else {  Expr(None) };
 
       val allFields:List[Expr[FieldInfo]] = typClassSym.declaredFields.map(fieldSym => {
          val memberType = typRepr.memberType(fieldSym);
@@ -91,7 +97,6 @@ object ReflectType {
             case ('[ft],'[t]) => {
                   val fullTypeName = Assembly.fullTypeName[ft]; 
                   '{
-                    
                      FieldInfo(
                         ${Expr(fieldName)},
                         ${fullTypeName},
@@ -110,11 +115,11 @@ object ReflectType {
       });
       val fieldList:Expr[List[FieldInfo]] = Expr.ofList(allFields);
       val ret = '{
-         val baseTypeInfo = Assembly.get($baseTypeName,false);
          new ReflectType[T] {
-            override def info: TypeInfo = TypeInfo($fullName,$shortName,() => ${newExpr},baseTypeInfo,${fieldList})
+            override def info: TypeInfo = TypeInfo($fullName,$shortName,() => ${newExpr},$baseTypeName,${fieldList})
          }
       }
+      //report.info(ret.show)
       ret
    }
    /*

@@ -6,8 +6,10 @@ import scala.quoted.Expr
 import scala.annotation.internal.Body
 import scala.collection.mutable.{ListBuffer,HashMap}
 import core.reflect.Assembly.nameOf
+import scala.util.Failure
 
 case class TypeCastException(from:String,to:String) extends Exception(s"${from} to ${to} err")
+case class NotFoundConvertException(from:String,to:String) extends Exception(s"${from} to ${to} not found")
 
 trait Into[A,B] {
     def into(fromValue: A): B;
@@ -64,6 +66,13 @@ object DynTypeConv {
         this.convertStrType(nameOf[String],toType,fromValue)
     }
 
+    def strConvertToTry(toType:String,fromValue:String):Try[Any] = {
+        this.convertStrType(nameOf[String],toType,fromValue) match {
+            case Some(v) => v
+            case _ =>  Failure(NotFoundConvertException(fromValue,toType))
+        }
+    }
+
     def convert(fromType:Class[?],toType:Class[?],fromValue:Any):Option[Try[Any]] = {
         this.convertStrType(fromType.getName(),toType.getName(),fromValue)
     }
@@ -94,6 +103,7 @@ object DynTypeConv {
       }
       //report.info(allStrings);
       val block = Block(allTypeList.toList,Literal(UnitConstant()));
+      //report.info(block.show);
       block.asExprOf[Unit]
     }
 }

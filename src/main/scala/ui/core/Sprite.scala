@@ -51,11 +51,13 @@ class SpriteBuilder extends RawComponentBuilder {
     }
 }
 
+object Sprite {
+    given SpriteComponent:RawComponent[Sprite] with  {
+     type BuilderType = SpriteBuilder;
+     type RawType = RawSprite
+     override def builder(): BuilderType = new SpriteBuilder()
 
-given SpriteComponent:RawComponent[Sprite] with  {
-  type BuilderType = SpriteBuilder;
-  type RawType = RawSprite
-  override def builder(): BuilderType = new SpriteBuilder()
-
-  override def getRaw(entity: Entity): RawType = RawSprite(FFISeijaUI.entityGetSprite(App.worldPtr,entity.id,true))
+     override def getRaw(entity: Entity): RawType = RawSprite(FFISeijaUI.entityGetSprite(App.worldPtr,entity.id,true))
+   }
 }
+

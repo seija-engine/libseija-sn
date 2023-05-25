@@ -26,7 +26,7 @@ class Text extends BaseLayout with Cloneable derives ReflectType {
     this._color = value; this.callPropertyChanged("color", this);
   }
 
-  var _font:Font = Font.getDefault_?()
+  var _font:Font = Font.getDefault().get
   def font = this._font;
   def font_=(font:Font) = {
     this._font = font; this.callPropertyChanged("font", this);

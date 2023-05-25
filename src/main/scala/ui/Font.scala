@@ -2,6 +2,9 @@ package ui
 import ui.core.{Font as FontAsset,FontAssetType};
 import asset.Handle
 import scala.collection.mutable.HashMap
+import scala.util.Try
+import scala.util.Success
+import scala.util.Failure
 
 case class Font(val handle:Handle[FontAsset]);
 
@@ -21,8 +24,5 @@ object Font {
 
     def get(name:String):Option[Font] = fontDict.get(name)
 
-    def getDefault_?() = defaultFont match {
-        case Some(font) => font
-        case None => { throw new Exception("Default font not set"); }
-    }
+    def getDefault():Option[Font] = defaultFont
 }
