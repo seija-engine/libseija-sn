@@ -5,14 +5,23 @@ import scala.quoted.*
 import core.formString
 import scala.util.Try
 import scala.util.Success
+import scala.quoted.ToExpr.ListToExpr
+import scala.annotation.Annotation;
+import scala.util.boundary,boundary.break
+import scala.reflect.ClassTag
 
 case class TypeInfo(val name:String,
                     val shortName:String,
                     val create:() => Any,
                     val base:Option[String],
-                    val fieldList:List[FieldInfo]) {
+                    val fieldList:List[FieldInfo],
+                    val annotations:List[Annotation] = List()) {
    val fieldMap:HashMap[String,FieldInfo] = fieldList.foldLeft(HashMap[String,FieldInfo]()){(map,info) =>
       map.updated(info.Name,info)
+   };
+
+   val annotationMap:HashMap[String,Annotation] = annotations.foldLeft(HashMap[String,Annotation]()){(map,ann) =>
+      map.updated(ann.getClass().getName(),ann)
    };
 
    def getBaseType():Option[TypeInfo] = base.flatMap(Assembly.get(_,false));
@@ -58,6 +67,11 @@ case class TypeInfo(val name:String,
    def getFieldTry(fieldName:String):Try[FieldInfo] = {
       this.getField(fieldName).toRight(NotFoundFieldException(this.name,fieldName)).toTry
    }
+
+   def getAnnotation[T <: Annotation :ClassTag](using ev:ClassTag[T]):Option[T] = {
+      val annName = ev.runtimeClass.getName();
+      this.annotationMap.get(annName).map(_.asInstanceOf[T])
+   }
 }
 
 case class FieldInfo(val Name:String,
@@ -78,6 +92,13 @@ object ReflectType {
    def derivedMacro[T: Type](using Quotes): Expr[ReflectType[T]] = {
       import quotes.reflect.*
       val typRepr: TypeRepr = TypeRepr.of[T]
+      
+      val annLst = Expr.ofList(typRepr.typeSymbol.annotations.filter(t => {
+         t.tpe.asType match
+            case '[scala.annotation.internal.SourceFile] => false
+            case _ => true
+      }).map(_.asExprOf[Annotation])); 
+      
       val typ = typRepr.asType;
       val typClassSym = typRepr.classSymbol.get;
       val typeSym = typRepr.typeSymbol;
@@ -116,7 +137,13 @@ object ReflectType {
       val fieldList:Expr[List[FieldInfo]] = Expr.ofList(allFields);
       val ret = '{
          new ReflectType[T] {
-            override def info: TypeInfo = TypeInfo($fullName,$shortName,() => ${newExpr},$baseTypeName,${fieldList})
+            override def info: TypeInfo = TypeInfo(
+               $fullName,
+               $shortName,
+               () => ${newExpr},
+               $baseTypeName,
+               ${fieldList},
+               ${annLst})
          }
       }
       //report.info(ret.show)

@@ -1,15 +1,4 @@
-<StackPanel>
-    <Panel  width="100" height="40">
-        <Image  imageType="Slice" sprite="default.button" />
-        <Text text="OK" />
-    </Panel>
-    <Panel height="40">
-        <Image  imageType="Slice" sprite="default.button" />
-        <Text text="確立する" />
-    </Panel>
-    <Panel  width="100" height="40">
-        <Image  imageType="Slice" sprite="default.button" />
-        <Text text="确定" />
-    </Panel>
-    <Text height="40" color="#ffffff" text="{Binding Data testString}"/>
-</StackPanel>
+<ContentControl>
+  <ContentControl.width>123</ContentControl.width>
+  QQQ
+</ContentControl>

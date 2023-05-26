@@ -32,6 +32,7 @@ class UIElement extends INotifyPropertyChanged derives ReflectType {
     protected var bindingInstList:ListBuffer[BindingInst] = ListBuffer.empty
     protected var parent:Option[UIElement] = None;
     protected var children:ListBuffer[UIElement] = ListBuffer.empty
+    protected var templatedParent:Option[UIElement] = None;
 
 
     def hor = this._hor;
@@ -115,8 +116,9 @@ class UIElement extends INotifyPropertyChanged derives ReflectType {
         return this._dataContext;
     }
 
-    def handleXMLContent(xmlElement:ListBuffer[XmlElement]) = {  }
-
+    def xmlContentHook(elem:String | ListBuffer[XmlElement],templateParent:Option[UIElement]):Unit = {
+        
+    }
 
     def Exit() = {
         this.bindingInstList.foreach(DataBindingManager.removeInst);

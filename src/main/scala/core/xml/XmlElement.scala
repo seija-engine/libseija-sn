@@ -29,6 +29,9 @@ case class XmlElement(
     for (child <- this.children) {
       child.toXMLString(dep + 1, builder)
     }
+    if(this.innerText.isEmpty) {
+      builder.append(this.innerText.get)
+    }
     appendLine();
     builder.append(s"</${this.name}>\r\n");
     builder.toString()
@@ -92,7 +95,8 @@ case class XmlElementReader(reader: XmlReader) {
             }
           }
           case XmlEvent.Text(text) => {
-            elementStack.last.innerText = Some(text);
+            val trimText = text.trim();
+            if(!trimText.isEmpty()) elementStack.last.innerText = Some(trimText);
           }
           case XmlEvent.Comment(text) =>
           case XmlEvent.EOF           =>

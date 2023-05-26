@@ -12,12 +12,5 @@ class Panel extends UIElement derives ReflectType {
       //println(s"Panel OnEnter ${this.getEntity()} ${this.parent}")
     }
 
-    override def handleXMLContent(elemList: ListBuffer[XmlElement]) = {
-       super.handleXMLContent(elemList);
-       for(childElem <- elemList) {
-         XmlUIElement.fromXmlElement(childElem).logError().foreach(child => {
-           this.addChild(child);
-         })
-       }
-    }
+    
 }

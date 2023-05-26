@@ -2,6 +2,7 @@ package core.reflect
 import java.util.HashMap
 import scala.quoted.*
 import scala.collection.mutable.ListBuffer
+import scala.util.Try
 
 case class NotFoundTypeInfoException(name: String)  extends Exception(s"not found type info: ${name}")
 case class NotFoundFieldException(className: String, name: String) extends Exception(s"not found field: ${className}.${name}")
@@ -24,8 +25,8 @@ object Assembly {
     else { this.typeMap.get(name) }
   )
 
-  def getOrThrow(name: String, isShort: Boolean = false): TypeInfo =  {
-    this.get(name, isShort).getOrElse(throw new NotFoundReflectException(name))
+  def getTry(name: String, isShort: Boolean = false): Try[TypeInfo]  =  {
+    this.get(name, isShort).toRight(NotFoundReflectException(name)).toTry
   }
 
   def getTypeInfo(obj: Any): Option[TypeInfo] = Option(

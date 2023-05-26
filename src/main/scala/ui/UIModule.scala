@@ -5,7 +5,9 @@ import scalanative.unsafe._
 import ui.core.FFISeijaUI
 import _root_.core.reflect.DynTypeConv
 import _root_.core.reflect.Assembly
+import scala.annotation.StaticAnnotation
 
+case class ContentProperty(val name:String) extends StaticAnnotation;
 
 final case class UIModule() extends IModule {
     def OnAdd(appPtr: Ptr[Byte]): Unit = {

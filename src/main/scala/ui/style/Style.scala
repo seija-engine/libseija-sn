@@ -23,7 +23,7 @@ object Style {
       override def into(element: XmlElement): Style = {
         val forType = element.attributes.get("ForType").getOrElse(throw new MissRequiredFieldException("Style","ForType"));
         val className:Option[String] = element.attributes.get("Class");
-        val typInfo = Assembly.getOrThrow(forType,true);
+        val typInfo = Assembly.getTry(forType,true).get;
         val propertyList:ListBuffer[PropertySet] = ListBuffer();
        
         for(elem <- element.children) {
