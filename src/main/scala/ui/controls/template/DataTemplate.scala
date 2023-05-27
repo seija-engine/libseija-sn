@@ -1,4 +1,4 @@
-package ui.controls2.template
+package ui.controls.template
 
 class DataTemplate extends BaseTemplate {
     

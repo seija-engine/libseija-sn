@@ -6,6 +6,7 @@ import ui.core.FFISeijaUI
 import _root_.core.reflect.DynTypeConv
 import _root_.core.reflect.Assembly
 import scala.annotation.StaticAnnotation
+import ui.controls.Image
 
 case class ContentProperty(val name:String) extends StaticAnnotation;
 
@@ -13,11 +14,10 @@ final case class UIModule() extends IModule {
     def OnAdd(appPtr: Ptr[Byte]): Unit = {
         FFISeijaUI.addSpriteSheetModule(appPtr);
         FFISeijaUI.addUIModule(appPtr);
-        DynTypeConv.scanPackage(ui.controls2.Image);
-        DynTypeConv.scanPackage(ui.Template);
+        DynTypeConv.scanPackage(ui.controls.Image);
+        DynTypeConv.scanPackage(ui.Atlas);
         DynTypeConv.scanPackage(ui.core.Thickness);
-        
-        Assembly.scanPackage(ui.controls2.Image); 
+        Assembly.scanPackage(ui.controls.Image);
     }
 
     override def update(): Unit = {

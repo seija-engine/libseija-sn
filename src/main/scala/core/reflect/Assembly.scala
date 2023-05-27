@@ -20,13 +20,10 @@ object Assembly {
     this.typeMap.put(info.name, info);
   }
 
-  def get(name: String, isShort: Boolean = false): Option[TypeInfo] = Option(
-    if (isShort) { this.typeShortMap.get(name) }
-    else { this.typeMap.get(name) }
-  )
+  def get(name: String): Option[TypeInfo] = Option(this.typeMap.get(name))
 
-  def getTry(name: String, isShort: Boolean = false): Try[TypeInfo]  =  {
-    this.get(name, isShort).toRight(NotFoundReflectException(name)).toTry
+  def getTry(name: String): Try[TypeInfo]  =  {
+    this.get(name).toRight(NotFoundReflectException(name)).toTry
   }
 
   def getTypeInfo(obj: Any): Option[TypeInfo] = Option(

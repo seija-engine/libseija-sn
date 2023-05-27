@@ -1,6 +1,6 @@
-package ui.controls2.template
+package ui.controls.template
 
-import ui.controls2.UIElement
+import ui.controls.UIElement
 import scala.util.Try
 import scala.util.Failure
 

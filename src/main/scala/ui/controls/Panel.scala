@@ -1,8 +1,8 @@
-package ui.controls2
+package ui.controls
 import core.reflect.*;
 import scala.collection.mutable.ListBuffer
 import core.xml.XmlElement
-import ui.xml2.XmlUIElement
+import ui.xml.XmlUIElement
 import core.logError;
 
 class Panel extends UIElement derives ReflectType {

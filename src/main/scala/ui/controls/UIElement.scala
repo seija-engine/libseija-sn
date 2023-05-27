@@ -1,4 +1,4 @@
-package ui.controls2
+package ui.controls
 import ui.style.Style;
 import core.Entity;
 import ui.binding.INotifyPropertyChanged

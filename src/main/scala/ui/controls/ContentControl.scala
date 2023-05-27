@@ -1,5 +1,5 @@
-package ui.controls2
-import ui.controls2.template.DataTemplate
+package ui.controls
+import ui.controls.template.DataTemplate
 import ui.ContentProperty;
 import core.reflect.*;
 import scala.runtime.Static

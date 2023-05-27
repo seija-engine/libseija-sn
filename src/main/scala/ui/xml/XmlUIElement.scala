@@ -1,7 +1,7 @@
-package ui.xml2
+package ui.xml
 import core.xml.XmlElement
 import scala.util.Try
-import ui.controls2.UIElement
+import ui.controls.UIElement
 import core.reflect.Assembly
 import core.reflect.TypeInfo
 import scala.util.Success
@@ -9,6 +9,7 @@ import core.logError
 import core.reflect.DynTypeConv
 import ui.binding.BindingItem
 import ui.ContentProperty
+import scala.util.Failure
 
 object XmlUIElement {
     def fromFile(filePath:String):Try[UIElement] = {
@@ -16,22 +17,16 @@ object XmlUIElement {
     }
 
     def fromXmlElement(xmlElem:XmlElement,templateParent:Option[UIElement]):Try[UIElement] = Try {
-        val typInfo:TypeInfo = Assembly.getTry(xmlElem.name,true).get;
-        val newUIElement = typInfo.create().asInstanceOf[UIElement];
-        setElemetStringProps(typInfo,newUIElement,xmlElem);
+      val typInfo = this.getType(xmlElem.name).get;
+      val newUIElement = typInfo.create().asInstanceOf[UIElement];
+      setElemetStringProps(typInfo,newUIElement,xmlElem);
+      ???
+      /*
+        val typInfo:TypeInfo = Assembly.getTry(xmlElem.name).get;
+        
+        
 
-        /*
-        Content:
-        <Button>
-          <Button.width>123</Button.width>
-          <Button.template>
-            <ControlTemplate>
-              <ContentPresenter />
-            </ControlTemplate>
-          </Button.template>
-          OK
-        </Button>
-        */
+        
         val contentAnn = typInfo.getAnnotation[ContentProperty]
         for(childElem <- xmlElem.children) {
           if(childElem.name.startsWith(s"${xmlElem.name}.")) {
@@ -43,7 +38,7 @@ object XmlUIElement {
             fromXmlElement(childElem,Some(newUIElement)).logError();
           }
         }
-        newUIElement
+        newUIElement*/
     }
 
     protected def setElemetStringProps(typInfo:TypeInfo,ui:UIElement,xml:XmlElement) = {
@@ -59,4 +54,14 @@ object XmlUIElement {
           }
         }
     }
+
+    def getType(xmlName:String):Try[TypeInfo] = {
+      val fullTypeName = XmlReadSetting.default.toFullName(xmlName);
+      if(fullTypeName.isEmpty) {
+        return Failure(NotFoundNSAlias(xmlName))
+      }
+      Assembly.getTry(fullTypeName.get)
+    }
 }
+
+case class NotFoundNSAlias(name:String) extends Exception;

@@ -8,7 +8,7 @@ import ui.core.UISystem
 import render.{Camera, given}
 import math.Vector3
 import ui.BaseControl;
-import ui.controls2.UIElement
+import ui.controls.UIElement
 
 case class UICanvas(val cameraEntity: Entity,val rootEntity:Entity) extends UIElement {
   this.entity = Some(rootEntity);

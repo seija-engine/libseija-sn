@@ -2,7 +2,7 @@ import core.IGameApp
 import ui.Atlas
 import ui.core.Thickness
 import ui.UICanvas
-import ui.xml2.XmlUIElement
+import ui.xml.XmlUIElement
 import core.reflect.Assembly
 import ui.binding.INotifyPropertyChanged
 import core.Time

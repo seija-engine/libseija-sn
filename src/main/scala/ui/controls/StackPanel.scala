@@ -1,4 +1,4 @@
-package ui.controls2
+package ui.controls
 import core.reflect.*;
 import core.xml.XmlElement
 import scala.collection.mutable.ListBuffer

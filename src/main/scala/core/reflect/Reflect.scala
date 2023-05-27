@@ -24,7 +24,7 @@ case class TypeInfo(val name:String,
       map.updated(ann.getClass().getName(),ann)
    };
 
-   def getBaseType():Option[TypeInfo] = base.flatMap(Assembly.get(_,false));
+   def getBaseType():Option[TypeInfo] = base.flatMap(Assembly.get(_));
 
    def getValue(obj:Any,fieldName:String):Option[Any] = {
       val baseType = getBaseType();
