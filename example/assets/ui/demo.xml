@@ -1,8 +1,7 @@
-<Control height="456">
-  <Control.width>123</Control.width>
+<Control height="200" width="200">
  <Control.template>
   <ControlTemplate>
-     <Image sprite="default.white" color="#ffff00" />
+     <Image  sprite="default.white" color="#ffff00" />
   </ControlTemplate>
  </Control.template>
 </Control>

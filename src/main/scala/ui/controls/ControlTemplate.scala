@@ -3,8 +3,16 @@ import ui.controls.BaseTemplate
 import core.reflect.*;
 import ui.ContentProperty
 import scala.collection.mutable.ArrayBuffer
+import scala.util.Try
+import core.ICopy;
+import core.copyObject
+import scala.util.Success
 
 @ContentProperty("content")
 class ControlTemplate extends BaseTemplate derives ReflectType {
     var content:UIElement = UIElement.zero;
+
+    override def LoadContent(): Try[UIElement] = {
+        Success(copyObject(content))
+    }
 }

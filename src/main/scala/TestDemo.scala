@@ -29,8 +29,6 @@ class TestDemo extends IGameApp {
     XmlUIElement.fromFile("example/assets/ui/demo.xml").logError().foreach {loadElement => 
       loadElement.dataContext = Some(viewModel);
       this.topCanvas.get.addElement(loadElement);
-      val ttt = loadElement.asInstanceOf[Control];
-      println(s"TTT:${ttt.template.get.content} ")
     }
 }
 

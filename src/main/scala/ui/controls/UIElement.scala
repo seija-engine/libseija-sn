@@ -15,6 +15,8 @@ import ui.binding.BindingSource
 import ui.binding.DataBindingManager
 import ui.binding.BindingInst
 import scala.util.Success
+import core.copyObject;
+import core.ICopy
 
 class UIElement extends INotifyPropertyChanged derives ReflectType {
     protected var entity:Option[Entity] = None
@@ -58,6 +60,10 @@ class UIElement extends INotifyPropertyChanged derives ReflectType {
     def addChild(elem:UIElement) = {
        elem.parent = Some(this);
        this.children.addOne(elem);
+    }
+
+    def setParent(elem:Option[UIElement]) = {
+        this.parent = elem;
     }
 
     def Enter():Unit = {
@@ -116,9 +122,7 @@ class UIElement extends INotifyPropertyChanged derives ReflectType {
         return this._dataContext;
     }
 
-    def xmlContentHook(elem:String | ListBuffer[XmlElement],templateParent:Option[UIElement]):Unit = {
-        
-    }
+    
 
     def Exit() = {
         this.bindingInstList.foreach(DataBindingManager.removeInst);
@@ -128,4 +132,8 @@ class UIElement extends INotifyPropertyChanged derives ReflectType {
 
 object UIElement {
     val zero:UIElement = UIElement()
+
+    given ICopy[UIElement] with {
+
+    }
 }
