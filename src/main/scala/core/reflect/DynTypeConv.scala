@@ -7,6 +7,7 @@ import scala.annotation.internal.Body
 import scala.collection.mutable.{ListBuffer,HashMap}
 import core.reflect.Assembly.nameOf
 import scala.util.Failure
+import scala.util.Success
 
 case class TypeCastException(from:String,to:String) extends Exception(s"${from} to ${to} err")
 case class NotFoundConvertException(from:String,to:String) extends Exception(s"${from} to ${to} not found")
@@ -29,12 +30,13 @@ object DynTypeConv {
         register[String,Double]
         register[String,Boolean]
         register[String,String]
+        register[String,Option[Any]];
     }
     
     inline def register[A,B](using into: Into[A,B]): Unit = { 
         val aName = Assembly.nameOf[A];
         val bName = Assembly.nameOf[B];
-       
+        println(s"register ${aName} to ${bName}")
         val key = (aName,bName);
         if(!this.convMap.contains(key)) {
             this.convMap.put(key,into);
@@ -52,6 +54,10 @@ object DynTypeConv {
     
 
     def convertStrType(fromType:String,toType:String,fromValue:Any):Option[Try[Any]] = {
+        if(fromType == toType) { return Some(Success(fromValue)) }
+        if(toType.startsWith("scala.Option") && toType.endsWith(fromType + "]")) {
+            return Some(Success(Some(fromValue)))
+        }
         val key = (fromType,toType);
         if(this.convMap.contains(key)) {
             val conv = this.convMap(key);
@@ -60,6 +66,13 @@ object DynTypeConv {
         } else {
             None
         }
+    }
+
+    def convertStrTypeTry(fromType:String,toType:String,fromValue:Any):Try[Any] = {
+      this.convertStrType(fromType,toType,fromValue) match
+        case None => Failure(NotFoundConvertException(fromType,toType))
+        case Some(value) => value
+      
     }
 
     def strConvertTo(toType:String,fromValue:String):Option[Try[Any]] = {
@@ -132,4 +145,12 @@ given [T](using t:Into[T,String]):Into[Option[T],String] with {
   override def into(value: Option[T]): String = value match
     case None => ""
     case Some(value) => t.into(value)
+}
+
+given Into[String,Any] with {
+    override def into(fromValue: String): Any = fromValue
+}
+
+given Into[String,Option[Any]] with {
+  override def into(fromValue: String): Option[Any] = Some(fromValue)
 }

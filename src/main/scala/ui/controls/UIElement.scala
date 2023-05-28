@@ -125,3 +125,7 @@ class UIElement extends INotifyPropertyChanged derives ReflectType {
         this.bindingInstList.clear();
     }
 }
+
+object UIElement {
+    val zero:UIElement = UIElement()
+}

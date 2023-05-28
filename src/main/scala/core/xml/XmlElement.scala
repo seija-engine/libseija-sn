@@ -29,7 +29,7 @@ case class XmlElement(
     for (child <- this.children) {
       child.toXMLString(dep + 1, builder)
     }
-    if(this.innerText.isEmpty) {
+    if(this.innerText.isDefined) {
       builder.append(this.innerText.get)
     }
     appendLine();

@@ -6,6 +6,8 @@ import ui.xml.XmlUIElement
 import core.reflect.Assembly
 import ui.binding.INotifyPropertyChanged
 import core.Time
+import core.logError;
+import ui.controls.Control
 
 class TestDemo extends IGameApp {
   var topCanvas:Option[UICanvas] = None;
@@ -23,10 +25,14 @@ class TestDemo extends IGameApp {
     this.loadAsset();
     val viewModel = new TestViewModel();
     this.testViewModel = Some(viewModel);
-    val loadElement = XmlUIElement.fromFile("example/assets/ui/demo.xml").get;
-    loadElement.dataContext = Some(viewModel);
-    this.topCanvas.get.addElement(loadElement);
-  }
+    
+    XmlUIElement.fromFile("example/assets/ui/demo.xml").logError().foreach {loadElement => 
+      loadElement.dataContext = Some(viewModel);
+      this.topCanvas.get.addElement(loadElement);
+      val ttt = loadElement.asInstanceOf[Control];
+      println(s"TTT:${ttt.template.get.content} ")
+    }
+}
 
   override def OnUpdate(): Unit = {
     val dt = Time.getDeltaTime();

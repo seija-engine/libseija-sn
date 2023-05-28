@@ -1,5 +1,5 @@
 package ui.controls
-import ui.controls.template.ControlTemplate
+import ui.controls.ControlTemplate
 import core.reflect.*;
 
 class Control extends UIElement derives ReflectType {

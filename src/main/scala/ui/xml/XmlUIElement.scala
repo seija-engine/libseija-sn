@@ -3,56 +3,89 @@ import core.xml.XmlElement
 import scala.util.Try
 import ui.controls.UIElement
 import core.reflect.Assembly
-import core.reflect.TypeInfo
+import core.reflect.{TypeInfo,FieldInfo}
 import scala.util.Success
 import core.logError
+import ui.ContentProperty;
 import core.reflect.DynTypeConv
 import ui.binding.BindingItem
 import ui.ContentProperty
 import scala.util.Failure
+import scala.collection.mutable.ListBuffer
+import scala.collection.SeqOps
+import scala.collection.mutable.Buffer
 
 object XmlUIElement {
     def fromFile(filePath:String):Try[UIElement] = {
         XmlElement.fromFile(filePath).flatMap(fromXmlElement(_,None));
     }
 
-    def fromXmlElement(xmlElem:XmlElement,templateParent:Option[UIElement]):Try[UIElement] = Try {
-      val typInfo = this.getType(xmlElem.name).get;
-      val newUIElement = typInfo.create().asInstanceOf[UIElement];
-      setElemetStringProps(typInfo,newUIElement,xmlElem);
-      ???
-      /*
-        val typInfo:TypeInfo = Assembly.getTry(xmlElem.name).get;
-        
-        
-
-        
-        val contentAnn = typInfo.getAnnotation[ContentProperty]
-        for(childElem <- xmlElem.children) {
-          if(childElem.name.startsWith(s"${xmlElem.name}.")) {
-            val propName = childElem.name.substring(xmlElem.name.length() + 1,childElem.name.length());
-            typInfo.getFieldTry(propName).logError().foreach {field =>
-                println(field)
-            }
-          } else {
-            fromXmlElement(childElem,Some(newUIElement)).logError();
-          }
-        }
-        newUIElement*/
+    def fromXmlElement(xmlElem:XmlElement,templateParent:Option[UIElement]):Try[UIElement] = {
+      this.parseXMLObject(xmlElem).map(_.asInstanceOf[UIElement])
     }
 
-    protected def setElemetStringProps(typInfo:TypeInfo,ui:UIElement,xml:XmlElement) = {
-        for((k,v) <- xml.attributes) {
-          if (v.startsWith("{Binding")) {
-            BindingItem.parse(k, v).logError().foreach(ui.addBindItem(_))
-          } else {
-            typInfo.getFieldTry(k).logError().foreach {field =>
-                DynTypeConv.strConvertToTry(field.typName,v).logError().foreach { value =>
-                    field.set(ui,value)
-                }
-            }
+    def parseXMLObject(xmlElem:XmlElement):Try[Any] = Try {
+      val typInfo = this.getType(xmlElem.name).get;
+      val newObject = typInfo.create();
+      setObjectStringProps(typInfo,newObject,xmlElem);
+      val contentPropName = typInfo.getAnnotation[ContentProperty].map(_.name);
+      val fieldContent = contentPropName.flatMap(typInfo.getField(_));
+      val lstObject:Option[Buffer[Any]] = if(fieldContent.isDefined) {
+        val filedObject = fieldContent.get.get(newObject);
+        if(filedObject.isInstanceOf[Buffer[_]]) {Some(filedObject.asInstanceOf[Buffer[Any]])} else { None }
+      } else { None }
+      
+      //xml attr
+      for(childElem <- xmlElem.children) {
+        if(childElem.name.indexOf('.') > 0) {
+           this.setXMLProp(newObject,typInfo,childElem).logError();
+        } else {
+           if(lstObject.isDefined) {
+              this.parseXMLObject(childElem).logError().foreach {v =>
+                //TODO Check Type?
+                lstObject.get.addOne(v);
+              }
+           } else {
+              this.parseXMLObject(childElem).logError().foreach {v => 
+                fieldContent.foreach(f => f.set(newObject,v))
+              }
+           }
+        }
+      }
+      newObject
+    }
+
+    def setXMLProp(curObject:Any,typInfo:TypeInfo,childElem:XmlElement):Try[Unit] = Try {
+      val filedNames = childElem.name.split('.');
+      val fieldInfo:FieldInfo = typInfo.getFieldTry(filedNames(1)).get;
+      childElem.children.length match {
+        case 0 => {
+          if(childElem.innerText.isDefined) {
+            this.trySetValue(curObject,fieldInfo,childElem.innerText.get).logError();
           }
         }
+        case 1 => {
+          val propValue = this.parseXMLObject(childElem.children(0)).logError();
+          propValue.foreach(v => this.trySetValue(curObject,fieldInfo,v).logError())
+          
+        }
+        case _ => { }
+      }
+    }
+
+    def setObjectStringProps(typInfo:TypeInfo,curObject:Any,xmlElem:XmlElement) = {
+      val isUIElement = curObject.isInstanceOf[UIElement];
+      for((k,v) <- xmlElem.attributes) {
+         val tryErr:Try[Unit] = if (isUIElement && v.startsWith("{Binding")) {
+            BindingItem.parse(k, v).map(curObject.asInstanceOf[UIElement].addBindItem(_))
+          } else {
+            for {
+            field <- typInfo.getFieldTry(k)
+            convValue <- DynTypeConv.strConvertToTry(field.typName,v)
+            } yield { field.set(curObject,convValue); }
+          }
+          tryErr.logError();
+      }
     }
 
     def getType(xmlName:String):Try[TypeInfo] = {
@@ -61,6 +94,11 @@ object XmlUIElement {
         return Failure(NotFoundNSAlias(xmlName))
       }
       Assembly.getTry(fullTypeName.get)
+    }
+
+    def trySetValue(curObject:Any,fieldInfo:FieldInfo,fromValue:Any):Try[Unit] = Try {
+      val convValue = DynTypeConv.convertStrTypeTry(fromValue.getClass().getName(),fieldInfo.typName,fromValue).get;
+      fieldInfo.set(curObject,convValue);
     }
 }
 

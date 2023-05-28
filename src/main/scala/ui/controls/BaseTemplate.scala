@@ -1,4 +1,4 @@
-package ui.controls.template
+package ui.controls
 
 import ui.controls.UIElement
 import scala.util.Try
