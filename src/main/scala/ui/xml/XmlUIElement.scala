@@ -58,6 +58,7 @@ object XmlUIElement {
     def setXMLProp(curObject:Any,typInfo:TypeInfo,childElem:XmlElement):Try[Unit] = Try {
       val filedNames = childElem.name.split('.');
       val fieldInfo:FieldInfo = typInfo.getFieldTry(filedNames(1)).get;
+      
       childElem.children.length match {
         case 0 => {
           if(childElem.innerText.isDefined) {
@@ -69,7 +70,19 @@ object XmlUIElement {
           propValue.foreach(v => this.trySetValue(curObject,fieldInfo,v).logError())
           
         }
-        case _ => { }
+        case _ => {
+           val curFieldObject = fieldInfo.get(curObject);
+           val filedTypeInfo = Assembly.getTypeInfoOrThrow(curFieldObject);
+           val lstObject = this.tryGetListObject(filedTypeInfo,curFieldObject);
+           if(lstObject.isDefined) {
+             for(propChildElem <- childElem.children) {
+                this.parseXMLObject(propChildElem).logError().foreach {v =>
+                  //TODO Check Type?
+                  lstObject.get.addOne(v);
+                }
+             }
+           }
+        }
       }
     }
 
@@ -99,6 +112,15 @@ object XmlUIElement {
     def trySetValue(curObject:Any,fieldInfo:FieldInfo,fromValue:Any):Try[Unit] = Try {
       val convValue = DynTypeConv.convertStrTypeTry(fromValue.getClass().getName(),fieldInfo.typName,fromValue).get;
       fieldInfo.set(curObject,convValue);
+    }
+
+    def tryGetListObject(typInfo:TypeInfo,curObject:Any):Option[Buffer[Any]] = {
+      val contentPropName = typInfo.getAnnotation[ContentProperty].map(_.name);
+      val fieldContent = contentPropName.flatMap(typInfo.getField(_));
+      if(fieldContent.isDefined) {
+        val filedObject = fieldContent.get.get(curObject);
+        if(filedObject.isInstanceOf[Buffer[_]]) {Some(filedObject.asInstanceOf[Buffer[Any]])} else { None }
+      } else { None }
     }
 }
 

@@ -2,19 +2,27 @@ package ui.controls
 import ui.controls.ControlTemplate
 import core.reflect.*;
 import core.logError;
+import scala.util.Try
+import scala.util.Success
+import scala.util.Failure
 class Control extends UIElement derives ReflectType {
     var template:Option[ControlTemplate] = None
 
-    override def Enter(): Unit = {
-        if(this.template.isDefined) {
-          this.template.get.LoadContent().logError().foreach {element =>
-             element.setParent(this.parent);
-             element.Enter();
-             this.entity = element.getEntity();    
-          }
+
+    override def OnEnter(): Unit = {
+        this.createBaseEntity(true);
+        this.findTemplate().logError().foreach { tem =>
+            tem.LoadContent().logError().foreach {element =>
+                element.setParent(Some(this));
+                element.Enter(); 
+            }
         }
-        super.Enter();
     }
 
-   
+    def findTemplate():Try[ControlTemplate] = {
+       if(this.template.isDefined) {
+         return Success(this.template.get);
+       }
+       Failure(new Throwable("template not found"))
+    }
 }

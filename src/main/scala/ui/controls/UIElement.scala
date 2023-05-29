@@ -5,6 +5,7 @@ import ui.binding.INotifyPropertyChanged
 import ui.core.{LayoutAlignment,SizeValue,Thickness,Rect2D,ItemLayout}
 import core.reflect.{autoProps,AutoGetSetter,ReflectType};
 import scala.Conversion
+import ui.resources.UIResource;
 import core.logError;
 import scala.quoted.Expr
 import core.xml.XmlElement
@@ -36,6 +37,7 @@ class UIElement extends INotifyPropertyChanged derives ReflectType {
     protected var children:ListBuffer[UIElement] = ListBuffer.empty
     protected var templatedParent:Option[UIElement] = None;
 
+    protected var resources:UIResource = UIResource.empty();
 
     def hor = this._hor;
     def hor_=(value:LayoutAlignment) = { this._hor = value; this.callPropertyChanged("hor",this) }

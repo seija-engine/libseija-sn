@@ -40,10 +40,9 @@ class Image extends UIElement derives ReflectType {
     def color_=(value:Color) = { this._color = value; this.callPropertyChanged("color",this) }
 
     override def OnEnter(): Unit = {
-      
       val spriteType = this.getSpriteType();
       val parentEntity = this.parent.flatMap(_.getEntity());
-      println(s"Image.OnEnter() ${this._sprite} ${parentEntity}")
+      //println(s"Image.OnEnter() ${this._sprite} ${parentEntity}")
       val entity = Entity.spawnEmpty()
           .add[Transform](_.parent = parentEntity)
           .add[Rect2D]()

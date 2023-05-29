@@ -1,7 +1,9 @@
 package ui.xml
 import scala.collection.mutable;
 import scala.collection.mutable.HashMap
+import core.reflect.*;
 case class XmlReadSetting(
+    specialNS:HashMap[String,String] = HashMap(),
     defaultNS:String,
     nsAlias:HashMap[String,String] = HashMap()
 ) {
@@ -16,10 +18,21 @@ case class XmlReadSetting(
            Some(s"${defaultNS}.${splitNames(0)}")
         }
     }
+
+    def getTypeInfo(xmlName:String):Option[TypeInfo] = {
+        val splitNames = xmlName.split(':');
+        if(splitNames.length > 1) {
+            nsAlias.get(splitNames(0)).flatMap {ns => Assembly.get(s"${ns}.${splitNames(1)}") }
+        } else {
+           
+           None
+        }
+    }
 }
 
 object XmlReadSetting {
     val default:XmlReadSetting = XmlReadSetting(
+        HashMap("Style" -> "ui.controls"),
         "ui.controls",
         HashMap()
     )

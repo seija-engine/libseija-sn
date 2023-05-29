@@ -25,6 +25,7 @@ object FFIXml {
   }
 
   def xmlRederFromFile(path:String):Try[Ptr[Byte]] = Zone { implicit z =>
+      println(s"read xml path:${path}")
       val ptrReader = xmlReaderFromFilePtr(toCString(path));
       if(ptrReader == null) {
         Failure(new Exception(s"xml not found path ${path}"))

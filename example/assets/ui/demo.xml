@@ -1,7 +1,12 @@
 <Control height="200" width="200">
- <Control.template>
-  <ControlTemplate>
-     <Image  sprite="default.white" color="#ffff00" />
-  </ControlTemplate>
- </Control.template>
-</Control>
+   <Control.resources>
+      <Style ForType="Button">
+         <Setter Property="Background" Value="Red" />
+         <Setter Property="width" Value="123" />
+      </Style>
+      <Style key="ImageButton" ForType="Button">
+         <Setter Property="Background" Value="Red" />
+         <Setter Property="width" Value="123" />
+      </Style>
+   </Control.resources>
+</Control> 
