@@ -12,18 +12,17 @@ import ui.binding.BindingItem
 import ui.ContentProperty
 import scala.util.Failure
 import scala.collection.mutable.ListBuffer
-import scala.collection.SeqOps
 import scala.collection.mutable.Buffer
 
 object XmlUIElement {
     def fromFile(filePath:String):Try[UIElement] = {
-        XmlElement.fromFile(filePath).flatMap(fromXmlElement(_,None));
+      ???
     }
 
     def fromXmlElement(xmlElem:XmlElement,templateParent:Option[UIElement]):Try[UIElement] = {
-      this.parseXMLObject(xmlElem).map(_.asInstanceOf[UIElement])
+      ???
     }
-
+    /*
     def parseXMLObject(xmlElem:XmlElement):Try[Any] = Try {
       val typInfo = this.getType(xmlElem.name).get;
       val newObject = typInfo.create();
@@ -121,7 +120,7 @@ object XmlUIElement {
         val filedObject = fieldContent.get.get(curObject);
         if(filedObject.isInstanceOf[Buffer[_]]) {Some(filedObject.asInstanceOf[Buffer[Any]])} else { None }
       } else { None }
-    }
+    }*/
 }
 
 case class NotFoundNSAlias(name:String) extends Exception;

@@ -11,9 +11,15 @@ import java.net.InetAddress
 import java.net.InetSocketAddress
 import scala.collection.mutable.ArrayBuffer
 import scala.collection.mutable.Buffer
+import scala.collection.mutable.HashMap
+import ui.xml.XmlNSResolver
+import core.reflect.Assembly
 object Main {
   def main(args: Array[String]): Unit = {
-    runSeija();
+    Assembly.scanPackage(ui.controls.Image);
+    val fullName = XmlNSResolver.default.resolver("Image");
+    println(fullName);
+    //runSeija();
   }
 
   def runSeija() = {

@@ -20,6 +20,8 @@ object Assembly {
     this.typeMap.put(info.name, info);
   }
 
+  def has(name:String):Boolean = { this.typeMap.containsKey(name); }
+
   def get(name: String): Option[TypeInfo] = Option(this.typeMap.get(name))
 
   def getTry(name: String): Try[TypeInfo]  =  {
