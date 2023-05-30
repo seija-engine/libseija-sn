@@ -1,12 +1,13 @@
 <Control height="200" width="200">
    <Control.resources>
-      <Style ForType="Button">
+      <Style forType="Button">
          <Setter Property="Background" Value="Red" />
          <Setter Property="width" Value="123" />
       </Style>
-      <Style key="ImageButton" ForType="Button">
+      <Style key="ImageButton" forType="Button">
          <Setter Property="Background" Value="Red" />
          <Setter Property="width" Value="123" />
       </Style>
    </Control.resources>
+   <Image sprite="default.white" />
 </Control> 

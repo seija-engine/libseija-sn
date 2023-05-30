@@ -5,6 +5,8 @@ import core.reflect.*;
 import input.KeyCode.N
 import scala.collection.mutable.ArrayBuffer
 import scala.util.boundary,boundary.break;
+import scala.util.Failure
+import scala.util.Try
 
 enum NSValue {
     case Const(value: String) extends NSValue
@@ -13,12 +15,11 @@ enum NSValue {
     def resolver(name:String):Option[String] = this match {
         case Const(value) => Some(value)
         case Ruled(value) => value.resolver(name)
-
     }
 }
 
 class XmlNSResolver {
-   var nsMap: HashMap[String, NSValue] = HashMap[String, NSValue]();
+   private var nsMap: HashMap[String, NSValue] = HashMap[String, NSValue]();
    
    def addConst(name: String, value: String) = {
        nsMap.put(name, NSValue.Const(value));
@@ -34,6 +35,10 @@ class XmlNSResolver {
      val nsValue = nsMap.get(nsName);
      if(nsValue.isEmpty) return None;
      nsValue.get.resolver(typName)
+   }
+
+   def resolverTypeInfo(name:String):Try[TypeInfo] = {
+      this.resolver(name).toRight(new NotFoundTypeInfoException(name)).toTry.flatMap(Assembly.getTry(_))
    }
 }
 

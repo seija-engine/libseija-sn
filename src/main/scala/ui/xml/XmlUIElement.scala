@@ -16,11 +16,13 @@ import scala.collection.mutable.Buffer
 
 object XmlUIElement {
     def fromFile(filePath:String):Try[UIElement] = {
-      ???
+      val xmlElement = XmlElement.fromFile(filePath).get;
+      fromXmlElement(xmlElement)
     }
 
-    def fromXmlElement(xmlElem:XmlElement,templateParent:Option[UIElement]):Try[UIElement] = {
-      ???
+    def fromXmlElement(xmlElem:XmlElement):Try[UIElement] = {
+      val curObject = XmlObjectParser(XmlNSResolver.default).parse(xmlElem);
+      curObject.map(_.asInstanceOf[UIElement])
     }
     /*
     def parseXMLObject(xmlElem:XmlElement):Try[Any] = Try {

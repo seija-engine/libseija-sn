@@ -16,10 +16,7 @@ import ui.xml.XmlNSResolver
 import core.reflect.Assembly
 object Main {
   def main(args: Array[String]): Unit = {
-    Assembly.scanPackage(ui.controls.Image);
-    val fullName = XmlNSResolver.default.resolver("Image");
-    println(fullName);
-    //runSeija();
+    runSeija();
   }
 
   def runSeija() = {
