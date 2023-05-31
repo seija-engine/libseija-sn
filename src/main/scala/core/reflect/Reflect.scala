@@ -68,9 +68,22 @@ case class TypeInfo(val name:String,
       this.getField(fieldName).toRight(NotFoundFieldException(this.name,fieldName)).toTry
    }
 
-   def getAnnotation[T <: Annotation :ClassTag](using ev:ClassTag[T]):Option[T] = {
+   def getAnnotation[T <: Annotation](using ev:ClassTag[T]):Option[T] = {
       val annName = ev.runtimeClass.getName();
-      this.annotationMap.get(annName).map(_.asInstanceOf[T])
+      val value = this.annotationMap.get(annName).map(_.asInstanceOf[T])
+      
+      if(value.isEmpty) {
+        this.getBaseType().flatMap(_.getAnnotation[T])
+      } else {
+         value
+      }
+   }
+
+   def isInstOf(other:TypeInfo):Boolean = {
+      if(this.name.equals(other.name)) {
+         return true;
+      }
+      return this.getBaseType().map(_.isInstOf(other)).getOrElse(false)
    }
 }
 

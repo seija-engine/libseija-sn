@@ -10,4 +10,9 @@ import scala.runtime.Static
 class ContentControl extends Control derives ReflectType {
     var content:Option[Any] = None
     var dataTemplate:Option[DataTemplate] = None
+
+    override def OnEnter(): Unit = {
+       super.OnEnter();
+      
+    }
 }

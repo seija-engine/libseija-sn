@@ -64,6 +64,13 @@ object DynTypeConv {
             val toValue = conv.tryInto.asInstanceOf[Any=>Try[Any]](fromValue);
             Some(toValue)
         } else {
+            val form = Assembly.get(fromType);
+            val to = Assembly.get(toType);
+            if(form.isDefined && to.isDefined) {
+               if(form.get.isInstOf(to.get)) {
+                  return Some(Success(fromValue));
+               }
+            }
             None
         }
     }

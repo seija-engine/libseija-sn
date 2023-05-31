@@ -1,13 +1,20 @@
-<Control height="200" width="200">
-   <Control.resources>
-      <Style forType="Button">
-         <Setter Property="Background" Value="Red" />
-         <Setter Property="width" Value="123" />
-      </Style>
-      <Style key="ImageButton" forType="Button">
-         <Setter Property="Background" Value="Red" />
-         <Setter Property="width" Value="123" />
-      </Style>
-   </Control.resources>
-   <Image sprite="default.white" />
-</Control> 
+<StackPanel orientation="Ver" spacing="10" >
+   <ContentControl height="200">
+      <ContentControl.template>
+         <ControlTemplate>
+            <Image sprite="default.white"   color="#334422" />
+         </ControlTemplate>
+      </ContentControl.template>
+      <ContentControl.dataTemplate>
+         <DataTemplate>
+            <Text />
+         </DataTemplate>
+      </ContentControl.dataTemplate>
+   </ContentControl>
+
+   <Image sprite="default.white" height="100" color="#ff0000" />
+
+   <Text color="#ffffff" height="30">
+      汨罗渊中波涛动，巫山峰旁乱云飞；
+   </Text>
+</StackPanel>
