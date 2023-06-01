@@ -24,17 +24,42 @@ class XmlObjectParser(val nsResolver: XmlNSResolver = XmlNSResolver.default) {
       }
       val contentName = curTypeInfo.getAnnotation[ContentProperty].map(_.name).getOrElse("content");
       val contentField = curTypeInfo.getField(contentName);
+      
+      val contentList:Option[Growable[Any]] = contentField.flatMap { f =>
+        val fObject = f.get(curObject)
+        if(fObject.isInstanceOf[Growable[_]]) {
+          Some(fObject.asInstanceOf[Growable[Any]])
+        } else { None }
+      }
       if(contentField.isDefined) {
-        
         if(contentCount == 0 && xml.innerText.isDefined) {
-        
+          setStringProp(curTypeInfo,curObject,contentField.get.Name,xml.innerText.get);
         } else if(contentCount == 1) {
           xml.children.filter(_.name.indexOf(".") < 0).foreach { childElem =>
             val childObject = this.parse(childElem).logError();
-            println(childObject);
+            if(childObject.isSuccess) {
+              val ctxObject = childObject.get;
+              if(contentList.isDefined) {
+                contentList.get += ctxObject;
+              } else {
+                  val convValue = DynTypeConv.convertStrTypeTry(ctxObject.getClass().getName(),contentField.get.typName,ctxObject);
+                  if(convValue.logError().isSuccess) {
+                    contentField.get.set(curObject,convValue.get);
+                  }
+              }
+            }
           }
         } else if(contentCount > 1) {
+          if(contentList.isDefined) {
+              for(childElem <- xml.children.filter(_.name.indexOf(".") < 0)) {
+                  val childObject = this.parse(childElem).logError();
+                  if(childObject.isSuccess) {
+                    contentList.get += childObject.get;
 
+                    //println(s"add ${childObject.get} to ${contentList}")
+                  }
+              }
+          }
         }
       }
       curObject
@@ -52,7 +77,7 @@ class XmlObjectParser(val nsResolver: XmlNSResolver = XmlNSResolver.default) {
       if(xml.children.length == 0 && xml.innerText.isDefined) {
           setStringProp(typInfo,curObject,key,xml.innerText.get);
       } else if(xml.children.length == 1) {
-        val childValue = this.parse(xml).get;
+        val childValue = this.parse(xml.children(0)).get;
         val convValue = DynTypeConv.convertStrTypeTry(childValue.getClass().getName(),fieldInfo.typName,childValue).get;
         fieldInfo.set(curObject,convValue);
       } else if(xml.children.length > 1) {

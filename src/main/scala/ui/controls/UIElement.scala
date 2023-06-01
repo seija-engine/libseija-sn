@@ -18,6 +18,8 @@ import ui.binding.BindingInst
 import scala.util.Success
 import core.copyObject;
 import core.ICopy
+import ui.ContentProperty
+
 
 class UIElement extends INotifyPropertyChanged derives ReflectType {
     protected var entity:Option[Entity] = None
@@ -71,7 +73,11 @@ class UIElement extends INotifyPropertyChanged derives ReflectType {
     def Enter():Unit = {
         this.applyBindItems();
         this.OnEnter();
-        this.children.foreach(_.Enter());
+        
+        this.children.foreach(child => {
+          child.setParent(Some(this));
+          child.Enter()
+        });
     }
 
     def OnEnter(): Unit = { this.createBaseEntity(true); }

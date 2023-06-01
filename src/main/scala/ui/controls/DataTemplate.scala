@@ -1,6 +1,9 @@
 package ui.controls
 import ui.controls.BaseTemplate
+import core.reflect.*;
+import ui.ContentProperty
 
-class DataTemplate extends BaseTemplate {
-    
+@ContentProperty("content")
+class DataTemplate extends BaseTemplate derives ReflectType {
+    var content:UIElement = UIElement.zero;
 }

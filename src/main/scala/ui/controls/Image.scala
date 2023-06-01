@@ -42,7 +42,7 @@ class Image extends UIElement derives ReflectType {
     override def OnEnter(): Unit = {
       val spriteType = this.getSpriteType();
       val parentEntity = this.parent.flatMap(_.getEntity());
-      //println(s"Image.OnEnter() ${this._sprite} ${parentEntity}")
+      //println(s"Image.OnEnter() ${this._sprite.get.name} ${parentEntity} ${this.parent}")
       val entity = Entity.spawnEmpty()
           .add[Transform](_.parent = parentEntity)
           .add[Rect2D]()

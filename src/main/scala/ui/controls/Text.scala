@@ -3,7 +3,9 @@ import ui.core.Text as CoreText;
 import core.reflect.*;
 import math.Color
 import ui.Font
+import ui.ContentProperty
 
+@ContentProperty("text")
 class Text extends UIElement derives ReflectType {
   var _text: String = "Text"
   var _color: Color = Color.black;

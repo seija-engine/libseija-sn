@@ -5,6 +5,7 @@ import core.logError;
 import scala.util.Try
 import scala.util.Success
 import scala.util.Failure
+
 class Control extends UIElement derives ReflectType {
     var template:Option[ControlTemplate] = None
 
