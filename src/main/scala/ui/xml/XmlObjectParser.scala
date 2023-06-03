@@ -74,15 +74,20 @@ class XmlObjectParser(val nsResolver: XmlNSResolver = XmlNSResolver.default) {
 
     def setXMLProp(typInfo:TypeInfo,key:String,curObject:Any,xml:XmlElement):Try[Unit] = Try {
       val fieldInfo = typInfo.getFieldTry(key).get;
+      var fieldList:Option[Growable[Any]] =  None;
+      val fObject = fieldInfo.get(curObject)
+      if(fObject.isInstanceOf[Growable[_]]) {
+         fieldList = Some(fObject.asInstanceOf[Growable[Any]])
+      }
+
       if(xml.children.length == 0 && xml.innerText.isDefined) {
           setStringProp(typInfo,curObject,key,xml.innerText.get);
-      } else if(xml.children.length == 1) {
+      } else if(fieldList.isDefined) {
+        setObjectList(fObject,xml);
+      } else {
         val childValue = this.parse(xml.children(0)).get;
         val convValue = DynTypeConv.convertStrTypeTry(childValue.getClass().getName(),fieldInfo.typName,childValue).get;
         fieldInfo.set(curObject,convValue);
-      } else if(xml.children.length > 1) {
-        val fieldObject = fieldInfo.get(curObject);
-        setObjectList(fieldObject,xml);
       }
     }
 

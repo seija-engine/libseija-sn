@@ -1,0 +1,7 @@
+<Control>
+<Control.resources>
+    <Style forType="Control">
+        <Setter key="width" value="200" />
+    </Style>
+</Control.resources>
+</Control>

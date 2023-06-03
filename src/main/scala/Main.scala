@@ -20,7 +20,6 @@ object Main {
   }
 
   def runSeija() = {
-    val file = java.io.File("");
     val app = core.App;
     FFISeijaCore.initLog("ERROR");
     app.addModule(CoreModule());

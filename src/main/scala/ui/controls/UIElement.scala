@@ -130,6 +130,13 @@ class UIElement extends INotifyPropertyChanged derives ReflectType {
         return this._dataContext;
     }
 
+    def findStyle():Option[Style] = {
+        if(this.style.isDefined) {
+            return this.style;
+        }
+        None
+    }
+
     
 
     def Exit() = {
