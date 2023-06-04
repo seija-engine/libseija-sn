@@ -1,0 +1,28 @@
+<UIResource>
+    <Style forType="Control">
+        <Setter key="width" value="120" />
+        <Setter key="height" value="50" />
+        <Setter key="template">
+            <ControlTemplate>
+                <Panel>
+                    <Image sprite="default.white" color="#eeeeee" />
+                    <Text text="FUCK" />
+                </Panel>
+            </ControlTemplate>
+        </Setter>
+    </Style>
+
+    <Style forType="ContentControl">
+        <Setter key="width" value="120" />
+        <Setter key="height" value="50" />
+        <Setter key="template">
+            <ControlTemplate>
+                <Panel>
+                    <Image sprite="default.white" color="#eeeeee" />
+                    <Text text="FUCK" />
+                    <ContentPresenter />
+                </Panel>
+            </ControlTemplate>
+        </Setter>
+    </Style>
+</UIResource>

@@ -19,6 +19,7 @@ import core.copyObject;
 import core.ICopy
 import ui.ContentProperty
 import ui.resources.Style;
+import ui.resources.UIResourceMgr
 
 
 class UIElement extends INotifyPropertyChanged derives ReflectType {
@@ -147,7 +148,12 @@ class UIElement extends INotifyPropertyChanged derives ReflectType {
         if(this.style.isDefined) {
            return this.style;
         }
-        this.findResourceStyle(this.getClass().getName())
+        val styleKey = this.getClass().getName();
+        val resStyle = this.findResourceStyle(styleKey)
+        if(resStyle.isDefined) {
+            return resStyle;
+        }
+        UIResourceMgr.appResource.findStyle(styleKey)
     }
 
     def findResourceStyle(key:String):Option[Style] = {

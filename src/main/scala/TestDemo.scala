@@ -8,6 +8,7 @@ import ui.binding.INotifyPropertyChanged
 import core.Time
 import core.logError;
 import ui.controls.Control
+import ui.resources.UIResourceMgr
 
 class TestDemo extends IGameApp {
   var topCanvas:Option[UICanvas] = None;
@@ -23,6 +24,7 @@ class TestDemo extends IGameApp {
   override def OnStart(): Unit = {
     Assembly.add[TestViewModel]();
     this.loadAsset();
+    UIResourceMgr.loadResource("example/assets/ui/AppStyle.xml");
     val viewModel = new TestViewModel();
     this.testViewModel = Some(viewModel);
     XmlUIElement.fromFile("example/assets/ui/testStyle.xml").logError().foreach {loadElement => 
