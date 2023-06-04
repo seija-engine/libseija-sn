@@ -133,7 +133,14 @@ class UIElement extends INotifyPropertyChanged derives ReflectType {
 
     def applyStyle() = {
       val style = this.findStyle();
-      println(s"apply style ${style}")
+      if(style.isDefined && style.get.forTypeInfo.isDefined) {
+        val typInfo = style.get.forTypeInfo.get;
+        for(setter <- style.get.setterList.setterList) {
+            typInfo.getFieldTry(setter.key).logError().foreach {f => 
+                f.set(this,setter.value);    
+            }
+        }
+      }
     }
 
     def findStyle():Option[Style] = {
