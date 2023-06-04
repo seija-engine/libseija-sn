@@ -2,6 +2,12 @@
 <Control.resources>
     <Style forType="Control">
         <Setter key="width" value="200" />
+        <Setter key="height" value="200" />
+        <Setter key="template">
+            <ControlTemplate>
+                <Image sprite="default.white" color="#ff0000" />
+            </ControlTemplate>
+        </Setter>
     </Style>
 </Control.resources>
 </Control>

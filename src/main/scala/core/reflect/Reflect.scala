@@ -162,42 +162,4 @@ object ReflectType {
       //report.info(ret.show)
       ret
    }
-   /*
-   def getFormStringExpr[T:Type]()(using Quotes):Option[Expr[(String) => Any]] = {
-      import quotes.reflect.*
-      val typRepr: TypeRepr = TypeRepr.of[T]
-      typRepr.asType match {
-         case '[Boolean] => Some('{str2Bool })
-         case '[Byte] => Some('{str2Byte })
-         case '[Int] =>  Some('{str2Int})
-         case '[Float] => Some('{str2Float })
-         case '[String] => Some('{ str2str})
-         case '[ui.Template] => None
-         case '[Option[tt]] => {
-            val expr = getFormStringExpr[tt](); 
-            expr match {
-               case None => None
-               case Some(value) => Some('{ s => Some(${value}(s)) })
-            }
-         }
-         case '[t] => {
-            var allString = "";
-            val fromStringSymLst = typRepr.typeSymbol.companionModule.declarations.filter(_.name.startsWith("given_IFromString"));
-            if(fromStringSymLst.isEmpty) return None;
-            val fromStringSym = fromStringSymLst.head;
-            val from = fromStringSym.declaredMethod("from");
-            val select =  Select(Ident(fromStringSym.termRef),from(0));
-            val lambda = select.etaExpand(fromStringSym.owner).asExprOf[String => Option[t]];
-            val typName = Expr(typRepr.typeSymbol.fullName);
-            val ret = '{ (s:String) => ${lambda}(s).getOrElse(throw new Exception( "parse '" + s + "' to " + ${typName} + " error ")) }
-            Some(ret)
-         }
-      }
-   }
-
-   protected def str2Bool(str:String):Boolean = str.toBooleanOption.getOrElse(false)
-   protected def str2Int(str:String):Int = str.toIntOption.getOrElse(0)
-   protected def str2Byte(str:String):Byte = str.toByteOption.getOrElse(0)
-   protected def str2Float(str:String):Float = str.toFloatOption.getOrElse(0.0f)
-   protected def str2str(str:String):String = str*/
 }

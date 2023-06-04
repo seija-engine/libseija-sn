@@ -31,6 +31,7 @@ object DynTypeConv {
         register[String,Boolean]
         register[String,String]
         register[String,Option[Any]];
+        register[String,Any];
     }
     
     inline def register[A,B](using into: Into[A,B]): Unit = { 
@@ -57,6 +58,9 @@ object DynTypeConv {
         if(fromType == toType) { return Some(Success(fromValue)) }
         if(toType.startsWith("scala.Option") && toType.endsWith(fromType + "]")) {
             return Some(Success(Some(fromValue)))
+        }
+        if(toType == "scala.Any") {
+          return Some(Success(fromValue))
         }
         val key = (fromType,toType);
         if(this.convMap.contains(key)) {

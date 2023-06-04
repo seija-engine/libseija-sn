@@ -16,7 +16,7 @@ class UIResource extends Growable[BaseUIResource] derives ReflectType {
     protected var styleDict:HashMap[String,Style] = HashMap.empty 
 
     def findStyle(key:String):Option[Style] = {
-        None
+        this.styleDict.get(key)
     }
 
     override def clear(): Unit = this.resList.clear();
@@ -25,8 +25,12 @@ class UIResource extends Growable[BaseUIResource] derives ReflectType {
         this.resList.addOne(elem)
         elem match {
             case style:Style => {
-                println(s"adding style ${style.key} ${style.forType}")
-                this.styleDict.put(style.key,style)
+               if(style.key == "") {
+                 val autoKey = style.forTypeInfo.map(_.name).getOrElse("");
+                 this.styleDict.put(autoKey,style);
+               } else {
+                 this.styleDict.put(style.key,style)
+               }
             }
         }
         this

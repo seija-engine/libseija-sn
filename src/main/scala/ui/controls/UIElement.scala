@@ -1,5 +1,4 @@
 package ui.controls
-import ui.style.Style;
 import core.Entity;
 import ui.binding.INotifyPropertyChanged
 import ui.core.{LayoutAlignment,SizeValue,Thickness,Rect2D,ItemLayout}
@@ -19,6 +18,7 @@ import scala.util.Success
 import core.copyObject;
 import core.ICopy
 import ui.ContentProperty
+import ui.resources.Style;
 
 
 class UIElement extends INotifyPropertyChanged derives ReflectType {
@@ -71,6 +71,7 @@ class UIElement extends INotifyPropertyChanged derives ReflectType {
     }
 
     def Enter():Unit = {
+        this.applyStyle();
         this.applyBindItems();
         this.OnEnter();
         
@@ -130,11 +131,24 @@ class UIElement extends INotifyPropertyChanged derives ReflectType {
         return this._dataContext;
     }
 
+    def applyStyle() = {
+      val style = this.findStyle();
+      println(s"apply style ${style}")
+    }
+
     def findStyle():Option[Style] = {
         if(this.style.isDefined) {
-            return this.style;
+           return this.style;
         }
-        None
+        this.findResourceStyle(this.getClass().getName())
+    }
+
+    def findResourceStyle(key:String):Option[Style] = {
+        val style = this.resources.findStyle(key);
+        if(style.isDefined) {
+           return style;
+        }
+        this.parent.flatMap(parent => parent.findResourceStyle(key))
     }
 
     
