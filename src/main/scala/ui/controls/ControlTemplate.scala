@@ -12,7 +12,16 @@ import scala.util.Success
 class ControlTemplate extends BaseTemplate derives ReflectType {
     var content:UIElement = UIElement.zero;
 
-    override def LoadContent(): Try[UIElement] = {
-        Success(copyObject(content))
+    override def LoadContent(parent:UIElement): Try[UIElement] = {
+        val instObject:UIElement = content.clone();
+        setUIElementTemplate(instObject,parent);
+        Success(instObject)
+    }
+
+    protected def setUIElementTemplate(curElement:UIElement,templateParent:UIElement):Unit = {
+        curElement.templateParent = Some(templateParent);
+        for(child <- curElement.children) {
+            setUIElementTemplate(child,templateParent);
+        }
     }
 }

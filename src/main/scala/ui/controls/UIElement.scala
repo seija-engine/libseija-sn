@@ -22,10 +22,11 @@ import ui.resources.Style;
 import ui.resources.UIResourceMgr
 
 
-class UIElement extends INotifyPropertyChanged derives ReflectType {
+class UIElement extends INotifyPropertyChanged with Cloneable derives ReflectType {
     protected var entity:Option[Entity] = None
     protected var style:Option[Style] = None
     protected var _dataContext:Option[Any] = None;
+    var templateParent:Option[UIElement] = None;
 
     protected var _hor:LayoutAlignment = LayoutAlignment.Stretch
     protected var _ver:LayoutAlignment = LayoutAlignment.Stretch
@@ -37,8 +38,7 @@ class UIElement extends INotifyPropertyChanged derives ReflectType {
     protected var bindItemList:ListBuffer[BindingItem] = ListBuffer.empty
     protected var bindingInstList:ListBuffer[BindingInst] = ListBuffer.empty
     protected var parent:Option[UIElement] = None;
-    protected var children:ListBuffer[UIElement] = ListBuffer.empty
-    protected var templatedParent:Option[UIElement] = None;
+    var children:ListBuffer[UIElement] = ListBuffer.empty
 
     protected var resources:UIResource = UIResource.empty();
 
@@ -170,12 +170,13 @@ class UIElement extends INotifyPropertyChanged derives ReflectType {
         this.bindingInstList.foreach(DataBindingManager.removeInst);
         this.bindingInstList.clear();
     }
+
+    override def clone():UIElement = {
+        val cloneObject = super.clone().asInstanceOf[UIElement];
+        cloneObject
+    }
 }
 
 object UIElement {
     val zero:UIElement = UIElement()
-
-    given ICopy[UIElement] with {
-
-    }
 }
