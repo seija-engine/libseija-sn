@@ -164,6 +164,22 @@ class UIElement extends INotifyPropertyChanged with Cloneable derives ReflectTyp
         this.parent.flatMap(parent => parent.findResourceStyle(key))
     }
 
+     def findResDataTemplate(dataType:String):Option[DataTemplate] = {
+        val dataTemplate = this.resources.findDataTemplate(dataType);
+        if(dataTemplate.isDefined) {
+            return dataTemplate;
+        }
+        this.parent.flatMap(parent => parent.findResDataTemplate(dataType))
+    }
+
+    def findDataTemplate(dataType:String):Option[DataTemplate] = {
+        val findDataTemplate = this.findResDataTemplate(dataType);
+        if(findDataTemplate.isDefined) {
+            return findDataTemplate;
+        }
+        UIResourceMgr.appResource.findDataTemplate(dataType)
+    }
+    
     
 
     def Exit() = {

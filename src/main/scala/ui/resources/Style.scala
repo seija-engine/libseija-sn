@@ -8,11 +8,12 @@ import core.logError;
 
 @ContentProperty("setterList")
 class Style extends BaseUIResource derives ReflectType {
+    var key:String = "";
     var forType:String = "";
     var isGetTypeFail:Boolean = false;
     var forTypeInfo:Option[TypeInfo] = None;
     var setterList:SetterGroup = SetterGroup(this)
-
+    def getKey = this.key;
     def getForTypeInfo():Option[TypeInfo] = {
         if(isGetTypeFail) return None;
         if(forTypeInfo.isDefined) { return forTypeInfo; }

@@ -62,6 +62,9 @@ object DynTypeConv {
         if(toType == "scala.Any") {
           return Some(Success(fromValue))
         }
+        if(toType == "scala.Option[scala.Any]") {
+          return Some(Success(Some(fromValue)))
+        }
         val key = (fromType,toType);
         if(this.convMap.contains(key)) {
             val conv = this.convMap(key);
