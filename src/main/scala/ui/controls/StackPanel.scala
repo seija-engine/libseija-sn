@@ -4,7 +4,8 @@ import core.xml.XmlElement
 import scala.collection.mutable.ListBuffer
 import ui.core.StackLayout
 import ui.core.Orientation
-
+import ui.ContentProperty
+@ContentProperty("children")
 class StackPanel extends Panel derives ReflectType {
     var _orientation:Orientation = Orientation.Vertical;
     var _spacing:Float = 0;

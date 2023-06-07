@@ -13,7 +13,7 @@ class Control extends UIElement derives ReflectType {
     override def OnEnter(): Unit = {
         this.createBaseEntity(true);
         this.findTemplate().logError().foreach { tem =>
-            tem.LoadContent().logError().foreach {element =>
+            tem.LoadContent(this).logError().foreach {element =>
                 element.setParent(Some(this));
                 element.Enter(); 
             }
