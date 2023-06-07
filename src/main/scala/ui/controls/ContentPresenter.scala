@@ -1,6 +1,6 @@
 package ui.controls
 import core.reflect.*;
-
+import core.logError;
 class ContentPresenter extends UIElement derives ReflectType {
     var content:Option[Any] = None
     var dataTemplate:Option[DataTemplate] = None
@@ -11,9 +11,12 @@ class ContentPresenter extends UIElement derives ReflectType {
             this.dataTemplate = this.findDataTemplate(dataType);
         }
         super.OnEnter();
+
         this.dataTemplate match {
             case Some(value) => {
-                println(s"TemplateType:${value.dataType}")
+                val newElement = value.LoadContent(this).logError().foreach(v => {
+                    this.addChild(v);
+                })
             }
             case None => {
                 if(this.content.isDefined &&this.content.get.isInstanceOf[UIElement]) {

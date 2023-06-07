@@ -110,7 +110,9 @@ class UIElement extends INotifyPropertyChanged with Cloneable derives ReflectTyp
     def applyBindItems():Unit = {
        for(bindItem <- this.bindItemList) {
             bindItem.sourceType match
-                case BindingSource.Owner => {}
+                case BindingSource.Owner => {
+                    
+                }
                 case BindingSource.Data => {
                     this.findDataContext().foreach{dataContext =>
                         DataBindingManager.binding(dataContext,this,bindItem).logError() match {

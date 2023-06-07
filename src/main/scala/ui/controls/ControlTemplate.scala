@@ -18,10 +18,5 @@ class ControlTemplate extends BaseTemplate derives ReflectType {
         Success(instObject)
     }
 
-    protected def setUIElementTemplate(curElement:UIElement,templateParent:UIElement):Unit = {
-        curElement.templateParent = Some(templateParent);
-        for(child <- curElement.children) {
-            setUIElementTemplate(child,templateParent);
-        }
-    }
+    
 }

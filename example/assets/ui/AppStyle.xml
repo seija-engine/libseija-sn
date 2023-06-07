@@ -26,5 +26,6 @@
     </Style>
 
     <DataTemplate dataType="java.lang.String">
+        <Text text="{Binding Owner this}"/>
     </DataTemplate>
 </UIResource>
