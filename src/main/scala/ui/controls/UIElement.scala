@@ -199,6 +199,11 @@ class UIElement extends INotifyPropertyChanged with Cloneable derives ReflectTyp
 
     override def clone():UIElement = {
         val cloneObject = super.clone().asInstanceOf[UIElement];
+        cloneObject.children = new ListBuffer[UIElement]();
+        for(child <- this.children) {
+            val cloneChild = child.clone();
+            cloneObject.children += cloneChild;
+        }
         cloneObject
     }
 }

@@ -1,4 +1,4 @@
-<StackPanel>
+<StackPanel spacing="20">
   <ButtonBase>
      123123
   </ButtonBase>
