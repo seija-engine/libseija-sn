@@ -28,15 +28,6 @@ class EventNodeBuilder extends RawComponentBuilder {
   }
 }
 
-given EventNodeComponent:RawComponent[EventNode] with {
-  type BuilderType = EventNodeBuilder;
-  type RawType = Ptr[Byte];
-
-  override def builder(): BuilderType = new EventNodeBuilder();
-
-  override def getRaw(entity: Entity): RawType = ???
-}
-
 
 object EventNode {
     final val NONE = 0.toUInt;
@@ -45,4 +36,13 @@ object EventNode {
     final val MOUSE_ENTER = 4.toUInt;
     final val MOUSE_LEAVE = 8.toUInt;
     final val CLICK = 16.toUInt;
+
+    given EventNodeComponent:RawComponent[EventNode] with {
+      type BuilderType = EventNodeBuilder;
+      type RawType = Ptr[Byte];
+
+      override def builder(): BuilderType = new EventNodeBuilder();
+
+      override def getRaw(entity: Entity): RawType = ???
+    }
 }

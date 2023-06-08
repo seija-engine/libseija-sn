@@ -25,6 +25,19 @@
         </Setter>
     </Style>
 
+    <Style forType="ButtonBase">
+        <Setter key="width" value="150" />
+        <Setter key="height" value="35" />
+        <Setter key="template">
+            <ControlTemplate>
+                <Panel>
+                    <Image sprite="default.white" color="#eeeeee" />
+                    <ContentPresenter />
+                </Panel>
+            </ControlTemplate>
+        </Setter>
+    </Style>
+
     <DataTemplate dataType="java.lang.String">
         <Panel>
             <Image sprite="default.white" color="#ee0ee0" />

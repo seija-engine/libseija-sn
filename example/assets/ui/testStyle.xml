@@ -1,1 +1,11 @@
-<ContentControl content="{Binding Data this}" />
+<StackPanel>
+  <ButtonBase>
+     123123
+  </ButtonBase>
+  <ButtonBase>
+     456456
+  </ButtonBase>
+  <ButtonBase>
+     789
+  </ButtonBase>
+</StackPanel>
