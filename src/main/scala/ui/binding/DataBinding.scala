@@ -12,16 +12,20 @@ object DataBindingManager {
   var instList:ArrayBuffer[BindingInst] = ArrayBuffer.empty
 
   def binding(srcObject:Any,dstObject:Any,item:BindingItem): Try[Option[BindingInst]] = Try {
-    assert(srcObject != null && dstObject != null);
+    if(srcObject == null || dstObject == null) {
+      throw new Exception("DataBinding srcObject or dstObject is null")
+    }
     var retInst:Option[BindingInst] = None;
     item.typ match {
       case BindingType.Src2Dst => {
-        if(srcObject.isInstanceOf[INotifyPropertyChanged]) {
+        if(srcObject.isInstanceOf[INotifyPropertyChanged] && item.sourceKey != "this") {
           var inst = BindingInst.create(srcObject, dstObject, item).get;
           inst.init();
           this.instList.addOne(inst);
           retInst = Some(inst)
-        } else { this.applyOnce(srcObject,dstObject,item) }
+        } else { 
+          this.applyOnce(srcObject,dstObject,item) 
+        }
       }
       case BindingType.Dst2Src => {
         if(dstObject.isInstanceOf[INotifyPropertyChanged]) {
@@ -44,6 +48,7 @@ object DataBindingManager {
   }
 
   def applyOnce(srcObject:Any,dstObject:Any,item:BindingItem):Unit = {
+      
       if(item.typ == BindingType.Src2Dst || item.typ == BindingType.Both) {
         var srcValue = srcObject;
         if(item.sourceKey != "this") {
@@ -93,7 +98,6 @@ case class BindingInst(
   val srcField:FieldInfo,
   val dstField:FieldInfo
 ) {
-  
   def init(): Unit = {
      item.typ match
       case BindingType.Src2Dst => {

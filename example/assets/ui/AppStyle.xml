@@ -13,8 +13,8 @@
     </Style>
 
     <Style forType="ContentControl">
-        <Setter key="width" value="120" />
-        <Setter key="height" value="50" />
+        <Setter key="width" value="300" />
+        <Setter key="height" value="80" />
         <Setter key="template">
             <ControlTemplate>
                 <Panel>
@@ -26,6 +26,16 @@
     </Style>
 
     <DataTemplate dataType="java.lang.String">
-        <Text text="{Binding Owner this}"/>
+        <Panel>
+            <Image sprite="default.white" color="#ee0ee0" />
+            <Text text="{Binding Data this}"/>
+        </Panel>
+    </DataTemplate>
+
+    <DataTemplate dataType="TestViewModel">
+        <StackPanel>
+            <Text height="30" text="TestViewModel" color="#ff0000"/>
+            <Text height="30" text="{Binding Data testString}"/>
+        </StackPanel>
     </DataTemplate>
 </UIResource>

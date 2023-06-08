@@ -1,3 +1,1 @@
-<ContentControl>
-   123123
-</ContentControl>
+<ContentControl content="{Binding Data this}" />

@@ -6,6 +6,8 @@ import core.reflect.DynTypeConv
 import core.logError;
 import scala.collection.mutable.Growable
 import ui.ContentProperty
+import ui.controls.UIElement
+import ui.binding.BindingItem
 
 class XmlObjectParser(val nsResolver: XmlNSResolver = XmlNSResolver.default) {
     def parse(xml: XmlElement): Try[Any] = Try {
@@ -66,10 +68,15 @@ class XmlObjectParser(val nsResolver: XmlNSResolver = XmlNSResolver.default) {
     }
 
     def setStringProp(typInfo:TypeInfo,curObject:Any,key:String,value:String):Unit = {
-      (for {
-        filed <- typInfo.getFieldTry(key)
-        value <- DynTypeConv.strConvertToTry(filed.typName,value)
-       } yield filed.set(curObject,value)).logError();
+      val isUIElement = curObject.isInstanceOf[UIElement];
+      if (isUIElement && value.startsWith("{Binding")) {
+        BindingItem.parse(key, value).logError().map(curObject.asInstanceOf[UIElement].addBindItem(_))
+      } else {
+        (for {
+          filed <- typInfo.getFieldTry(key)
+          value <- DynTypeConv.strConvertToTry(filed.typName,value)
+        } yield filed.set(curObject,value)).logError();
+      }
     }
 
     def setXMLProp(typInfo:TypeInfo,key:String,curObject:Any,xml:XmlElement):Try[Unit] = Try {

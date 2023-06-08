@@ -44,14 +44,17 @@ case class TypeInfo(val name:String,
    def setValue(obj:Any,fieldName:String,value:Any):Boolean = {
       val baseType = getBaseType();
       if(baseType.isDefined) {
-         if(baseType.get.setValue(obj,fieldName,value)) { return true; }
+         if(baseType.get.setValue(obj,fieldName,value)) { 
+            return true; 
+         }
       }
-      this.fieldMap.get(fieldName) match
+      val ret = this.fieldMap.get(fieldName) match
          case None => false
          case Some(info) => {
             info.set(obj,value);
             true
          }
+      ret
    }
 
    def getField(fieldName:String):Option[FieldInfo] = {

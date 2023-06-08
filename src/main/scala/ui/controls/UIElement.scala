@@ -25,7 +25,7 @@ import ui.resources.UIResourceMgr
 class UIElement extends INotifyPropertyChanged with Cloneable derives ReflectType {
     protected var entity:Option[Entity] = None
     protected var style:Option[Style] = None
-    protected var _dataContext:Option[Any] = None;
+    protected var _dataContext:Any = null;
     var templateParent:Option[UIElement] = None;
 
     protected var _hor:LayoutAlignment = LayoutAlignment.Stretch
@@ -55,7 +55,7 @@ class UIElement extends INotifyPropertyChanged with Cloneable derives ReflectTyp
     def margin = this._margin;
     def margin_=(value:Thickness) = { this._margin = value; this.callPropertyChanged("margin",this) }
     def dataContext = this._dataContext;
-    def dataContext_=(value:Option[Any]) = {
+    def dataContext_=(value:Any) = {
         this._dataContext = value;
         this.callPropertyChanged("dataContext",this);
     }
@@ -111,12 +111,20 @@ class UIElement extends INotifyPropertyChanged with Cloneable derives ReflectTyp
        for(bindItem <- this.bindItemList) {
             bindItem.sourceType match
                 case BindingSource.Owner => {
-                    
+                    if(this.templateParent.isDefined) {
+                      DataBindingManager.binding(this.templateParent.get,this,bindItem).logError() match {
+                        case Success(Some(inst)) => {
+                            this.bindingInstList += inst;
+                        } 
+                        case _=> {}
+                      }
+                    }
                 }
                 case BindingSource.Data => {
-                    this.findDataContext().foreach{dataContext =>
-                        DataBindingManager.binding(dataContext,this,bindItem).logError() match {
-                            case Success(Some(inst)) => this.bindingInstList.addOne(inst)
+                    val findDataContext = this.findDataContext();
+                    if(findDataContext != null) {
+                        DataBindingManager.binding(findDataContext,this,bindItem).logError() match {
+                            case Success(Some(inst)) => this.bindingInstList += inst;
                             case _ => {}
                         }
                     }
@@ -125,8 +133,8 @@ class UIElement extends INotifyPropertyChanged with Cloneable derives ReflectTyp
        }
     }
 
-    def findDataContext():Option[Any] = {
-        if(this._dataContext.isEmpty) {
+    def findDataContext():Any = {
+        if(this._dataContext == null) {
             if(this.parent.isDefined) {
                return this.parent.get.findDataContext();
             }
