@@ -5,7 +5,6 @@
   <ButtonBase>
      456456
   </ButtonBase>
-  <ButtonBase>
-     789
+  <ButtonBase content="{Binding Data this}">
   </ButtonBase>
 </StackPanel>

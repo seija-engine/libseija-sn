@@ -26,8 +26,8 @@
     </Style>
 
     <Style forType="ButtonBase">
-        <Setter key="width" value="150" />
-        <Setter key="height" value="35" />
+        <Setter key="width" value="200" />
+        <Setter key="height" value="65" />
         <Setter key="template">
             <ControlTemplate>
                 <Panel>
