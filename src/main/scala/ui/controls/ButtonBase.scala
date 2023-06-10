@@ -3,6 +3,7 @@ import core.reflect.*;
 import ui.EventManager
 import ui.EventType
 import scalanative.unsigned._
+import ui.visualState.ViewStates
 
 class ButtonBase extends ContentControl derives ReflectType {
     var _IsPressed:Boolean = false;
@@ -52,12 +53,17 @@ class ButtonBase extends ContentControl derives ReflectType {
 
     def updateVisualState():Unit = {
        if(this._IsPressed) {
-          println("state pressed");
+         this.setViewState(ViewStates.CommonStates,ViewStates.Pressed);
        } else if(this._IsMouseOver) {
-          println("state mouse over");
+          this.setViewState(ViewStates.CommonStates,ViewStates.MouseOver);
        } else {
-          println("state normal");
+          this.setViewState(ViewStates.CommonStates,ViewStates.Normal);
        }
+    }
+
+    override def onViewStateChanged(changeGroup: String, newState: String): Unit = {
+       println(s"change group:${changeGroup} newState:${newState}")
+       
     }
 
     override def Exit(): Unit = {

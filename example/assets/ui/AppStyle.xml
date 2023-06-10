@@ -37,11 +37,16 @@
             </ControlTemplate>
         </Setter>
         <Setter key="visualStateGroups">
-            <VisualStateGroups>
-                <VisualStateGroup>
-                
+            <VisualStateGroupList>
+                <VisualStateGroup name="CommonStates">
+                    <VisualState name="Normal">
+                        <Setter key="width" value="300"/>
+                    </VisualState>
+                    <VisualState name="MouseOver">
+                        <Setter key="width" value="400"/>
+                    </VisualState>
                 </VisualStateGroup>
-            </VisualStateGroups>
+            </VisualStateGroupList>
         </Setter>
     </Style>
 

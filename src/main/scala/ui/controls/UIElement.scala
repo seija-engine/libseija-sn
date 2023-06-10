@@ -19,7 +19,10 @@ import core.copyObject;
 import core.ICopy
 import ui.ContentProperty
 import ui.resources.Style;
+import scala.collection.mutable.HashMap;
 import ui.resources.UIResourceMgr
+import scala.collection.mutable.ArrayBuffer
+import ui.visualState.VisualStateGroupList
 
 
 class UIElement extends INotifyPropertyChanged with Cloneable derives ReflectType {
@@ -41,6 +44,9 @@ class UIElement extends INotifyPropertyChanged with Cloneable derives ReflectTyp
     var children:ListBuffer[UIElement] = ListBuffer.empty
 
     protected var resources:UIResource = UIResource.empty();
+
+    protected var curViewStateDict:HashMap[String,String] = HashMap.empty;
+    protected var visualStateGroups:VisualStateGroupList = VisualStateGroupList();
 
     def hor = this._hor;
     def hor_=(value:LayoutAlignment) = { this._hor = value; this.callPropertyChanged("hor",this) }
@@ -190,7 +196,18 @@ class UIElement extends INotifyPropertyChanged with Cloneable derives ReflectTyp
         UIResourceMgr.appResource.findDataTemplate(dataType)
     }
     
-    
+    def setViewState(groupName:String,stateName:String):Unit = {
+        if(!this.curViewStateDict.contains(groupName)) {
+            this.curViewStateDict.put(groupName,stateName);
+        } else {
+            this.curViewStateDict.update(groupName,stateName);
+        }
+        this.onViewStateChanged(groupName,stateName);
+    }
+
+    def onViewStateChanged(changeGroup:String,newState:String):Unit = {
+
+    }
 
     def Exit() = {
         this.bindingInstList.foreach(DataBindingManager.removeInst);

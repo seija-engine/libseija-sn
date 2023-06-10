@@ -2,9 +2,4 @@
   <ButtonBase>
      123123
   </ButtonBase>
-  <ButtonBase>
-     456456
-  </ButtonBase>
-  <ButtonBase content="{Binding Data this}">
-  </ButtonBase>
 </StackPanel>

@@ -67,6 +67,7 @@ object XmlNSResolver {
         val ruled = new NSRuledValue();
         ruled.addImport("ui.controls.*")
         ruled.addImport("ui.resources.*")
+         ruled.addImport("ui.visualState.*")
         ruled.addImport("ui.core.Thickness")
         val resolver = new XmlNSResolver();
         resolver.addRuled("", ruled);

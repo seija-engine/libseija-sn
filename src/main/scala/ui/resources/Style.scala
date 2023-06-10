@@ -6,6 +6,10 @@ import scala.collection.mutable.Growable
 import ui.xml.XmlNSResolver
 import core.logError;
 
+trait IApplyStyleType {
+   def applyType(info:Option[TypeInfo]):Unit;
+}
+
 @ContentProperty("setterList")
 class Style extends BaseUIResource derives ReflectType {
     var key:String = "";
@@ -29,16 +33,8 @@ case class SetterGroup(style:Style) extends Growable[Setter] {
    var setterList:ArrayBuffer[Setter] = ArrayBuffer.empty;
    override def addOne(setter: Setter): this.type = {
      val styleTypeInfo = style.getForTypeInfo();
-     val field = styleTypeInfo.flatMap(_.getField(setter.key));
-     if(field.isDefined) {
-       val fromTypName = setter.value.getClass().getName();
-       val tryConvValue = DynTypeConv.convertStrTypeTry(setter.value.getClass().getName(),field.get.typName,setter.value);
-       tryConvValue.logError();
-       if(tryConvValue.isSuccess) {
-          setter.value = tryConvValue.get;
-          this.setterList.addOne(setter);
-       }
-     }
+     setter.applyType(styleTypeInfo);
+     this.setterList.addOne(setter);
      this
    }
 

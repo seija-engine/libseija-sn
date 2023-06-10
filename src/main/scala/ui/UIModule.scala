@@ -19,6 +19,7 @@ final case class UIModule() extends IModule {
         DynTypeConv.scanPackage(ui.core.Thickness);
         Assembly.scanPackage(ui.controls.Image);
         Assembly.scanPackage(ui.resources.UIResource);
+        Assembly.scanPackage(ui.visualState.VisualState);
     }
 
     override def update(): Unit = {
