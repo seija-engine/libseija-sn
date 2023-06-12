@@ -31,6 +31,7 @@ class UIElement extends INotifyPropertyChanged with Cloneable derives ReflectTyp
     protected var _dataContext:Any = null;
     var templateParent:Option[UIElement] = None;
 
+    var Name:String = null;
     protected var _hor:LayoutAlignment = LayoutAlignment.Stretch
     protected var _ver:LayoutAlignment = LayoutAlignment.Stretch
     protected var _width:SizeValue = SizeValue.Auto
@@ -64,6 +65,10 @@ class UIElement extends INotifyPropertyChanged with Cloneable derives ReflectTyp
     def dataContext_=(value:Any) = {
         this._dataContext = value;
         this.callPropertyChanged("dataContext",this);
+    }
+
+    def Awake():Unit = {
+        this.children.foreach(_.Awake());
     }
 
     def getEntity():Option[Entity] = this.entity;

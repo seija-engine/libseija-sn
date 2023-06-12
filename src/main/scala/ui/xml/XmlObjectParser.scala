@@ -57,8 +57,6 @@ class XmlObjectParser(val nsResolver: XmlNSResolver = XmlNSResolver.default) {
                   val childObject = this.parse(childElem).logError();
                   if(childObject.isSuccess) {
                     contentList.get += childObject.get;
-
-                    //println(s"add ${childObject.get} to ${contentList}")
                   }
               }
           }

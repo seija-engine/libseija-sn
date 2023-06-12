@@ -3,6 +3,7 @@ import scala.collection.mutable.{Growable,ArrayBuffer,HashMap};
 import core.reflect.*;
 import ui.ContentProperty;
 import ui.resources.IApplyStyleType
+import ui.ElementNameScope
 
 @ContentProperty("content")
 class VisualStateGroupList extends IApplyStyleType derives ReflectType {
@@ -11,6 +12,10 @@ class VisualStateGroupList extends IApplyStyleType derives ReflectType {
     
     override def applyType(info: Option[TypeInfo]): Unit = {
         this.content.applyType(info);
+    }
+
+    def applyNameScope(nameScope:ElementNameScope):Unit = {
+        this.content.applyNameScope(nameScope);
     }
 }
 
@@ -23,6 +28,10 @@ class VisualStateGroupInnerList extends Growable[VisualStateGroup] derives Refle
     
     def applyType(info: Option[TypeInfo]): Unit = {
         this.groupDict.values.foreach(_.applyType(info));
+    }
+
+    def applyNameScope(nameScope:ElementNameScope):Unit = {
+        this.groupDict.values.foreach(_.applyNameScope(nameScope))
     }
 
     def clear(): Unit = {
