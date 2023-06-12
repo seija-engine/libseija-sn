@@ -1,5 +1,16 @@
 <StackPanel spacing="20">
   <ButtonBase>
-     123123
-  </ButtonBase>
+    <ButtonBase.visualStateGroups>
+      <VisualStateGroupList>
+        <VisualStateGroup name="CommonStates">
+          <VisualState name="Normal">
+            <Setter  key="width" value="200" />
+          </VisualState>
+          <VisualState name="MouseOver">
+            <Setter key="width" value="300" />
+          </VisualState>
+        </VisualStateGroup>
+      </VisualStateGroupList>
+    </ButtonBase.visualStateGroups>
+    123123 </ButtonBase>
 </StackPanel>

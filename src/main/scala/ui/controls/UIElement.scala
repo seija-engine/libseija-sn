@@ -23,6 +23,8 @@ import scala.collection.mutable.HashMap;
 import ui.resources.UIResourceMgr
 import scala.collection.mutable.ArrayBuffer
 import ui.visualState.VisualStateGroupList
+import ui.visualState.VisualStateGroup
+import core.reflect.Assembly
 
 
 class UIElement extends INotifyPropertyChanged with Cloneable derives ReflectType {
@@ -210,8 +212,26 @@ class UIElement extends INotifyPropertyChanged with Cloneable derives ReflectTyp
         this.onViewStateChanged(groupName,stateName);
     }
 
-    def onViewStateChanged(changeGroup:String,newState:String):Unit = {
+    protected def onViewStateChanged(changeGroup:String,newState:String):Unit = {
+        val visualGroup = this.visualStateGroups.getGroup(changeGroup);
+        if(visualGroup.isEmpty) return;
+        this.applyVisualGroup(visualGroup.get,newState);
+    }
 
+    protected def applyVisualGroup(group:VisualStateGroup,newState:String):Unit = {
+       val newVisualState = group.getState(newState);
+       if(newVisualState.isEmpty) return;
+       val typeInfo = Assembly.getTypeInfo(this);
+       if(typeInfo.isDefined) {
+         for(setter <- newVisualState.get.Setters.setters) {
+           if(setter.target == null) {
+              typeInfo.get.getField(setter.key).foreach {f => 
+                println(setter.value);
+                //f.set(this,setter.value); 
+              };
+           }
+         }
+       }
     }
 
     def Exit() = {

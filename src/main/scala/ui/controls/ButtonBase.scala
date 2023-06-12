@@ -61,10 +61,6 @@ class ButtonBase extends ContentControl derives ReflectType {
        }
     }
 
-    override def onViewStateChanged(changeGroup: String, newState: String): Unit = {
-       println(s"change group:${changeGroup} newState:${newState}")
-       
-    }
 
     override def Exit(): Unit = {
         EventManager.unRegister(this.entity.get);

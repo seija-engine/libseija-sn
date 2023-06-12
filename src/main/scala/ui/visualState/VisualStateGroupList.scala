@@ -9,6 +9,11 @@ import ui.ElementNameScope
 class VisualStateGroupList extends IApplyStyleType derives ReflectType {
     var content:VisualStateGroupInnerList = VisualStateGroupInnerList()
 
+    def isEmpty():Boolean = this.content.groupDict.size == 0
+
+    def getGroup(name:String):Option[VisualStateGroup] = {
+        this.content.groupDict.get(name)
+    }
     
     override def applyType(info: Option[TypeInfo]): Unit = {
         this.content.applyType(info);
