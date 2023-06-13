@@ -5,6 +5,7 @@ import ui.ContentProperty
 import ui.resources.BaseUIResource;
 import scala.util.Try
 import scala.util.Success
+import ui.ElementNameScope
 @ContentProperty("content")
 class DataTemplate extends BaseTemplate with BaseUIResource derives ReflectType {
     var key:String = "";
@@ -13,9 +14,9 @@ class DataTemplate extends BaseTemplate with BaseUIResource derives ReflectType 
     
     var content:UIElement = UIElement.zero;
 
-    override def LoadContent(parent: UIElement): Try[UIElement] = {
+    override def LoadContent(parent: UIElement,scope:Option[ElementNameScope]): Try[UIElement] = {
         val instObject:UIElement = content.clone();
-        this.setUIElementTemplate(instObject,parent);
+        this.setUIElementTemplate(instObject,parent,None);
         Success(instObject)
     }
 }

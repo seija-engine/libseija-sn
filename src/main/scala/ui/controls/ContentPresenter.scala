@@ -15,7 +15,7 @@ class ContentPresenter extends UIElement derives ReflectType {
         super.OnEnter();
         this.dataTemplate match {
             case Some(value) => {
-                val newElement = value.LoadContent(this).logError().foreach(v => {
+                val newElement = value.LoadContent(this,None).logError().foreach(v => {
                     this.addChild(v);
                 })
             }

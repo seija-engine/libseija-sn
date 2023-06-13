@@ -122,10 +122,10 @@ object ReflectType {
       val shortName:Expr[String] = Expr(typClassSym.name);
       val init = typeSym.declarations.find(_.name=="<init>").get
       val newExpr = Apply(Select(New(TypeTree.of[T]),init),List()).asExprOf[T]
-      val baseTypeName:Expr[Option[String]] = if(typRepr.baseClasses.length >= 2) { 
-         Expr(Some(typRepr.baseClasses(1).fullName)) 
+      val baseLst = typRepr.baseClasses.filter(s => !s.flags.is(Flags.Trait));
+      val baseTypeName:Expr[Option[String]] = if(baseLst.length >= 2) { 
+         Expr(Some(baseLst(1).fullName)) 
       } else {  Expr(None) };
-
       val allFields:List[Expr[FieldInfo]] = typClassSym.declaredFields.map(fieldSym => {
          val memberType = typRepr.memberType(fieldSym);
          

@@ -16,6 +16,7 @@ import ui.core.RawFlexLayout
 import ui.core.RawFlexItem
 import ui.core.RawTextFFI
 import scala.scalanative.runtime.libc
+import math.Color
 
 
 type RawSpriteSheet = Ptr[Byte]
@@ -34,6 +35,7 @@ object FFISeijaUI {
     private val entityAddSpriteSlicePtr = LibSeija.getFunc[CFuncPtr6[Ptr[Byte],Long,Int,Long,Ptr[RawVector4],Ptr[RawVector4],Unit]]("entity_add_sprite_slice");
     private val entityGetSpritePtr = LibSeija.getFunc[CFuncPtr3[Ptr[Byte],Long,Boolean,Ptr[Byte]]]("entity_get_sprite");
     private val spriteSetSpritePtr = LibSeija.getFunc[CFuncPtr4[Ptr[Byte],Ptr[Byte],Int,Long,Unit]]("sprite_set_sprite");
+    private val spriteSetColorPtr = LibSeija.getFunc[CFuncPtr2[Ptr[Byte],Ptr[RawVector4],Unit]]("sprite_set_color");
     private val entityAddEventNodePtr = LibSeija.getFunc[CFuncPtr3[Ptr[Byte],Long,Ptr[RawEventNode],Unit]]("entity_add_event_node");
     private val entityRemoveEventPtr = LibSeija.getFunc[CFuncPtr2[Ptr[Byte],Long,Boolean]]("entity_remove_event_node")
     private val readUIEventsPtr = LibSeija.getFunc[CFuncPtr2[Ptr[Byte],Ptr[Byte],Unit]]("read_ui_events");
@@ -136,6 +138,12 @@ object FFISeijaUI {
 
     def spriteSetSptite(worldPtr:Ptr[Byte],spritePtr:Ptr[Byte],index:Int,atlasId:Long) = {
         spriteSetSpritePtr(worldPtr,spritePtr,index,atlasId)
+    }
+
+    def spriteSetColor(spritePtr:Ptr[Byte],color:Color):Unit = {
+        val ptrVec4 = stackalloc[RawVector4]();
+        Vector4RawFFI.toRaw(color.toVector4(),ptrVec4);
+        spriteSetColorPtr(spritePtr,ptrVec4);
     }
 
     def entityAddFlex(worldPtr:Ptr[Byte],entity:Long,view:CommonView,flex:Ptr[RawFlexLayout]) = {

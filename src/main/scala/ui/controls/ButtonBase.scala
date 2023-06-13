@@ -44,6 +44,9 @@ class ButtonBase extends ContentControl derives ReflectType {
        }
        if((typ & EventType.MOUSE_LEAVE) != zero) {
           this.IsMouseOver = false;
+          if(this.IsPressed) {
+            this.IsPressed = false;
+          }
           this.updateVisualState();
        }
        if((typ & EventType.CLICK) != zero) {

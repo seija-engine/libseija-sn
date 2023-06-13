@@ -13,6 +13,7 @@ import ui.core.SpriteSheet
 import ui.AtlasSprite
 import _root_.core.App;
 import math.Color
+import math.{RawVector4,Vector4RawFFI}
 
 class Sprite;
 
@@ -26,6 +27,10 @@ case class RawSprite(val rawPtr:Ptr[Byte]) {
         FFISeijaUI.spriteSetSptite(App.worldPtr,this.rawPtr,-1,0)
       }
     }
+  }
+
+  def setColor(color:Color):Unit = {
+    FFISeijaUI.spriteSetColor(rawPtr,color);
   }
 }
 

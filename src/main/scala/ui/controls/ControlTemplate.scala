@@ -18,7 +18,7 @@ class ControlTemplate extends BaseTemplate with IApplyStyleType with ElementName
     var nameDict:HashMap[String,UIElement] = HashMap.empty;
 
     var content:UIElement = UIElement.zero;
-    protected var visualStateGroups:VisualStateGroupList = VisualStateGroupList();
+    var visualStateGroups:VisualStateGroupList = VisualStateGroupList();
     override def Awake(): Unit = {
        this.putNameToScope(content);
     }
@@ -32,15 +32,16 @@ class ControlTemplate extends BaseTemplate with IApplyStyleType with ElementName
 
     override def getScopeElement(name:String):Option[UIElement] = { this.nameDict.get(name) }
 
-    override def LoadContent(parent:UIElement): Try[UIElement] = {
+    
+
+    override def LoadContent(parent:UIElement,nameScope:Option[ElementNameScope]): Try[UIElement] = {
         val instObject:UIElement = content.clone();
-        setUIElementTemplate(instObject,parent);
+        setUIElementTemplate(instObject,parent,nameScope);
         Success(instObject)
     }
 
     override def applyType(info: Option[TypeInfo]): Unit = {
         this.visualStateGroups.applyType(info);
-        
         this.visualStateGroups.applyNameScope(this);
     }
 }

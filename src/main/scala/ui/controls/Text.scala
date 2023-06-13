@@ -41,6 +41,7 @@ class Text extends UIElement derives ReflectType {
   }
 
   override def onPropertyChanged(propertyName: String): Unit = {
+    super.onPropertyChanged(propertyName);
     propertyName match
       case "text" => {
         this.entity.foreach(e => {

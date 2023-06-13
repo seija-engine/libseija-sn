@@ -79,6 +79,13 @@ class Image extends UIElement derives ReflectType {
              rawSprite.setSprite(this._sprite);
           })
         }
+        case "color" => {
+          println(s"set color${this.color}");
+          this.entity.foreach {v => 
+            val rawSprite = v.get[Sprite]();
+            rawSprite.setColor(this._color);
+          }
+        }
         case _ => 
   }
 

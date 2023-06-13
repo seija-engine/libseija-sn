@@ -18,7 +18,7 @@
         <Setter key="template">
             <ControlTemplate>
                 <Panel>
-                    <Image sprite="default.white" color="#eeeeee" />
+                    <Image sprite="default.white"  color="#eeeeee" />
                     <ContentPresenter />
                 </Panel>
             </ControlTemplate>
@@ -26,22 +26,25 @@
     </Style>
 
     <Style forType="ButtonBase">
-        <Setter key="width" value="200" />
-        <Setter key="height" value="65" />
+        <Setter key="width" value="120" />
+        <Setter key="height" value="35" />
         <Setter key="template">
             <ControlTemplate>
                 <Panel>
-                    <Image Name="BtnBG" sprite="default.white" color="#eeeeee" />
+                    <Image Name="BtnBG" imageType="Slice" sprite="default.button"  />
                     <ContentPresenter />
                 </Panel>
                 <ControlTemplate.visualStateGroups>
                     <VisualStateGroupList>
                         <VisualStateGroup name="CommonStates">
                             <VisualState name="Normal">
-                                <Setter target="BtnBG" key="color" value="#ffffff" />
+                                <Setter target="BtnBG" key="sprite" value="default.button" />
                             </VisualState>
                             <VisualState name="MouseOver">
-                                <Setter target="BtnBG" key="color" value="#666666" />
+                                <Setter target="BtnBG" key="sprite" value="default.button-hover" />
+                            </VisualState>
+                            <VisualState name="Pressed">
+                                <Setter target="BtnBG" key="sprite" value="default.button-active" />
                             </VisualState>
                         </VisualStateGroup>
                     </VisualStateGroupList>
@@ -52,8 +55,7 @@
 
     <DataTemplate dataType="java.lang.String">
         <Panel>
-            <Image sprite="default.white" color="#ee0ee0" />
-            <Text text="{Binding Data this}" />
+            <Text fontSize="20" text="{Binding Data this}" />
         </Panel>
     </DataTemplate>
 

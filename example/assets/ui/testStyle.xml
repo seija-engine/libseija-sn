@@ -1,16 +1,8 @@
-<StackPanel spacing="20">
-  <ButtonBase>
-    <ButtonBase.visualStateGroups>
-      <VisualStateGroupList>
-        <VisualStateGroup name="CommonStates">
-          <VisualState name="Normal">
-            <Setter  key="width" value="200" />
-          </VisualState>
-          <VisualState name="MouseOver">
-            <Setter key="width" value="300" />
-          </VisualState>
-        </VisualStateGroup>
-      </VisualStateGroupList>
-    </ButtonBase.visualStateGroups>
-    123123 </ButtonBase>
-</StackPanel>
+<Panel>
+  <Image sprite="default.white" color="#e8e8e7" />
+
+  <StackPanel orientation="Hor" spacing="10" height="120">
+     <ButtonBase>确定</ButtonBase>
+     <ButtonBase>取消</ButtonBase>
+  </StackPanel>
+</Panel>

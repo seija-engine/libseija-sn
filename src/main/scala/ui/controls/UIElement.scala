@@ -25,6 +25,7 @@ import scala.collection.mutable.ArrayBuffer
 import ui.visualState.VisualStateGroupList
 import ui.visualState.VisualStateGroup
 import core.reflect.Assembly
+import ui.ElementNameScope
 
 
 class UIElement extends INotifyPropertyChanged with Cloneable derives ReflectType {
@@ -71,6 +72,7 @@ class UIElement extends INotifyPropertyChanged with Cloneable derives ReflectTyp
 
     def Awake():Unit = {
         this.children.foreach(_.Awake());
+        this.visualStateGroups.applyType(Assembly.getTypeInfo(this));
     }
 
     def getEntity():Option[Entity] = this.entity;
@@ -97,7 +99,9 @@ class UIElement extends INotifyPropertyChanged with Cloneable derives ReflectTyp
 
     def OnEnter(): Unit = { this.createBaseEntity(true); }
 
-    
+    override def onPropertyChanged(propertyName: String): Unit = {
+        
+    }
 
     protected def createBaseEntity(addBaseLayout:Boolean = true):Entity = {
         val parentEntity = this.parent.flatMap(_.getEntity());
@@ -215,10 +219,10 @@ class UIElement extends INotifyPropertyChanged with Cloneable derives ReflectTyp
     protected def onViewStateChanged(changeGroup:String,newState:String):Unit = {
         val visualGroup = this.visualStateGroups.getGroup(changeGroup);
         if(visualGroup.isEmpty) return;
-        this.applyVisualGroup(visualGroup.get,newState);
+        this.applyVisualGroup(visualGroup.get,newState,None);
     }
 
-    protected def applyVisualGroup(group:VisualStateGroup,newState:String):Unit = {
+    protected def applyVisualGroup(group:VisualStateGroup,newState:String,nameScope:Option[ElementNameScope]):Unit = {
        val newVisualState = group.getState(newState);
        if(newVisualState.isEmpty) return;
        val typeInfo = Assembly.getTypeInfo(this);
@@ -226,8 +230,16 @@ class UIElement extends INotifyPropertyChanged with Cloneable derives ReflectTyp
          for(setter <- newVisualState.get.Setters.setters) {
            if(setter.target == null) {
               typeInfo.get.getField(setter.key).foreach {f => 
-                println(setter.value);
-                //f.set(this,setter.value); 
+                f.set(this,setter.value);
+                this.callPropertyChanged(setter.key,this);
+              };
+           } else nameScope.foreach { scope =>
+              val findElement = scope.getScopeElement(setter.target);
+              findElement.foreach { elem =>
+                Assembly.getTypeInfo(elem).get.getField(setter.key).foreach {f => 
+                  f.set(elem,setter.value);
+                  elem.callPropertyChanged(setter.key,this);
+                }
               };
            }
          }
