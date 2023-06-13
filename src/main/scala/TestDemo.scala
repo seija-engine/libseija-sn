@@ -9,6 +9,7 @@ import core.Time
 import core.logError;
 import ui.controls.Control
 import ui.resources.UIResourceMgr
+import command.FCommand
 
 class TestDemo extends IGameApp {
   var topCanvas:Option[UICanvas] = None;
@@ -43,8 +44,14 @@ class TestDemo extends IGameApp {
 import core.reflect.ReflectType;  
 class TestViewModel extends INotifyPropertyChanged derives ReflectType {
     var testString:String = "TestViewModel.testString";
+    var testCommand:FCommand = FCommand(this.testClick);
+
     def setTestString(v:String) = {
         this.testString = v;
         this.callPropertyChanged("testString",this);
+    }
+
+    def testClick(params:Any):Unit = {
+       println("test Click");
     }
 }
