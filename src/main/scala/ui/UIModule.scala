@@ -17,6 +17,7 @@ final case class UIModule() extends IModule {
         DynTypeConv.scanPackage(ui.controls.Image);
         DynTypeConv.scanPackage(ui.Atlas);
         DynTypeConv.scanPackage(ui.core.Thickness);
+        DynTypeConv.scanPackage(ui.command.FCommand);
         Assembly.scanPackage(ui.controls.Image);
         Assembly.scanPackage(ui.resources.UIResource);
         Assembly.scanPackage(ui.visualState.VisualState);

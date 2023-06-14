@@ -4,6 +4,7 @@ import ui.EventManager
 import ui.EventType
 import scalanative.unsigned._
 import ui.visualState.ViewStates
+import ui.command.ICommand
 
 class ButtonBase extends ContentControl derives ReflectType {
     var _IsPressed:Boolean = false;
@@ -19,6 +20,9 @@ class ButtonBase extends ContentControl derives ReflectType {
         _IsMouseOver = value;
         this.callPropertyChanged("IsMouseOver",this);
     }
+
+    var command:Option[ICommand] = None;
+    var commandParams:Any = null;
     
     override def OnEnter(): Unit = {
        val thisEntity = this.createBaseEntity(true);
@@ -50,7 +54,9 @@ class ButtonBase extends ContentControl derives ReflectType {
           this.updateVisualState();
        }
        if((typ & EventType.CLICK) != zero) {
-         
+         this.command.foreach { cmd =>
+            cmd.Execute(this.commandParams);
+         }
        }
     }
 

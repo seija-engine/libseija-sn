@@ -26,6 +26,7 @@ object DynTypeConv {
     
     def init() = {
         register[String,Int]
+        register[Int,String]
         register[String,Float]
         register[String,Double]
         register[String,Boolean]
@@ -61,6 +62,9 @@ object DynTypeConv {
         }
         if(toType == "scala.Any") {
           return Some(Success(fromValue))
+        }
+        if(toType == "java.lang.String" && fromType != "java.lang.String") {
+          return Some(Success(fromValue.toString()))
         }
         if(toType == "scala.Option[scala.Any]") {
           return Some(Success(Some(fromValue)))
@@ -167,4 +171,8 @@ given Into[String,Any] with {
 
 given Into[String,Option[Any]] with {
   override def into(fromValue: String): Option[Any] = Some(fromValue)
+}
+
+given Into[Int,String] with {
+  override def into(fromValue: Int): String = fromValue.toString()
 }

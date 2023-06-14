@@ -1,8 +1,9 @@
 <Panel>
   <Image sprite="default.white" color="#e8e8e7" />
 
-  <StackPanel orientation="Hor" spacing="10" height="120">
-     <ButtonBase>确定</ButtonBase>
-     <ButtonBase>取消</ButtonBase>
+  <StackPanel width="300" orientation="Hor" spacing="10" height="120">
+     <ButtonBase command="{Binding Data numCommand}" commandParams="+">加1</ButtonBase>
+     <Text width="50" text="{Binding Data count}" />
+     <ButtonBase command="{Binding Data numCommand}" commandParams="-">减1</ButtonBase>
   </StackPanel>
 </Panel>

@@ -7,6 +7,9 @@ import core.reflect.NotFoundFieldException
 import ui.binding.INotifyPropertyChanged;
 import scala.collection.mutable.ArrayBuffer
 import core.reflect.{TypeInfo,FieldInfo}
+import core.reflect.DynTypeConv
+import scala.util.Failure
+import scala.util.Success
 
 object DataBindingManager {
   var instList:ArrayBuffer[BindingInst] = ArrayBuffer.empty
@@ -120,18 +123,32 @@ case class BindingInst(
   }
 
   def onSrcPropertyChanged(sender:INotifyPropertyChanged,name:String,sourceObj:Any,param:Any): Unit = {
+    if(name == this.srcField.Name) {
       this.setSrc2Dst(sourceObj);
+    }
   }
 
   def onDstPropertyChanged(sender:INotifyPropertyChanged,name:String,sourceObj:Any,param:Any): Unit = {
-    
-      this.setDst2Src(sourceObj);
+      if(name == this.dstField.Name) {
+        this.setDst2Src(sourceObj);
+      }
   }
 
   def setSrc2Dst(sourceObj:Any):Unit = {
       var setValue = this.srcField.get(this.srcObject);
       if(this.item.conv.isDefined) {
         setValue = this.item.conv.get.conv(setValue)
+      }
+      if(setValue.getClass().getName() != this.dstField.Name) {
+        DynTypeConv.convertStrTypeTry(setValue.getClass().getName(),this.dstField.typName,setValue) match {
+          case Success(value) => {
+            setValue = value;
+          }
+          case Failure(exception) => {
+            System.err.println(exception.toString());
+            return;
+          }
+        }
       }
       dstTypeInfo.setValue(dstObject,this.item.dstKey,setValue)
       if(dstObject != sourceObj && dstObject.isInstanceOf[INotifyPropertyChanged]) {
