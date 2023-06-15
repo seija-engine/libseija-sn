@@ -1,0 +1,7 @@
+<Panel>
+  <Image sprite="default.white" color="#e8e8e7" />
+  <ItemsControl itemsSource="{Binding Data dataList}">
+    <String>List #1</String>
+    <String>List #2</String>
+  </ItemsControl>
+</Panel>

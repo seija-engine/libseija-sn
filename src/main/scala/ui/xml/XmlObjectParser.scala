@@ -8,9 +8,17 @@ import scala.collection.mutable.Growable
 import ui.ContentProperty
 import ui.controls.UIElement
 import ui.binding.BindingItem
+import scala.util.Success
 
 class XmlObjectParser(val nsResolver: XmlNSResolver = XmlNSResolver.default) {
     def parse(xml: XmlElement): Try[Any] = Try {
+      xml.name match
+        case "string" | "String" => xml.innerText.getOrElse("")
+        case _ => this._parse(xml).get
+    }
+
+    def _parse(xml: XmlElement): Try[Any] = Try {
+    
       val curTypeInfo = nsResolver.resolverTypeInfo(xml.name).get;
       val curObject = curTypeInfo.create();
       for((k,v) <- xml.attributes) {

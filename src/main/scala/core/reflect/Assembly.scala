@@ -12,6 +12,9 @@ object Assembly {
   private var typeMap: HashMap[String, TypeInfo] = HashMap()
   private var typeShortMap: HashMap[String, TypeInfo] = HashMap()
 
+  def init():Unit = {
+  }
+
   inline def add[T]()(using t: ReflectType[T]) = { this.addTypeInfo(t.info); }
 
   def addTypeInfo(info:TypeInfo) = {

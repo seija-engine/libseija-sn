@@ -10,6 +10,7 @@ import core.logError;
 import ui.controls.Control
 import ui.resources.UIResourceMgr
 import ui.command.FCommand
+import ui.binding.ObservableList
 
 class TestDemo extends IGameApp {
   var topCanvas:Option[UICanvas] = None;
@@ -28,7 +29,7 @@ class TestDemo extends IGameApp {
     UIResourceMgr.loadResource("example/assets/ui/AppStyle.xml");
     val viewModel = new TestViewModel();
     this.testViewModel = Some(viewModel);
-    XmlUIElement.fromFile("example/assets/ui/testStyle.xml").logError().foreach {loadElement => 
+    XmlUIElement.fromFile("example/assets/ui/testList.xml").logError().foreach {loadElement => 
       loadElement.dataContext = this.testViewModel.get;
       this.topCanvas.get.addElement(loadElement);
     }
@@ -44,7 +45,8 @@ import core.reflect.ReflectType;
 class TestViewModel extends INotifyPropertyChanged derives ReflectType {
     var count:Int = 0;
     var numCommand:FCommand = FCommand(this.testClick);
-
+    var dataList:ObservableList[String] = ObservableList.from(List("Data@1","Data@1","Data@2"));
+ 
     def setCount(count:Int) = {
       this.count = count;
       this.callPropertyChanged("count",this);

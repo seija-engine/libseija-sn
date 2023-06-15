@@ -1,6 +1,6 @@
 package ui.binding
 import scala.collection.mutable.ArrayBuffer;
-import scala.collection.Seq;
+import scala.collection.{Seq,IterableOnce};
 class ObservableList[T] extends INotifyCollectionChanged with Seq[T] {
     protected var list:ArrayBuffer[T] = ArrayBuffer.empty
     
@@ -32,5 +32,13 @@ class ObservableList[T] extends INotifyCollectionChanged with Seq[T] {
     def clear():Unit = {
         this.list.clear();
         this.callChanged(NotifyCollectionChanged.Clear());
+    }
+}
+
+object ObservableList {
+    def from[T](iter:IterableOnce[T]):ObservableList[T] = {
+      val lst = ObservableList[T]();
+      lst.list = ArrayBuffer.from(iter);
+      lst
     }
 }

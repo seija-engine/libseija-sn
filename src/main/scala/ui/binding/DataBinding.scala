@@ -10,6 +10,7 @@ import core.reflect.{TypeInfo,FieldInfo}
 import core.reflect.DynTypeConv
 import scala.util.Failure
 import scala.util.Success
+import core.logError;
 
 object DataBindingManager {
   var instList:ArrayBuffer[BindingInst] = ArrayBuffer.empty
@@ -139,20 +140,28 @@ case class BindingInst(
       if(this.item.conv.isDefined) {
         setValue = this.item.conv.get.conv(setValue)
       }
-      if(setValue.getClass().getName() != this.dstField.Name) {
-        DynTypeConv.convertStrTypeTry(setValue.getClass().getName(),this.dstField.typName,setValue) match {
-          case Success(value) => {
-            setValue = value;
-          }
-          case Failure(exception) => {
-            System.err.println(exception.toString());
-            return;
-          }
+      this.tryConvValue(setValue,this.dstField,this.srcField) match {
+        case Failure(exception) => {
+          System.err.println(exception.toString());
+          return;
         }
+        case Success(value) => { setValue = value }
       }
       dstTypeInfo.setValue(dstObject,this.item.dstKey,setValue)
       if(dstObject != sourceObj && dstObject.isInstanceOf[INotifyPropertyChanged]) {
           dstObject.asInstanceOf[INotifyPropertyChanged].callPropertyChanged(item.dstKey,sourceObj)
+      }
+  }
+
+  def tryConvValue(setValue:Any,toField:FieldInfo,fromField:FieldInfo):Try[Any] = {
+      val setValueTypName = setValue.getClass().getName();
+      if(setValueTypName != toField.Name) {
+        if(setValue.isInstanceOf[scala.collection.Seq[Any]] && toField.typName == "scala.collection.Seq[scala.Any]") {
+           return Success(setValue);
+        }
+        DynTypeConv.convertStrTypeTry(setValueTypName,toField.typName,setValue)
+      } else {
+        Success(setValue)
       }
   }
 
