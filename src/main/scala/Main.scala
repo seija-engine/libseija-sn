@@ -14,6 +14,7 @@ import scala.collection.mutable.Buffer
 import scala.collection.mutable.HashMap
 import ui.xml.XmlNSResolver
 import core.reflect.Assembly
+import ruv.RUVModule;
 object Main {
   def main(args: Array[String]): Unit = {
     runSeija();
@@ -26,6 +27,7 @@ object Main {
     app.addModule(AssetModule("example/assets"));
     app.addModule(TransformModule());
     app.addModule(WindowModule());
+    app.addModule(RUVModule());
     app.addModule(InputModule());
     app.addModule(
       render.RenderModule(

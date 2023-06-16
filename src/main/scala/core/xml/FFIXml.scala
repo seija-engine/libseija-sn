@@ -87,6 +87,6 @@ object FFIXml {
   }
 
   def releaseReader(ptr:Ptr[Byte],isString:Boolean) = {
-    if(isString) xmlReaderReleaseString(ptr) else xmlReaderFromFilePtr(ptr)
+    if(isString) xmlReaderReleaseString(ptr) else xmlReaderReleaseFile(ptr)
   }
 }

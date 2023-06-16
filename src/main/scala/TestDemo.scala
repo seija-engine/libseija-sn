@@ -11,6 +11,8 @@ import ui.controls.Control
 import ui.resources.UIResourceMgr
 import ui.command.FCommand
 import ui.binding.ObservableList
+import ruv.FFIRuv
+import ruv.RuvRuntime
 
 class TestDemo extends IGameApp {
   var topCanvas:Option[UICanvas] = None;
