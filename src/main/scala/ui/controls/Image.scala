@@ -72,6 +72,7 @@ class Image extends UIElement derives ReflectType {
     }
 
     override def onPropertyChanged(propertyName: String): Unit = {
+      super.onPropertyChanged(propertyName);
       propertyName match
         case "sprite" => {
           this.entity.foreach(v => {

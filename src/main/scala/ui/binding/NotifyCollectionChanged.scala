@@ -25,6 +25,10 @@ object NotifyCollectionChanged {
         NotifyCollectionChangedEventArgs(CollectionChangedAction.Add,true,newItem = newItem,newStartingIndex = newStartingIndex)
     }
 
+    def Replace(index:Int,newValue:Any):NotifyCollectionChangedEventArgs = {
+        NotifyCollectionChangedEventArgs(CollectionChangedAction.Replace,true,newStartingIndex = index,newItem = newValue)
+    }
+
     def Clear():NotifyCollectionChangedEventArgs = {
         NotifyCollectionChangedEventArgs(CollectionChangedAction.Clear,true)
     }

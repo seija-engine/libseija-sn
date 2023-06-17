@@ -156,7 +156,7 @@ case class BindingInst(
   def tryConvValue(setValue:Any,toField:FieldInfo,fromField:FieldInfo):Try[Any] = {
       val setValueTypName = setValue.getClass().getName();
       if(setValueTypName != toField.Name) {
-        if(setValue.isInstanceOf[scala.collection.Seq[Any]] && toField.typName == "scala.collection.Seq[scala.Any]") {
+        if(setValue.isInstanceOf[scala.collection.IndexedSeq[Any]] && toField.typName == "scala.collection.IndexedSeq[scala.Any]") {
            return Success(setValue);
         }
         DynTypeConv.convertStrTypeTry(setValueTypName,toField.typName,setValue)

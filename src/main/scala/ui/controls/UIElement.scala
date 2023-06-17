@@ -32,6 +32,7 @@ class UIElement extends INotifyPropertyChanged with Cloneable derives ReflectTyp
     protected var entity:Option[Entity] = None
     protected var style:Option[Style] = None
     protected var _dataContext:Any = null;
+    protected var isEntered:Boolean = false;
     var templateParent:Option[UIElement] = None;
 
     var Name:String = null;
@@ -82,6 +83,11 @@ class UIElement extends INotifyPropertyChanged with Cloneable derives ReflectTyp
        this.children.addOne(elem);
     }
 
+    def insertChild(index:Int,elem:UIElement):Unit = {
+        elem.parent = Some(this);
+        this.children.insert(index,elem);
+    }
+
     def setParent(elem:Option[UIElement]) = {
         this.parent = elem;
     }
@@ -90,7 +96,7 @@ class UIElement extends INotifyPropertyChanged with Cloneable derives ReflectTyp
         this.applyStyle();
         this.applyBindItems();
         this.OnEnter();
-        
+        this.isEntered = true;
         this.children.foreach(child => {
           child.setParent(Some(this));
           child.Enter()
@@ -99,8 +105,12 @@ class UIElement extends INotifyPropertyChanged with Cloneable derives ReflectTyp
 
     def OnEnter(): Unit = { this.createBaseEntity(true); }
 
+    protected def onDataContextChanged():Unit = {
+
+    }
+
     override def onPropertyChanged(propertyName: String): Unit = {
-        
+       
     }
 
     protected def createBaseEntity(addBaseLayout:Boolean = true):Entity = {
@@ -246,7 +256,8 @@ class UIElement extends INotifyPropertyChanged with Cloneable derives ReflectTyp
        }
     }
 
-    def Exit() = {
+    def Exit():Unit = {
+        this.children.foreach(_.Exit());
         this.bindingInstList.foreach(DataBindingManager.removeInst);
         this.bindingInstList.clear();
     }
@@ -259,6 +270,12 @@ class UIElement extends INotifyPropertyChanged with Cloneable derives ReflectTyp
             cloneObject.children += cloneChild;
         }
         cloneObject
+    }
+
+    def Release():Unit = {
+        this.Exit();
+        this.children.foreach(_.Release());
+        this.entity.foreach(_.destroy());
     }
 }
 

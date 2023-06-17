@@ -1,7 +1,8 @@
 package core
 import math.Vector3
 import scala.scalanative.unsigned.UInt
-
+import transform.FFISeijaTransform
+import scala.scalanative.unsigned._
 class Entity(val id:Long) extends AnyVal {
   def add[T](using v:RawComponent[T])(f:(builder:v.BuilderType) => Unit = null):Entity = {
      val builder = v.builder();
@@ -12,6 +13,14 @@ class Entity(val id:Long) extends AnyVal {
      this
   }
   def get[T]()(using v:RawComponent[T]):v.RawType = v.getRaw(this)
+
+  def insertChild(child:Entity,index:Int):Unit = {
+      FFISeijaTransform.transformAddChildIndex(this.id,child.id,index);
+  }
+
+  def destroy():Unit = {
+    FFISeijaTransform.transformDespawn(this.id);
+  }
 }
 
 object Entity {

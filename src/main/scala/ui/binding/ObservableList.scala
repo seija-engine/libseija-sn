@@ -1,7 +1,7 @@
 package ui.binding
 import scala.collection.mutable.ArrayBuffer;
 import scala.collection.{Seq,IterableOnce};
-class ObservableList[T] extends INotifyCollectionChanged with Seq[T] {
+class ObservableList[T] extends INotifyCollectionChanged with IndexedSeq[T] {
     protected var list:ArrayBuffer[T] = ArrayBuffer.empty
     
     def length:Int = list.length
@@ -12,7 +12,18 @@ class ObservableList[T] extends INotifyCollectionChanged with Seq[T] {
        this.list.addOne(value);
        val notify = NotifyCollectionChanged.Add(value,this.length - 1);
        this.callChanged(notify);
+    }
 
+    def insert(index:Int,value:T):Unit = {
+        this.list.insert(index,value);
+        val notify = NotifyCollectionChanged.Add(value,index);
+        this.callChanged(notify);
+    }
+
+    def update(index:Int,value:T):Unit = {
+        this.list.update(index,value);
+        val notify = NotifyCollectionChanged.Replace(index,value);
+        this.callChanged(notify);
     }
     
     def removeAt(idx:Int):Unit = {
@@ -29,7 +40,7 @@ class ObservableList[T] extends INotifyCollectionChanged with Seq[T] {
        false
     }
 
-    def clear():Unit = {
+    def clear():Unit = { 
         this.list.clear();
         this.callChanged(NotifyCollectionChanged.Clear());
     }

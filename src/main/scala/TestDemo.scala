@@ -47,11 +47,43 @@ import core.reflect.ReflectType;
 class TestViewModel extends INotifyPropertyChanged derives ReflectType {
     var count:Int = 0;
     var numCommand:FCommand = FCommand(this.testClick);
-    var dataList:ObservableList[String] = ObservableList.from(List("Data@1","Data@1","Data@2"));
+
+    var lstCommand:FCommand = FCommand(this.testAdd);
+    var insertCommand:FCommand = FCommand(this.testInsert);
+    var updateCommand:FCommand = FCommand(this.testUpdate);
+    var removeCommand:FCommand = FCommand(this.testRemove);
+    var clearCommand:FCommand = FCommand(this.testClear);
+    var dataList:ObservableList[String] = ObservableList.from(List("Data@1","Data@2","Data@3"));
  
     def setCount(count:Int) = {
       this.count = count;
       this.callPropertyChanged("count",this);
+    }
+
+    def testAdd(params:Any):Unit = {
+       this.dataList.add(s"Data@${this.dataList.length + 1}");
+    }
+
+    def testInsert(params:Any):Unit = {
+       if(this.dataList.length >= 1) {
+          this.dataList.insert(1,"Insert#1");
+       }
+    }
+
+    def testUpdate(params:Any):Unit = {
+      if(this.dataList.length > 0) {
+        this.dataList.update(0,"Replace 0");
+      }
+    }
+
+    def testRemove(params:Any):Unit = {
+       if(this.dataList.length > 0) {
+         this.dataList.removeAt(0);
+       }
+    }
+
+    def testClear(params:Any):Unit = {
+      this.dataList.clear();
     }
 
     def testClick(params:Any):Unit = {

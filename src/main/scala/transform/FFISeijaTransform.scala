@@ -4,6 +4,7 @@ import scalanative.unsafe._
 import core.Entity
 import core.App.worldPtr
 import scalanative.unsafe.CFuncPtr1.fromScalaFunction
+import scala.scalanative.unsigned._
 
 type SVector3 = CStruct3[CFloat,CFloat,CFloat]
 type SVector4 = CStruct4[CFloat,CFloat,CFloat,CFloat]
@@ -17,6 +18,8 @@ object FFISeijaTransform {
   private val transformMutViewPtr = LibSeija.getFunc[CFuncPtr3[Ptr[Byte],Long,Ptr[Byte],Unit]]("transform_mut_view");
   private val transformGetPtr = LibSeija.getFunc[CFuncPtr2[Ptr[Byte],Long,Ptr[STransform]]]("transform_get_ptr");
   private val transformSetParentPtr = LibSeija.getFunc[CFuncPtr4[Ptr[Byte],Long,Long,Boolean,Unit]]("transform_set_parent");
+  private val transformAddChildIndexPtr = LibSeija.getFunc[CFuncPtr4[Ptr[Byte],Long,Long,Int,Unit]]("transform_add_child_index");
+  private val transformDespawnPtr = LibSeija.getFunc[CFuncPtr2[Ptr[Byte],Long,Unit]]("transform_despawn");
   def addTransformModule(appPtr:Ptr[Byte]):Unit = {
       addTransformModulePtr(appPtr)
   }
@@ -42,5 +45,13 @@ object FFISeijaTransform {
 
   def transformSetParent(worldPtr:Ptr[Byte],entity:Long,parent:Long,isNull:Boolean) = {
       transformSetParentPtr(core.App.worldPtr,entity,parent,isNull)
+  }
+
+  def transformAddChildIndex(curEntity:Long,childEntity:Long,index:Int):Unit = {
+      transformAddChildIndexPtr(core.App.worldPtr,curEntity,childEntity,index);
+  }
+
+  def transformDespawn(curEntity:Long):Unit = {
+      transformDespawnPtr(core.App.worldPtr,curEntity);
   }
 }

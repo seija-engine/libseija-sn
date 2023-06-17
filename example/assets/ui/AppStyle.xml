@@ -59,7 +59,7 @@
                 <Panel width="750" height="500">
                     <Image sprite="default.white"  color="#cccccc" />
                     <Text ver="Start" text="ItemsControl"  height="30" />
-                    
+                    <ItemsPresenter ver="End" width="750" height="470" />
                 </Panel>
             </ControlTemplate>
         </Setter>

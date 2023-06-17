@@ -52,5 +52,11 @@ class Text extends UIElement derives ReflectType {
       case _: String => 
   }
 
+  override def clone():Text = {
+    val cloneObject = super.clone().asInstanceOf[Text];
+    cloneObject._text = new String(this._text);
+    cloneObject  
+  }
+
    
 }
