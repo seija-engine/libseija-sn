@@ -62,6 +62,9 @@ object DataBindingManager {
         if(item.conv.isDefined) { srcValue = item.conv.get.conv(srcValue) }
         val dstTypeInfo = Assembly.getTypeInfoOrThrow(dstObject);
         dstTypeInfo.setValue(dstObject,item.dstKey,srcValue);
+        if(dstObject.isInstanceOf[INotifyPropertyChanged]) {
+          dstObject.asInstanceOf[INotifyPropertyChanged].callPropertyChanged(item.dstKey,srcObject);
+        }
       } else {
         var dstValue = dstObject;
         if(item.dstKey != "this") {
@@ -71,6 +74,9 @@ object DataBindingManager {
         if(item.conv.isDefined) { dstValue = item.conv.get.conv(dstValue) }
         val srcTypeInfo = Assembly.getTypeInfoOrThrow(srcObject);
         srcTypeInfo.setValue(srcObject,item.sourceKey,dstValue);
+        if(srcObject.isInstanceOf[INotifyPropertyChanged]) {
+          srcObject.asInstanceOf[INotifyPropertyChanged].callPropertyChanged(item.sourceKey,dstObject);
+        }
       }
   }
 

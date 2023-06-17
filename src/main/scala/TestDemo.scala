@@ -52,6 +52,7 @@ class TestViewModel extends INotifyPropertyChanged derives ReflectType {
     var insertCommand:FCommand = FCommand(this.testInsert);
     var updateCommand:FCommand = FCommand(this.testUpdate);
     var removeCommand:FCommand = FCommand(this.testRemove);
+    var moveCommand:FCommand = FCommand(this.testMove);
     var clearCommand:FCommand = FCommand(this.testClear);
     var dataList:ObservableList[String] = ObservableList.from(List("Data@1","Data@2","Data@3"));
  
@@ -80,6 +81,11 @@ class TestViewModel extends INotifyPropertyChanged derives ReflectType {
        if(this.dataList.length > 0) {
          this.dataList.removeAt(0);
        }
+    }
+
+    def testMove(params:Any):Unit = {
+       if(this.dataList.length < 2) return;
+       this.dataList.move(0,3);
     }
 
     def testClear(params:Any):Unit = {

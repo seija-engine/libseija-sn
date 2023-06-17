@@ -36,6 +36,13 @@ object NotifyCollectionChanged {
     def Remove(oldItem:Any,idx:Int):NotifyCollectionChangedEventArgs = {
         NotifyCollectionChangedEventArgs(CollectionChangedAction.Remove,true,oldItem = oldItem,oldStartingIndex = idx)
     }
+
+    def Move(item:Any,oldIndex:Int,newIndex:Int):NotifyCollectionChangedEventArgs = {
+        NotifyCollectionChangedEventArgs(CollectionChangedAction.Move,
+        true,oldItem = item,
+        oldStartingIndex = oldIndex,
+        newStartingIndex = newIndex)
+    }
 }
 
 type CollectionChangedCallBack = (INotifyCollectionChanged, NotifyCollectionChangedEventArgs) => Unit;
