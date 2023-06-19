@@ -1,6 +1,6 @@
-<Panel>
+<Panel isCanvas="true">
   <Image sprite="default.white" color="#e8e8e7" />
-  <StackPanel height="50" spacing="10"   ver="Start" orientation="Hor" padding="10,10,0,0">
+  <StackPanel  isCanvas="true" height="50" spacing="10"   ver="Start" orientation="Hor" padding="10,10,0,0">
     <ButtonBase command="{Binding Data lstCommand}" ver="Start" >添加</ButtonBase>
     <ButtonBase command="{Binding Data insertCommand}" ver="Start">插入</ButtonBase>
     <ButtonBase command="{Binding Data removeCommand}" ver="Start">删除</ButtonBase>
@@ -11,11 +11,11 @@
   
   <ItemsControl width="750" height="500" itemsSource="{Binding Data dataList}">
     <ItemsControl.warpElement>
-      <StackPanel spacing="10" />
+      <StackPanel spacing="10" isCanvas="true" />
     </ItemsControl.warpElement>
     <ItemsControl.itemTemplate>
       <DataTemplate>
-        <Panel height="30" width="730">
+        <Panel isCanvas="true" height="30" width="730">
           <Image sprite="default.white" color="#111199" height="30"/>
           <Text color="#ffffff" text="{Binding Data this}"/>
         </Panel>

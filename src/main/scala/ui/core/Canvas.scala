@@ -8,18 +8,19 @@ import scala.scalanative.unsafe.Ptr
 class Canvas;
 
 class CanvasBuilder extends RawComponentBuilder {
+    var isClip:Boolean = false;
     def build(entity: Entity): Unit = {
-        FFISeijaUI.entityAddCanvas(core.App.worldPtr,entity.id)
+        FFISeijaUI.entityAddCanvas(core.App.worldPtr,entity.id,isClip)
     }
 }
 
+object Canvas {
+    given CanvasComponent:RawComponent[Canvas] with {
+        type BuilderType = CanvasBuilder;
+        type RawType = Ptr[Byte]
 
-given CanvasComponent:RawComponent[Canvas] with {
+        override def builder(): BuilderType = new CanvasBuilder()
 
-    type BuilderType = CanvasBuilder;
-    type RawType = Ptr[Byte]
-
-    override def builder(): BuilderType = new CanvasBuilder()
-
-    override def getRaw(entity: Entity): RawType = ???    
+        override def getRaw(entity: Entity): RawType = ???    
+    }
 }

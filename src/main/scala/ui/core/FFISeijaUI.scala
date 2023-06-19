@@ -29,7 +29,7 @@ object FFISeijaUI {
     private val renderConfigSetUIPtr = LibSeija.getFunc[CFuncPtr1[Ptr[Byte],Unit]]("render_config_set_ui")
     private val entityAddRectPtr = LibSeija.getFunc[CFuncPtr3[Ptr[Byte],Long,Ptr[RawVector4],Unit]]("entity_add_rect2d");
     private val entityAddUICanvasPtr = LibSeija.getFunc[CFuncPtr3[Ptr[Byte],Long,Byte,Unit]]("entity_add_ui_canvas");
-    private val entityAddCanvasPtr = LibSeija.getFunc[CFuncPtr2[Ptr[Byte],Long,Unit]]("entity_add_canvas");
+    private val entityAddCanvasPtr = LibSeija.getFunc[CFuncPtr3[Ptr[Byte],Long,Boolean,Unit]]("entity_add_canvas");
     private val entityAddUISystemPtr = LibSeija.getFunc[CFuncPtr2[Ptr[Byte],Long,Unit]]("entity_add_ui_system");
     private val entityAddSpriteSimplePtr = LibSeija.getFunc[CFuncPtr5[Ptr[Byte],Long,Int,Long,Ptr[RawVector4],Unit]]("entity_add_sprite_simple");
     private val entityAddSpriteSlicePtr = LibSeija.getFunc[CFuncPtr6[Ptr[Byte],Long,Int,Long,Ptr[RawVector4],Ptr[RawVector4],Unit]]("entity_add_sprite_slice");
@@ -76,8 +76,8 @@ object FFISeijaUI {
         entityAddUICanvasPtr(worldPtr,entity,0);
     }
 
-    def entityAddCanvas(worldPtr:Ptr[Byte],entity:Long) = {
-        entityAddCanvasPtr(worldPtr,entity);
+    def entityAddCanvas(worldPtr:Ptr[Byte],entity:Long,isClip:Boolean) = {
+        entityAddCanvasPtr(worldPtr,entity,isClip);
     }
 
     def entityAddUISystem(worldPtr:Ptr[Byte],entity:Long) = {
