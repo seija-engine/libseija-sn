@@ -5,7 +5,7 @@
     <ButtonBase command="{Binding Data insertCommand}" ver="Start">插入</ButtonBase>
     <ButtonBase command="{Binding Data removeCommand}" ver="Start">删除</ButtonBase>
     <ButtonBase command="{Binding Data updateCommand}" ver="Start">替换</ButtonBase>
-    <ButtonBase command="{Binding Data insertCommand}" ver="Start">移动</ButtonBase>
+    <ButtonBase command="{Binding Data moveCommand}" ver="Start">移动</ButtonBase>
     <ButtonBase command="{Binding Data clearCommand}" ver="Start">清除</ButtonBase>
   </StackPanel>
   

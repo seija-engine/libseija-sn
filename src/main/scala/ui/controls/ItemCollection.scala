@@ -75,7 +75,13 @@ case class ItemElementListMgr(val parent:UIElement,val collection:ItemCollection
           oldElement.Release();
         }
         case CollectionChangedAction.Move => {
-
+          val dataList = this.collection.getDataList;
+          val a = args.newStartingIndex;
+          val b = args.oldStartingIndex;
+          val (startIdx,endIdx) = if(a > b) (b,a) else (a,b)
+          startIdx.to(endIdx).foreach {index => 
+            parent.children(index).dataContext = dataList(index);  
+          }
         }
         case CollectionChangedAction.Clear => {
           parent.children.foreach(_.Release());

@@ -31,6 +31,13 @@ class ObservableList[T] extends INotifyCollectionChanged with IndexedSeq[T] {
         this.callChanged(NotifyCollectionChanged.Remove(oldItem,idx))
     }
 
+    def move(oldIndex:Int,newIndex:Int):Unit = {
+        if(oldIndex == newIndex) return;
+        val item = this.list.remove(oldIndex);
+        this.list.insert(newIndex,item);
+        this.callChanged(NotifyCollectionChanged.Move(item,oldIndex,newIndex))
+    }
+
     def remove(item:T):Boolean = {
        val findIdx = this.list.lastIndexOf(item);
        if(findIdx >= 0) {

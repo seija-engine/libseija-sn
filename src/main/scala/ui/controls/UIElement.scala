@@ -69,6 +69,12 @@ class UIElement extends INotifyPropertyChanged with Cloneable derives ReflectTyp
     def dataContext_=(value:Any) = {
         this._dataContext = value;
         this.callPropertyChanged("dataContext",this);
+        this.onDataContextChanged();
+        this.children.foreach { child => {
+          if(child.dataContext == null) {
+            child.onDataContextChanged()
+          }
+       }};
     }
 
     def Awake():Unit = {
@@ -106,11 +112,23 @@ class UIElement extends INotifyPropertyChanged with Cloneable derives ReflectTyp
     def OnEnter(): Unit = { this.createBaseEntity(true); }
 
     protected def onDataContextChanged():Unit = {
-
-    }
-
-    override def onPropertyChanged(propertyName: String): Unit = {
-       
+       if(!this.isEntered) return;
+       for(curItem <- this.bindItemList) {
+          if(curItem.sourceType == BindingSource.Data) {
+            val oldInstIndex = this.bindingInstList.indexWhere(_.item == curItem);
+            if(oldInstIndex >= 0) {
+              val inst = this.bindingInstList.remove(oldInstIndex);
+              DataBindingManager.removeInst(inst);
+            }
+            val findDataContext = this.findDataContext();
+            if(findDataContext != null) {
+                DataBindingManager.binding(findDataContext,this,curItem).logError() match {
+                    case Success(Some(inst)) => this.bindingInstList += inst;
+                    case _ => {}
+                }
+            }
+          }
+       }
     }
 
     protected def createBaseEntity(addBaseLayout:Boolean = true):Entity = {
