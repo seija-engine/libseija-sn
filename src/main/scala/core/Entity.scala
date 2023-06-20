@@ -18,6 +18,14 @@ class Entity(val id:Long) extends AnyVal {
       FFISeijaTransform.transformAddChildIndex(this.id,child.id,index);
   }
 
+  def setParent(parent:Option[Entity]) = {
+    parent match
+      case None => FFISeijaTransform.transformSetParent(core.App.worldPtr,this.id,0,true);
+      case Some(value) => FFISeijaTransform.transformSetParent(core.App.worldPtr,this.id,value.id,false);
+    
+    
+  }
+
   def destroy():Unit = {
     FFISeijaTransform.transformDespawn(this.id);
   }

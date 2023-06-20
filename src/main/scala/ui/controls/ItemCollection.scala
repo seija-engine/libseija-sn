@@ -62,7 +62,8 @@ case class ItemElementListMgr(val parent:UIElement,val collection:ItemCollection
             case Success(value) => {
               value.Enter();
               parent.insertChild(args.newStartingIndex,value)
-              parent.getEntity().get.insertChild(value.getEntity().get,args.newStartingIndex);
+              value.getEntity().get.setParent(parent.getEntity());
+              //parent.getEntity().get.insertChild(value.getEntity().get,args.newStartingIndex);
             }
             case Failure(exception) => System.err.println(exception.toString());
           }
