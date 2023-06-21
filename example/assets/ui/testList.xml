@@ -11,7 +11,7 @@
   
   <ItemsControl width="750" height="500" itemsSource="{Binding Data dataList}">
     <ItemsControl.warpElement>
-      <StackPanel spacing="10" isCanvas="true" />
+      <StackPanel spacing="10" isCanvas="true" isClip="true" />
     </ItemsControl.warpElement>
     <ItemsControl.itemTemplate>
       <DataTemplate>

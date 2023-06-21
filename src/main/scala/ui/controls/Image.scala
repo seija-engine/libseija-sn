@@ -51,6 +51,8 @@ class Image extends UIElement derives ReflectType {
             v.common.ver = this._ver;
             v.common.uiSize.width = this._width;
             v.common.uiSize.height = this._height;
+            v.common.margin = this._margin;
+            v.common.padding = this._padding;
           })
           .add[Sprite](v => {
               if(this._sprite.isDefined) {

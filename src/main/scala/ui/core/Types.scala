@@ -6,7 +6,7 @@ import scala.scalanative.unsafe.Ptr
 import core.reflect.DynTypeConv
 type RawThickness = CStruct4[CFloat, CFloat, CFloat, CFloat];
 
-case class Thickness(val left:Float,top:Float,right:Float,bottom:Float);
+case class Thickness(val left:Float,val top:Float,val right:Float,val bottom:Float);
 
 object Thickness {
     def apply(v:Float):Thickness = Thickness(v,v,v,v)

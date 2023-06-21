@@ -31,7 +31,7 @@ class TestDemo extends IGameApp {
     UIResourceMgr.loadResource("example/assets/ui/AppStyle.xml");
     val viewModel = new TestViewModel();
     this.testViewModel = Some(viewModel);
-    XmlUIElement.fromFile("example/assets/ui/testList.xml").logError().foreach {loadElement => 
+    XmlUIElement.fromFile("example/assets/ui/testScroll.xml").logError().foreach {loadElement => 
       loadElement.dataContext = this.testViewModel.get;
       this.topCanvas.get.addElement(loadElement);
     }
