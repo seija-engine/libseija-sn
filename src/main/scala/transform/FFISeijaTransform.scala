@@ -6,10 +6,7 @@ import core.App.worldPtr
 import scalanative.unsafe.CFuncPtr1.fromScalaFunction
 import scala.scalanative.unsigned._
 
-type SVector3 = CStruct3[CFloat,CFloat,CFloat]
-type SVector4 = CStruct4[CFloat,CFloat,CFloat,CFloat]
-type STransform = CStruct3[SVector4,SVector4,SVector3]
-type RawTransform = STransform;
+
 
 object FFISeijaTransform {
   private val addTransformModulePtr = LibSeija.getFunc[CFuncPtr1[Ptr[Byte],Unit]]("transform_add_module");

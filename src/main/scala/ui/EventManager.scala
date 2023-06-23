@@ -14,8 +14,13 @@ object EventType {
     val MOUSE_ENTER = 4.toUInt;
     val MOUSE_LEAVE = 8.toUInt;
     val CLICK = 16.toUInt;
+    val BEGIN_DRAG = (1 << 5).toUInt
+    val DRAG = (1 << 6).toUInt
+    val END_DRAG = (1 << 7).toUInt
 
-    val ALL = TOUCH_START | TOUCH_END | MOUSE_ENTER | MOUSE_LEAVE | CLICK;
+    val ALL_TOUCH = TOUCH_START | TOUCH_END | CLICK;
+    val ALL_MOUSE = MOUSE_ENTER | MOUSE_LEAVE;
+    val ALL_DRAG = BEGIN_DRAG | DRAG | END_DRAG;
 }
 
 private case class EventInfo(val entity:Entity,callFunc:(UInt,Any) => Unit,args:Any);

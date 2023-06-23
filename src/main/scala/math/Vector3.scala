@@ -1,7 +1,7 @@
 package math
 import scalanative.unsafe.{Ptr,CStruct3,CStruct4}
 
-case class Vector3(val x:Float,val y:Float,val z:Float) {
+case class Vector3(var x:Float,var y:Float,var z:Float) {
     def +(other:Vector3):Vector3 = Vector3(x + other.x,y + other.y,z + other.z)
     
     def normalize():Vector3 = Vector3.Normalize(this)

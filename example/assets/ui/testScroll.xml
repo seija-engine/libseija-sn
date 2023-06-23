@@ -1,4 +1,10 @@
 <Panel isCanvas="true">
     <Image sprite="default.white" color="#e8e8e7" />
-    
+    <Thumb width="200" height="200">
+        <Thumb.template>
+          <ControlTemplate>
+            <Image sprite="default.scrollbar-horz-trough" width="10" height="20" />
+          </ControlTemplate>
+        </Thumb.template>
+    </Thumb>
 </Panel>

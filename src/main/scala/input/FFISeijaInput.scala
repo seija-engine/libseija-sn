@@ -7,6 +7,7 @@ object FFISeijaInput {
     private val worldGetInputPtr = LibSeija.getFunc[CFuncPtr1[Ptr[Byte],Ptr[Byte]]]("input_world_get_input");
     private val inputGetKeyDownPtr = LibSeija.getFunc[CFuncPtr2[Ptr[Byte],Int,Boolean]]("input_get_keydown");
     private val inputGetKeyUpPtr = LibSeija.getFunc[CFuncPtr2[Ptr[Byte],Int,Boolean]]("input_get_keyup");
+    //
     def addInputModule(appPtr: Ptr[Byte]): Unit = {
         addInputModulePtr(appPtr);
     }
@@ -22,4 +23,5 @@ object FFISeijaInput {
     def inputGetKeyUp(inputPtr: Ptr[Byte], key: Int): Boolean = {
         inputGetKeyUpPtr(inputPtr, key)
     }
+
 }

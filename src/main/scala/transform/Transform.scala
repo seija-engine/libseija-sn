@@ -4,6 +4,11 @@ import scalanative.unsafe._
 import core.{RawComponentBuilder,RawComponent};
 import core.Entity
 
+type SVector3 = CStruct3[CFloat,CFloat,CFloat]
+type SVector4 = CStruct4[CFloat,CFloat,CFloat,CFloat]
+type STransform = CStruct3[SVector4,SVector4,SVector3]
+type RawTransform = STransform;
+
 class Transform;
 
 class TransformBuilder extends RawComponentBuilder {
@@ -32,8 +37,11 @@ object Transform {
 
 
 extension (t:RawTransform) {
+    def getPosition():Vector3 = {
+        Vector3(t._3._1,t._3._2,t._3._3)
+    }
     def setPosition(v3:Vector3):Unit = {
-        v3.toPtr4(t.at1)
+        v3.toPtr(t.at3)
     }
 }
     

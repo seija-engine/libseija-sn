@@ -27,7 +27,7 @@ class ButtonBase extends ContentControl derives ReflectType {
     override def OnEnter(): Unit = {
        val thisEntity = this.createBaseEntity(true);
        this.loadControlTemplate();
-       val events = EventType.ALL;
+       val events = EventType.ALL_TOUCH | EventType.ALL_MOUSE;
        EventManager.register(thisEntity,events,this.OnElementEvent);
        updateVisualState();
     }
