@@ -1,10 +1,23 @@
 <Panel isCanvas="true">
     <Image sprite="default.white" color="#e8e8e7" />
-    <Thumb width="200" height="200">
-        <Thumb.template>
-          <ControlTemplate>
-            <Image sprite="default.scrollbar-horz-trough" width="10" height="20" />
-          </ControlTemplate>
-        </Thumb.template>
-    </Thumb>
+    <Track width="250" height="20">
+        <Track.template>
+            <ControlTemplate>
+                <Image sprite="default.white" color="#999999" />
+            </ControlTemplate>
+        </Track.template>
+        <Track.resources>
+            <Style forType="Thumb">
+                <Setter key="width"  value="50" />
+                <Setter key="height" value="20" />
+                <Setter key="template">
+                    <ControlTemplate>
+                        <Image sprite="default.white" color="#1111ee" />
+                    </ControlTemplate>
+                </Setter>
+            </Style>
+        </Track.resources>
+    </Track>
+    
+    <Text ver="End" height="50" margin="0,0,0,200" text="{Binding Data count}"/>
 </Panel>

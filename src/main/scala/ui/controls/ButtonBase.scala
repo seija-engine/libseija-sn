@@ -37,9 +37,11 @@ class ButtonBase extends ContentControl derives ReflectType {
        if((typ & EventType.TOUCH_START) != zero) {
           this.IsPressed = true;
           this.updateVisualState();
+          this.onStartPressed();
        }
        if((typ & EventType.TOUCH_END) != zero) {
           this.IsPressed = false;
+          this.onEndPressed();
           this.updateVisualState();
        }
        if((typ & EventType.MOUSE_ENTER) != zero) {
@@ -50,14 +52,23 @@ class ButtonBase extends ContentControl derives ReflectType {
           this.IsMouseOver = false;
           if(this.IsPressed) {
             this.IsPressed = false;
+            this.onEndPressed();
           }
           this.updateVisualState();
        }
        if((typ & EventType.CLICK) != zero) {
-         this.command.foreach { cmd =>
-            cmd.Execute(this.commandParams);
-         }
+         this.onClick();
        }
+    }
+
+    protected def onStartPressed():Unit = { }
+
+    protected def onEndPressed():Unit = { }
+
+    protected def onClick():Unit = { this.callCommand(); }
+
+    protected def callCommand():Unit = {
+      this.command.foreach { cmd => cmd.Execute(this.commandParams); }
     }
 
     def updateVisualState():Unit = {
@@ -72,6 +83,7 @@ class ButtonBase extends ContentControl derives ReflectType {
 
 
     override def Exit(): Unit = {
+        super.Exit();
         EventManager.unRegister(this.entity.get);
     }
 }

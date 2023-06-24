@@ -36,16 +36,18 @@ class Control extends UIElement with ElementNameScope derives ReflectType {
     }
 
     protected def loadControlTemplate(): Unit = {
-       this.findTemplate().flatMap( t => t.LoadContent(this,Some(this))).logError().foreach { element => 
-         this.addChild(element);
+       this.findTemplate().foreach {t => 
+          t.LoadContent(this,Some(this)).logError().foreach {elem => 
+            this.addChild(elem);
+          }
        }
     }
 
-    def findTemplate():Try[ControlTemplate] = {
+    def findTemplate():Option[ControlTemplate] = {
        if(this.template.isDefined) {
-         return Success(this.template.get);
+         return Some(this.template.get);
        }
-       Failure(new Throwable("control template not found"))
+       None
     }
 
     def getScopeElement(name:String):Option[UIElement] = { this.nameDict.get(name) }

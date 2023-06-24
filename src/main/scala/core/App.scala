@@ -4,6 +4,7 @@ import scalanative.unsigned.UnsignedRichInt
 import scala.scalanative.unsigned.UInt
 import input.Input
 import scala.collection.mutable;
+import scala.collection.mutable.ArrayBuffer;
 
 trait IModule {
   def OnAdd(appPtr:Ptr[Byte]):Unit;
@@ -55,8 +56,7 @@ object App {
       module.updateECSPtr(worldPtr)
       module.update();
     })
-    
-    
+    UpdateMgr.update();
     this.gameApp.OnUpdate();
   }
 }
