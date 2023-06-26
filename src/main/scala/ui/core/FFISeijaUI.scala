@@ -54,7 +54,12 @@ object FFISeijaUI {
     private val spritesheetEndReadPtr = LibSeija.getFunc[CFuncPtr1[RawSpriteSheet,Unit]]("spritesheet_end_read");
     private val entityGetTextPtr = LibSeija.getFunc[CFuncPtr2[Ptr[Byte],Long,Ptr[RawTextFFI]]]("entity_get_text");
     private val entityTextSetStringPtr = LibSeija.getFunc[CFuncPtr2[Ptr[RawTextFFI],CString,Unit]]("entity_text_setstring");
+    type AddFreeType = CFuncPtr4[Ptr[Byte],Long,Ptr[RawCommonView],Ptr[RawUISize],Unit];
+    private val entityAddFreeLayoutPtr = LibSeija.getFunc[AddFreeType]("entity_add_free_layout");
 
+    private val entityAddFreeItemPtr = LibSeija.getFunc[CFuncPtr4[Ptr[Byte],Long,Float,Float,Unit]]("entity_add_layout_freeitem");
+    private val entityGetFreeItemPtr = LibSeija.getFunc[CFuncPtr2[Ptr[Byte],Long,Ptr[Byte]]]("entity_get_layout_freeitem");
+    
     def addSpriteSheetModule(appPtr:Ptr[Byte]):Unit = addSpritesheetModulePtr(appPtr)
     def spriteSheetAssetGet(worldPtr:Ptr[Byte],id:Long):RawSpriteSheet = spriteSheetAssetGetPtr(worldPtr,id);
     def spritesheetGetIndex(sheet: RawSpriteSheet, name: String): Int = Zone { implicit z =>
@@ -154,6 +159,14 @@ object FFISeijaUI {
         entityAddFlexPtr(worldPtr,entity,ptrCommonView,ptrUISize,flex)
     }
 
+    def entityAddFreeLayout(worldPtr:Ptr[Byte],entity:Long,view:CommonView):Unit = {
+        val ptrCommonView = stackalloc[RawCommonView]();
+        ui.core.CommonViewToFFI.toRaw(view,ptrCommonView);
+        val ptrUISize = stackalloc[ui.core.RawUISize]();
+        ui.core.SizeValueToFFI.toRaw(view.uiSize,ptrUISize)
+        entityAddFreeLayoutPtr(worldPtr,entity,ptrCommonView,ptrUISize);
+    }
+
     def entityAddFlexItem(worldPtr:Ptr[Byte],entity:Long,flexItemPtr:Ptr[RawFlexItem]) = {
         entityAddFlexItemPtr(worldPtr,entity,flexItemPtr)
     }
@@ -183,5 +196,13 @@ object FFISeijaUI {
 
     def entityTextSetString(textPtr:Ptr[RawTextFFI],text:String) = Zone { implicit z =>
         entityTextSetStringPtr(textPtr,toCString(text))
+    }
+
+    def entityAddFreeItem(worldPtr:Ptr[Byte],entity:Long,x:Float,y:Float):Unit = {
+        entityAddFreeItemPtr(worldPtr,entity,x,y)
+    }
+
+    def entityGetFreeItem(worldPtr:Ptr[Byte],entity:Long):Ptr[Byte] = {
+        entityGetFreeItemPtr(worldPtr,entity)
     }
 }
