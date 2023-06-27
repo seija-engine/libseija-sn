@@ -13,6 +13,14 @@ enum SizeValue extends Cloneable {
   case Auto
   case FormRect
   case Pixel(v: Float)
+
+  def getPixel():Option[Float] = {
+    this match
+      case Auto => None
+      case FormRect => None
+      case Pixel(v) => Some(v)
+    
+  }
 }
 
 object SizeValue {

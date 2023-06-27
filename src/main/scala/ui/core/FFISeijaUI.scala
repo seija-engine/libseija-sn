@@ -17,6 +17,7 @@ import ui.core.RawFlexItem
 import ui.core.RawTextFFI
 import scala.scalanative.runtime.libc
 import math.Color
+import math.RawVector2
 
 
 type RawSpriteSheet = Ptr[Byte]
@@ -56,10 +57,10 @@ object FFISeijaUI {
     private val entityTextSetStringPtr = LibSeija.getFunc[CFuncPtr2[Ptr[RawTextFFI],CString,Unit]]("entity_text_setstring");
     type AddFreeType = CFuncPtr4[Ptr[Byte],Long,Ptr[RawCommonView],Ptr[RawUISize],Unit];
     private val entityAddFreeLayoutPtr = LibSeija.getFunc[AddFreeType]("entity_add_free_layout");
-
     private val entityAddFreeItemPtr = LibSeija.getFunc[CFuncPtr4[Ptr[Byte],Long,Float,Float,Unit]]("entity_add_layout_freeitem");
-    private val entityGetFreeItemPtr = LibSeija.getFunc[CFuncPtr2[Ptr[Byte],Long,Ptr[Byte]]]("entity_get_layout_freeitem");
-    
+    private val entityGetFreeItemPtr = LibSeija.getFunc[CFuncPtr2[Ptr[Byte],Long,Ptr[RawVector2]]]("entity_get_layout_freeitem");
+    private val entityGetRect2dPtr = LibSeija.getFunc[CFuncPtr3[Ptr[Byte],Long,Boolean,Ptr[RawVector4]]]("entity_get_rect2d");
+
     def addSpriteSheetModule(appPtr:Ptr[Byte]):Unit = addSpritesheetModulePtr(appPtr)
     def spriteSheetAssetGet(worldPtr:Ptr[Byte],id:Long):RawSpriteSheet = spriteSheetAssetGetPtr(worldPtr,id);
     def spritesheetGetIndex(sheet: RawSpriteSheet, name: String): Int = Zone { implicit z =>
@@ -202,7 +203,11 @@ object FFISeijaUI {
         entityAddFreeItemPtr(worldPtr,entity,x,y)
     }
 
-    def entityGetFreeItem(worldPtr:Ptr[Byte],entity:Long):Ptr[Byte] = {
+    def entityGetFreeItem(worldPtr:Ptr[Byte],entity:Long):Ptr[RawVector2] = {
         entityGetFreeItemPtr(worldPtr,entity)
+    }
+
+    def entityGetRect2d(worldPtr:Ptr[Byte],entity:Long,isMut:Boolean):Ptr[RawVector4] = {
+        entityGetRect2dPtr(worldPtr,entity,isMut)
     }
 }

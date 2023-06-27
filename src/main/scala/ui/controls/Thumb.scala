@@ -9,6 +9,7 @@ import math.Vector3
 import transform.{Transform,RawTransform}
 import transform.getPosition
 import transform.setPosition
+import ui.core.FreeLayoutItem
 
 class Thumb extends Control derives ReflectType {
     var OnBeginDragCall:Option[(Vector2) => Unit] = None;
@@ -19,6 +20,7 @@ class Thumb extends Control derives ReflectType {
     override def OnEnter(): Unit = {
         val thisEntity = this.createBaseEntity(true);
         EventManager.register(thisEntity,EventType.ALL_DRAG,this.OnElementEvent);
+        thisEntity.add[FreeLayoutItem]();
         this.loadControlTemplate();
     }
 
