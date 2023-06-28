@@ -1,18 +1,18 @@
 <Panel isCanvas="true">
     <Image sprite="default.white" color="#e8e8e7" />
-    <Track width="20" hor="End" orientation="Ver" value="0.6">
+    <Track width="26" hor="Center" orientation="Ver" value="0.6">
         <Track.template>
             <ControlTemplate>
-                <Image sprite="default.white" color="#999999" />
+                <Image imageType="Slice" sprite="default.scale-vert-trough" color="#ffffff" />
             </ControlTemplate>
         </Track.template>
         <Track.resources>
             <Style forType="Thumb">
-                <Setter key="width"  value="20" />
-                <Setter key="height" value="20" />
+                <Setter key="width"  value="26" />
+                <Setter key="height" value="26" />
                 <Setter key="template">
                     <ControlTemplate>
-                        <Image sprite="default.white" color="#1111ee" />
+                        <Image sprite="default.scale-slider" color="#ffffff" />
                     </ControlTemplate>
                 </Setter>
             </Style>

@@ -22,6 +22,7 @@ class TestDemo extends IGameApp {
     Atlas.load("default","ui/default.json").get
     ui.Font.load("default","ui/WenQuanYiMicroHei.ttf",true).get
     Atlas.getPath("default.button").get.sliceInfo = Some(Thickness(5,5,5,5));
+    Atlas.getPath("default.scale-vert-trough").get.sliceInfo = Some(Thickness(0,10,0,10));
     this.topCanvas = Some(canvas);
   }
   
