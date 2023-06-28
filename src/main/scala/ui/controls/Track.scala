@@ -106,11 +106,13 @@ class Track extends Control derives ReflectType {
     if (this.cacheSize.x != x || this.cacheSize.y != y) {
       this.cacheSize.x = x;
       this.cacheSize.y = y;
+      println(s"resize ${this.cacheSize}");
       this.onLayoutResize();
     }
   }
 
   protected def updatePosByValue(): Unit = {
+    println("update pos");
     val freeItem = this.thumb.getEntity().get.get[FreeLayoutItem]();
     val thisRect = this.getEntity().get.get[Rect2D]();
     val thumbRect = this.thumb.getEntity().get.get[Rect2D]();

@@ -126,7 +126,9 @@ object ReflectType {
       val baseTypeName:Expr[Option[String]] = if(baseLst.length >= 2) { 
          Expr(Some(baseLst(1).fullName)) 
       } else {  Expr(None) };
-      val allFields:List[Expr[FieldInfo]] = typClassSym.declaredFields.map(fieldSym => {
+      val allFields:List[Expr[FieldInfo]] = typClassSym.declaredFields.filter(filterSym => {
+         !filterSym.flags.is(Flags.Private)
+      }).map(fieldSym => {
          val memberType = typRepr.memberType(fieldSym);
          
          val fieldName = if(fieldSym.name.charAt(0) == '_') { fieldSym.name.tail } else { fieldSym.name };
