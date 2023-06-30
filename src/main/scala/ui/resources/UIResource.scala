@@ -31,6 +31,7 @@ class UIResource extends Growable[BaseUIResource] derives ReflectType {
                  val autoKey = style.forTypeInfo.map(_.name).getOrElse("");
                  this.styleDict.put(autoKey,style);
                } else {
+                 println(s"add Style Key:${style.getKey}");
                  this.styleDict.put(style.getKey,style)
                }
             }

@@ -9,8 +9,13 @@ import ui.ContentProperty
 import ui.controls.UIElement
 import ui.binding.BindingItem
 import scala.util.Success
+import scala.collection.mutable.ArrayBuffer
+import ui.resources.Style
+import ui.resources.UIResourceMgr
 
 class XmlObjectParser(val nsResolver: XmlNSResolver = XmlNSResolver.default) {
+    var waitSetStyle:ArrayBuffer[(Any,core.reflect.FieldInfo,String)] = ArrayBuffer.empty;
+
     def parse(xml: XmlElement): Try[Any] = Try {
       xml.name match
         case "string" | "String" => xml.innerText.getOrElse("")
@@ -77,6 +82,13 @@ class XmlObjectParser(val nsResolver: XmlNSResolver = XmlNSResolver.default) {
       val isUIElement = curObject.isInstanceOf[UIElement];
       if (isUIElement && value.startsWith("{Binding")) {
         BindingItem.parse(key, value).logError().map(curObject.asInstanceOf[UIElement].addBindItem(_))
+      } else if(value.startsWith("{Res")) {
+        val startLen = "{Res".length();
+        var remainString = value.substring(startLen,value.length() - 1);
+        remainString = remainString.trim();
+        typInfo.getField(key).foreach{field =>
+          this.waitSetStyle.addOne((curObject,field,remainString));  
+        }
       } else {
         (for {
           filed <- typInfo.getFieldTry(key)
@@ -115,6 +127,21 @@ class XmlObjectParser(val nsResolver: XmlNSResolver = XmlNSResolver.default) {
         this.parse(childElem).logError().foreach(childObject => {
           curGrowable += childObject;
         })
+      }
+    }
+
+    def postReadObject():Unit = {
+      for((obj,field,styleName) <- this.waitSetStyle) {
+        if(obj.isInstanceOf[UIElement]) {
+          val uiElement = obj.asInstanceOf[UIElement];
+          var findStyle = uiElement.findResourceStyle(styleName);
+          if(findStyle.isEmpty) { findStyle = UIResourceMgr.appResource.findStyle(styleName); }
+          uiElement.setStyle(findStyle);
+        } else {
+          UIResourceMgr.appResource.findStyle(styleName).foreach {style =>  
+             field.set(obj,style);  
+          }
+        }
       }
     }
 }

@@ -21,9 +21,11 @@ object XmlUIElement {
     }
 
     def fromXmlElement(xmlElem:XmlElement):Try[UIElement] = {
-      val curObject = XmlObjectParser(XmlNSResolver.default).parse(xmlElem);
+      val parser = XmlObjectParser(XmlNSResolver.default);
+      val curObject = parser.parse(xmlElem);
       val tryUIElement = curObject.map(_.asInstanceOf[UIElement])
       tryUIElement.map(_.Awake());
+      parser.postReadObject();
       tryUIElement
     }
 }

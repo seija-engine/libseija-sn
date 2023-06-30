@@ -65,6 +65,9 @@ class UIElement extends INotifyPropertyChanged with Cloneable derives ReflectTyp
     def padding_=(value:Thickness) = { this._padding = value; this.callPropertyChanged("padding",this) }
     def margin = this._margin;
     def margin_=(value:Thickness) = { this._margin = value; this.callPropertyChanged("margin",this) }
+    def setStyle(style:Option[Style]):Unit = {
+        this.style = style;
+    }
     def dataContext = this._dataContext;
     def dataContext_=(value:Any) = {
         this._dataContext = value;
@@ -78,7 +81,10 @@ class UIElement extends INotifyPropertyChanged with Cloneable derives ReflectTyp
     }
 
     def Awake():Unit = {
-        this.children.foreach(_.Awake());
+        this.children.foreach(child => {
+            child.setParent(Some(this));
+            child.Awake();
+        });
         this.visualStateGroups.applyType(Assembly.getTypeInfo(this));
     }
 
@@ -104,7 +110,6 @@ class UIElement extends INotifyPropertyChanged with Cloneable derives ReflectTyp
         this.OnEnter();
         this.isEntered = true;
         this.children.foreach(child => {
-          child.setParent(Some(this));
           child.Enter()
         });
     }

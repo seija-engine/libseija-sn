@@ -77,4 +77,14 @@
             <Text height="30" text="{Binding Data testString}" />
         </StackPanel>
     </DataTemplate>
+
+    <Style key="SliderThumb" forType="Thumb">
+        <Setter key="width" value="26" />
+        <Setter key="height" value="26" />
+        <Setter key="template">
+            <ControlTemplate>
+                <Image sprite="default.scale-slider" />
+            </ControlTemplate>
+        </Setter>
+    </Style>
 </UIResource>

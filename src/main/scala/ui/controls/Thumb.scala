@@ -20,7 +20,6 @@ class Thumb extends Control derives ReflectType {
     override def OnEnter(): Unit = {
         val thisEntity = this.createBaseEntity(true);
         EventManager.register(thisEntity,EventType.ALL_DRAG,this.OnElementEvent);
-        thisEntity.add[FreeLayoutItem]();
         this.loadControlTemplate();
     }
 
