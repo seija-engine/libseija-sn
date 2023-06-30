@@ -6,17 +6,9 @@
                 <Image imageType="Slice" sprite="default.scale-vert-trough" color="#ffffff" />
             </ControlTemplate>
         </Track.template>
-        <Track.resources>
-            <Style forType="Thumb">
-                <Setter key="width"  value="26" />
-                <Setter key="height" value="26" />
-                <Setter key="template">
-                    <ControlTemplate>
-                        <Image sprite="default.scale-slider" color="#ffffff" />
-                    </ControlTemplate>
-                </Setter>
-            </Style>
-        </Track.resources>
+        <Track.thumb>
+          <Thumb style="{Res SliderThumb}"/>
+        </Track.thumb>
     </Track>
     
     <Text ver="End" height="50" margin="0,0,0,200" text="{Binding Data count}"/>

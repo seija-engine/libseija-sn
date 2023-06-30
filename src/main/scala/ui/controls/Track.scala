@@ -17,7 +17,7 @@ class Track extends Control derives ReflectType {
 
   private var startBtn: RepeatButton = RepeatButton();
   private var endBtn: RepeatButton = RepeatButton();
-  private var thumb: Thumb = Thumb();
+  var thumb: Thumb = Thumb();
 
   private var cacheSize: Vector2 = Vector2.zero.clone();
   private var curPosRate: Float = 0;

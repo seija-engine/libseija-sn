@@ -25,7 +25,6 @@ object XmlUIElement {
       val curObject = parser.parse(xmlElem);
       val tryUIElement = curObject.map(_.asInstanceOf[UIElement])
       tryUIElement.map(_.Awake());
-      parser.postReadObject();
       tryUIElement
     }
 }

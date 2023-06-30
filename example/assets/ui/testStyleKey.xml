@@ -1,4 +1,5 @@
 <Panel isCanvas="true">
     <Image  sprite="default.white" color="#e8e8e7" />
+    <ButtonBase>确定</ButtonBase>
     <Thumb style="{Res SliderThumb}" />
 </Panel>

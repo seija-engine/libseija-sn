@@ -14,7 +14,6 @@ import ui.resources.Style
 import ui.resources.UIResourceMgr
 
 class XmlObjectParser(val nsResolver: XmlNSResolver = XmlNSResolver.default) {
-    var waitSetStyle:ArrayBuffer[(Any,core.reflect.FieldInfo,String)] = ArrayBuffer.empty;
 
     def parse(xml: XmlElement): Try[Any] = Try {
       xml.name match
@@ -47,6 +46,7 @@ class XmlObjectParser(val nsResolver: XmlNSResolver = XmlNSResolver.default) {
         } else { None }
       }
       if(contentField.isDefined) {
+        val curElement = if(curObject.isInstanceOf[UIElement]) { Some(curObject.asInstanceOf[UIElement]) } else { None }
         if(contentCount == 0 && xml.innerText.isDefined) {
           setStringProp(curTypeInfo,curObject,contentField.get.Name,xml.innerText.get);
         } else if(contentCount == 1) {
@@ -56,10 +56,12 @@ class XmlObjectParser(val nsResolver: XmlNSResolver = XmlNSResolver.default) {
               val ctxObject = childObject.get;
               if(contentList.isDefined) {
                 contentList.get += ctxObject;
+                curElement.foreach(_.onAddContent(ctxObject));
               } else {
                   val convValue = DynTypeConv.convertStrTypeTry(ctxObject.getClass().getName(),contentField.get.typName,ctxObject);
                   if(convValue.logError().isSuccess) {
                     contentField.get.set(curObject,convValue.get);
+                    curElement.foreach(_.onAddContent(convValue.get));
                   }
               }
             }
@@ -70,10 +72,13 @@ class XmlObjectParser(val nsResolver: XmlNSResolver = XmlNSResolver.default) {
                   val childObject = this.parse(childElem).logError();
                   if(childObject.isSuccess) {
                     contentList.get += childObject.get;
+                    curElement.foreach(_.onAddContent(childObject.get));
                   }
               }
           }
         }
+
+        
       }
       curObject
     }
@@ -84,10 +89,17 @@ class XmlObjectParser(val nsResolver: XmlNSResolver = XmlNSResolver.default) {
         BindingItem.parse(key, value).logError().map(curObject.asInstanceOf[UIElement].addBindItem(_))
       } else if(value.startsWith("{Res")) {
         val startLen = "{Res".length();
-        var remainString = value.substring(startLen,value.length() - 1);
-        remainString = remainString.trim();
-        typInfo.getField(key).foreach{field =>
-          this.waitSetStyle.addOne((curObject,field,remainString));  
+        var styleName = value.substring(startLen,value.length() - 1);
+        styleName = styleName.trim();
+        if(curObject.isInstanceOf[UIElement]) {
+          val uiElement = curObject.asInstanceOf[UIElement];
+          var findStyle = uiElement.findResourceStyle(styleName);
+          if(findStyle.isEmpty) { findStyle = UIResourceMgr.appResource.findStyle(styleName); }
+          uiElement.setStyle(findStyle);
+        } else {
+          UIResourceMgr.appResource.findStyle(styleName).foreach {style =>  
+             typInfo.getField(key).foreach(f => f.set(curObject,style));
+          }
         }
       } else {
         (for {
@@ -127,21 +139,6 @@ class XmlObjectParser(val nsResolver: XmlNSResolver = XmlNSResolver.default) {
         this.parse(childElem).logError().foreach(childObject => {
           curGrowable += childObject;
         })
-      }
-    }
-
-    def postReadObject():Unit = {
-      for((obj,field,styleName) <- this.waitSetStyle) {
-        if(obj.isInstanceOf[UIElement]) {
-          val uiElement = obj.asInstanceOf[UIElement];
-          var findStyle = uiElement.findResourceStyle(styleName);
-          if(findStyle.isEmpty) { findStyle = UIResourceMgr.appResource.findStyle(styleName); }
-          uiElement.setStyle(findStyle);
-        } else {
-          UIResourceMgr.appResource.findStyle(styleName).foreach {style =>  
-             field.set(obj,style);  
-          }
-        }
       }
     }
 }

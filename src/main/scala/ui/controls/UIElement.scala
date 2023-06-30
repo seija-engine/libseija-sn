@@ -110,11 +110,14 @@ class UIElement extends INotifyPropertyChanged with Cloneable derives ReflectTyp
         this.OnEnter();
         this.isEntered = true;
         this.children.foreach(child => {
+          child.setParent(Some(this));
           child.Enter()
         });
     }
 
     def OnEnter(): Unit = { this.createBaseEntity(true); }
+
+    def onAddContent(value:Any):Unit = { }
 
     protected def onDataContextChanged():Unit = {
        if(!this.isEntered) return;

@@ -25,5 +25,11 @@ class Panel extends UIElement derives ReflectType {
          });
       }
     }
+
+    override def onAddContent(value: Any): Unit = {
+      if(value.isInstanceOf[UIElement]) {
+        value.asInstanceOf[UIElement].setParent(Some(this));
+      }
+    }
     
 }

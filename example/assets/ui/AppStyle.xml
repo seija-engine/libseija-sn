@@ -83,7 +83,22 @@
         <Setter key="height" value="26" />
         <Setter key="template">
             <ControlTemplate>
-                <Image sprite="default.scale-slider" />
+                <Image Name="BG" sprite="default.scale-slider" />
+                <ControlTemplate.visualStateGroups>
+                    <VisualStateGroupList>
+                        <VisualStateGroup name="CommonStates">
+                            <VisualState name="Normal">
+                                <Setter target="BG" key="sprite" value="default.scale-slider" />
+                            </VisualState>
+                            <VisualState name="MouseOver">
+                                <Setter target="BG" key="sprite" value="default.scale-slider-hover" />
+                            </VisualState>
+                            <VisualState name="Pressed">
+                                <Setter target="BG" key="sprite" value="default.scale-slider-active" />
+                            </VisualState>
+                        </VisualStateGroup>
+                    </VisualStateGroupList>
+                </ControlTemplate.visualStateGroups>
             </ControlTemplate>
         </Setter>
     </Style>

@@ -7,20 +7,6 @@ import ui.visualState.ViewStates
 import ui.command.ICommand
 
 class ButtonBase extends ContentControl derives ReflectType {
-    var _IsPressed:Boolean = false;
-    def IsPressed:Boolean = _IsPressed;
-    def IsPressed_=(value:Boolean):Unit = {
-        _IsPressed = value;
-        this.callPropertyChanged("IsPressed",this);
-    }
-
-    var _IsMouseOver:Boolean = false;
-    def IsMouseOver:Boolean = _IsMouseOver;
-    def IsMouseOver_=(value:Boolean):Unit = {
-        _IsMouseOver = value;
-        this.callPropertyChanged("IsMouseOver",this);
-    }
-
     var command:Option[ICommand] = None;
     var commandParams:Any = null;
     
@@ -33,20 +19,13 @@ class ButtonBase extends ContentControl derives ReflectType {
     }
 
     protected def OnElementEvent(typ:UInt,args:Any):Unit = {
+       this.processViewStates(typ,args);
        val zero = 0.toUInt;
        if((typ & EventType.TOUCH_START) != zero) {
-          this.IsPressed = true;
-          this.updateVisualState();
           this.onStartPressed();
        }
        if((typ & EventType.TOUCH_END) != zero) {
-          this.IsPressed = false;
           this.onEndPressed();
-          this.updateVisualState();
-       }
-       if((typ & EventType.MOUSE_ENTER) != zero) {
-          this.IsMouseOver = true;
-          this.updateVisualState();
        }
        if((typ & EventType.MOUSE_LEAVE) != zero) {
           this.IsMouseOver = false;
@@ -54,7 +33,6 @@ class ButtonBase extends ContentControl derives ReflectType {
             this.IsPressed = false;
             this.onEndPressed();
           }
-          this.updateVisualState();
        }
        if((typ & EventType.CLICK) != zero) {
          this.onClick();
@@ -70,17 +48,6 @@ class ButtonBase extends ContentControl derives ReflectType {
     protected def callCommand():Unit = {
       this.command.foreach { cmd => cmd.Execute(this.commandParams); }
     }
-
-    def updateVisualState():Unit = {
-       if(this._IsPressed) {
-         this.setViewState(ViewStates.CommonStates,ViewStates.Pressed);
-       } else if(this._IsMouseOver) {
-          this.setViewState(ViewStates.CommonStates,ViewStates.MouseOver);
-       } else {
-          this.setViewState(ViewStates.CommonStates,ViewStates.Normal);
-       }
-    }
-
 
     override def Exit(): Unit = {
         super.Exit();

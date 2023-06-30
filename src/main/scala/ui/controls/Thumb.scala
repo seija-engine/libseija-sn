@@ -19,11 +19,12 @@ class Thumb extends Control derives ReflectType {
     var curPos:Vector3 = Vector3.zero;
     override def OnEnter(): Unit = {
         val thisEntity = this.createBaseEntity(true);
-        EventManager.register(thisEntity,EventType.ALL_DRAG,this.OnElementEvent);
+        EventManager.register(thisEntity,EventType.ALL,this.OnElementEvent);
         this.loadControlTemplate();
     }
 
     protected def OnElementEvent(typ:UInt,args:Any):Unit = {
+        this.processViewStates(typ,args);
         val zero = 0.toUInt;
         if((typ & EventType.BEGIN_DRAG) != zero) {
             this.OnBeginDrag();
