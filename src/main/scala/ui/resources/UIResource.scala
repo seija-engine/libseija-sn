@@ -8,9 +8,10 @@ import scala.collection.mutable.{Buffer,Growable,HashMap}
 import scala.collection.mutable.Growable
 import core.reflect.*;
 import ui.controls.DataTemplate
+import ui.xml.IXmlObject
 
 @ContentProperty("resList")
-class UIResource extends Growable[BaseUIResource] derives ReflectType {
+class UIResource extends Growable[BaseUIResource] with IXmlObject derives ReflectType {
     var resList:ArrayBuffer[BaseUIResource] = ArrayBuffer[BaseUIResource]()
     protected var styleDict:HashMap[String,Style] = HashMap.empty
     protected var dataTemplateDict:HashMap[String,DataTemplate] = HashMap.empty
@@ -22,6 +23,10 @@ class UIResource extends Growable[BaseUIResource] derives ReflectType {
     def findDataTemplate(key:String):Option[DataTemplate] = this.dataTemplateDict.get(key)
 
     override def clear(): Unit = this.resList.clear();
+
+    override def OnAddContent(value: Any): Unit = {
+        UIResourceMgr.appResource.addOne(value.asInstanceOf[BaseUIResource]);
+    }
 
     override def addOne(elem: BaseUIResource): this.type = {
         this.resList.addOne(elem)

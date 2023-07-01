@@ -26,9 +26,10 @@ import ui.visualState.VisualStateGroupList
 import ui.visualState.VisualStateGroup
 import core.reflect.Assembly
 import ui.ElementNameScope
+import ui.xml.IXmlObject
 
 
-class UIElement extends INotifyPropertyChanged with Cloneable derives ReflectType {
+class UIElement extends INotifyPropertyChanged with Cloneable with IXmlObject derives ReflectType {
     protected var entity:Option[Entity] = None
     protected var style:Option[Style] = None
     protected var _dataContext:Any = null;
@@ -117,7 +118,7 @@ class UIElement extends INotifyPropertyChanged with Cloneable derives ReflectTyp
 
     def OnEnter(): Unit = { this.createBaseEntity(true); }
 
-    def onAddContent(value:Any):Unit = { }
+    def OnAddContent(value:Any):Unit = { }
 
     protected def onDataContextChanged():Unit = {
        if(!this.isEntered) return;

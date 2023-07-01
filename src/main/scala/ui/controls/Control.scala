@@ -16,18 +16,18 @@ class Control extends UIElement with ElementNameScope derives ReflectType {
     var template:Option[ControlTemplate] = None
     var nameDict:HashMap[String,UIElement] = HashMap.empty;
 
-    var _IsPressed:Boolean = false;
-    def IsPressed:Boolean = _IsPressed;
-    def IsPressed_=(value:Boolean):Unit = {
-        _IsPressed = value;
-        this.callPropertyChanged("IsPressed",this);
+    var _IsActive:Boolean = false;
+    def IsActive:Boolean = _IsActive;
+    def IsActive_=(value:Boolean):Unit = {
+        _IsActive = value;
+        this.callPropertyChanged("IsActive",this);
     }
 
-    var _IsMouseOver:Boolean = false;
-    def IsMouseOver:Boolean = _IsMouseOver;
-    def IsMouseOver_=(value:Boolean):Unit = {
-        _IsMouseOver = value;
-        this.callPropertyChanged("IsMouseOver",this);
+    var _IsHover:Boolean = false;
+    def IsHover:Boolean = _IsHover;
+    def IsHover_=(value:Boolean):Unit = {
+        _IsHover = value;
+        this.callPropertyChanged("IsHover",this);
     }
 
     override def Awake(): Unit = {
@@ -54,11 +54,9 @@ class Control extends UIElement with ElementNameScope derives ReflectType {
     }
 
     protected def loadControlTemplate(): Unit = {
-       println(s"${this} ${this.template}");
        this.findTemplate().foreach {t => 
           t.LoadContent(this,Some(this)).logError().foreach {elem => 
             this.addChild(elem);
-            println(s"${this} add child${elem}");
           }
        }
     }
@@ -79,30 +77,30 @@ class Control extends UIElement with ElementNameScope derives ReflectType {
     protected def processViewStates(typ:UInt,args:Any):Unit = {
        val zero = 0.toUInt;
        if((typ & EventType.TOUCH_START) != zero) {
-          this.IsPressed = true;
+          this.IsActive = true;
           this.updateVisualState();
        }
        if((typ & EventType.TOUCH_END) != zero) {
-          this.IsPressed = false;
+          this.IsActive = false;
           this.updateVisualState();
        }
        if((typ & EventType.MOUSE_ENTER) != zero) {
-          this.IsMouseOver = true;
+          this.IsHover = true;
           this.updateVisualState();
        }
        if((typ & EventType.MOUSE_LEAVE) != zero) {
-          this.IsMouseOver = false;
-          if(this.IsPressed) {
-            this.IsPressed = false;
+          this.IsHover = false;
+          if(this.IsActive) {
+            this.IsActive = false;
           }
           this.updateVisualState();
        }
     }
 
     def updateVisualState():Unit = {
-       if(this._IsPressed) {
+       if(this._IsActive) {
          this.setViewState(ViewStates.CommonStates,ViewStates.Pressed);
-       } else if(this._IsMouseOver) {
+       } else if(this._IsHover) {
           this.setViewState(ViewStates.CommonStates,ViewStates.MouseOver);
        } else {
           this.setViewState(ViewStates.CommonStates,ViewStates.Normal);

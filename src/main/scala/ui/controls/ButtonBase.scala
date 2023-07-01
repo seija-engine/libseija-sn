@@ -10,6 +10,10 @@ class ButtonBase extends ContentControl derives ReflectType {
     var command:Option[ICommand] = None;
     var commandParams:Any = null;
     
+    var _IsPressed:Boolean = false;
+    def IsPressed:Boolean = _IsPressed;
+    def IsPressed_=(value:Boolean):Unit = { _IsPressed = value; this.callPropertyChanged("IsPressed",this); }
+
     override def OnEnter(): Unit = {
        val thisEntity = this.createBaseEntity(true);
        this.loadControlTemplate();
@@ -22,13 +26,15 @@ class ButtonBase extends ContentControl derives ReflectType {
        this.processViewStates(typ,args);
        val zero = 0.toUInt;
        if((typ & EventType.TOUCH_START) != zero) {
+          this.IsPressed = true;
           this.onStartPressed();
        }
        if((typ & EventType.TOUCH_END) != zero) {
+         this.IsPressed = false;
           this.onEndPressed();
        }
        if((typ & EventType.MOUSE_LEAVE) != zero) {
-          this.IsMouseOver = false;
+          this.IsHover = false;
           if(this.IsPressed) {
             this.IsPressed = false;
             this.onEndPressed();

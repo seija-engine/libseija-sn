@@ -102,4 +102,19 @@
             </ControlTemplate>
         </Setter>
     </Style>
+
+    <Style key="HorSlider" forType="Slider">
+        <Setter key="template">
+            <ControlTemplate>
+                <Panel>
+                    <Image imageType="Slice" sprite="default.scale-horz-trough"  />
+                    <Track>
+                        <Track.thumb>
+                            <Thumb style="{Res SliderThumb}" />
+                        </Track.thumb>
+                    </Track>
+                </Panel>
+            </ControlTemplate>
+        </Setter>
+    </Style>
 </UIResource>

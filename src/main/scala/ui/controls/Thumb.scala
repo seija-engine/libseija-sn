@@ -18,6 +18,7 @@ class Thumb extends Control derives ReflectType {
 
     var curPos:Vector3 = Vector3.zero;
     override def OnEnter(): Unit = {
+        println(s"Thumb Enter ${this.parent} ${this.style}" );
         val thisEntity = this.createBaseEntity(true);
         EventManager.register(thisEntity,EventType.ALL,this.OnElementEvent);
         this.loadControlTemplate();
@@ -39,6 +40,8 @@ class Thumb extends Control derives ReflectType {
 
     protected def OnBeginDrag():Unit = {
         this.OnBeginDragCall.foreach(_(Input.getMousePos()))
+        this.IsActive = true;
+        this.updateVisualState();
     }
 
     protected def OnDrag():Unit = {
@@ -48,6 +51,28 @@ class Thumb extends Control derives ReflectType {
 
     protected def OnEndDrag():Unit = {
       this.OnEndDragCall.foreach(_(Input.getMousePos()))
+      this.IsActive = false;
+      this.updateVisualState();
+    }
+
+    override protected def processViewStates(typ: UInt, args: Any): Unit = {
+       val zero = 0.toUInt;
+       if((typ & EventType.TOUCH_START) != zero) {
+          this.IsActive = true;
+          this.updateVisualState();
+       }
+       if((typ & EventType.TOUCH_END) != zero) {
+          this.IsActive = false;
+          this.updateVisualState();
+       }
+       if((typ & EventType.MOUSE_ENTER) != zero) {
+          this.IsHover = true;
+          this.updateVisualState();
+       }
+       if((typ & EventType.MOUSE_LEAVE) != zero) {
+          this.IsHover = false;
+          this.updateVisualState();
+       }
     }
 
     override def Exit(): Unit = {

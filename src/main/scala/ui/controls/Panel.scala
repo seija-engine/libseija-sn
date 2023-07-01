@@ -6,9 +6,10 @@ import ui.xml.XmlUIElement
 import core.logError;
 import ui.ContentProperty
 import ui.core.Canvas;
+import ui.xml.IXmlObject
 
 @ContentProperty("children")
-class Panel extends UIElement derives ReflectType {
+class Panel extends UIElement with IXmlObject derives ReflectType {
     var isClip:Boolean = false;
     var isCanvas:Boolean = false;
     override def OnEnter(): Unit = {
@@ -26,7 +27,7 @@ class Panel extends UIElement derives ReflectType {
       }
     }
 
-    override def onAddContent(value: Any): Unit = {
+    override def OnAddContent(value: Any): Unit = {
       if(value.isInstanceOf[UIElement]) {
         value.asInstanceOf[UIElement].setParent(Some(this));
       }

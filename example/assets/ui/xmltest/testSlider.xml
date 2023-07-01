@@ -1,0 +1,6 @@
+<Panel isCanvas="true">
+    <Image  sprite="default.white" color="#e8e8e7" />
+    <Slider style="{Res HorSlider}" width="100" height="26">
+        
+    </Slider>
+</Panel>

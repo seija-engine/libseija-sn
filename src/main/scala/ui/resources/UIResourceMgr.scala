@@ -14,8 +14,8 @@ object UIResourceMgr {
        parseObject.logError();
        if(parseObject.isFailure) return;
        val uiRes = parseObject.get.asInstanceOf[UIResource];
-       for(res <- uiRes.resList) {
-         this.appResource.addOne(res);
-       } 
+       //for(res <- uiRes.resList) {
+       //  this.appResource.addOne(res);
+       //} 
    }
 }

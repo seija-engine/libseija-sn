@@ -13,6 +13,10 @@ import scala.collection.mutable.ArrayBuffer
 import ui.resources.Style
 import ui.resources.UIResourceMgr
 
+trait IXmlObject {
+    def OnAddContent(value:Any):Unit;
+}
+
 class XmlObjectParser(val nsResolver: XmlNSResolver = XmlNSResolver.default) {
 
     def parse(xml: XmlElement): Try[Any] = Try {
@@ -46,7 +50,7 @@ class XmlObjectParser(val nsResolver: XmlNSResolver = XmlNSResolver.default) {
         } else { None }
       }
       if(contentField.isDefined) {
-        val curElement = if(curObject.isInstanceOf[UIElement]) { Some(curObject.asInstanceOf[UIElement]) } else { None }
+        val curElement = if(curObject.isInstanceOf[IXmlObject]) { Some(curObject.asInstanceOf[IXmlObject]) } else { None }
         if(contentCount == 0 && xml.innerText.isDefined) {
           setStringProp(curTypeInfo,curObject,contentField.get.Name,xml.innerText.get);
         } else if(contentCount == 1) {
@@ -56,12 +60,12 @@ class XmlObjectParser(val nsResolver: XmlNSResolver = XmlNSResolver.default) {
               val ctxObject = childObject.get;
               if(contentList.isDefined) {
                 contentList.get += ctxObject;
-                curElement.foreach(_.onAddContent(ctxObject));
+                curElement.foreach(_.OnAddContent(ctxObject));
               } else {
                   val convValue = DynTypeConv.convertStrTypeTry(ctxObject.getClass().getName(),contentField.get.typName,ctxObject);
                   if(convValue.logError().isSuccess) {
                     contentField.get.set(curObject,convValue.get);
-                    curElement.foreach(_.onAddContent(convValue.get));
+                    curElement.foreach(_.OnAddContent(convValue.get));
                   }
               }
             }
@@ -72,7 +76,7 @@ class XmlObjectParser(val nsResolver: XmlNSResolver = XmlNSResolver.default) {
                   val childObject = this.parse(childElem).logError();
                   if(childObject.isSuccess) {
                     contentList.get += childObject.get;
-                    curElement.foreach(_.onAddContent(childObject.get));
+                    curElement.foreach(_.OnAddContent(childObject.get));
                   }
               }
           }
