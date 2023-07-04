@@ -61,6 +61,9 @@ object FFISeijaUI {
     private val entityGetFreeItemPtr = LibSeija.getFunc[CFuncPtr2[Ptr[Byte],Long,Ptr[RawVector2]]]("entity_get_layout_freeitem");
     private val entityGetRect2dPtr = LibSeija.getFunc[CFuncPtr3[Ptr[Byte],Long,Boolean,Ptr[RawVector4]]]("entity_get_rect2d");
 
+    private val entitySetLayoutWPtr = LibSeija.getFunc[CFuncPtr3[Ptr[RawCommonView],Byte,Float,Unit]]("entity_set_layout_size_w");
+    private val entitySetLayoutHPtr = LibSeija.getFunc[CFuncPtr3[Ptr[RawCommonView],Byte,Float,Unit]]("entity_set_layout_size_h");
+
     def addSpriteSheetModule(appPtr:Ptr[Byte]):Unit = addSpritesheetModulePtr(appPtr)
     def spriteSheetAssetGet(worldPtr:Ptr[Byte],id:Long):RawSpriteSheet = spriteSheetAssetGetPtr(worldPtr,id);
     def spritesheetGetIndex(sheet: RawSpriteSheet, name: String): Int = Zone { implicit z =>
@@ -209,5 +212,13 @@ object FFISeijaUI {
 
     def entityGetRect2d(worldPtr:Ptr[Byte],entity:Long,isMut:Boolean):Ptr[RawVector4] = {
         entityGetRect2dPtr(worldPtr,entity,isMut)
+    }
+
+    def SetLayoutW(view:Ptr[RawCommonView],t:Byte,value:Float):Unit = {
+        entitySetLayoutWPtr(view,t,value);
+    }
+
+    def SetLayoutH(view:Ptr[RawCommonView],t:Byte,value:Float):Unit = {
+        entitySetLayoutHPtr(view,t,value);
     }
 }

@@ -56,6 +56,7 @@ object DynTypeConv {
     
 
     def convertStrType(fromType:String,toType:String,fromValue:Any):Option[Try[Any]] = {
+        var curFromType:String = fromType;
         if(fromType == toType) { return Some(Success(fromValue)) }
         if(toType.startsWith("scala.Option") && toType.endsWith(fromType + "]")) {
             return Some(Success(Some(fromValue)))
@@ -63,19 +64,23 @@ object DynTypeConv {
         if(toType == "scala.Any") {
           return Some(Success(fromValue))
         }
+        
         if(toType == "java.lang.String" && fromType != "java.lang.String") {
           return Some(Success(fromValue.toString()))
+        }
+        if(fromType == "java.lang.Float") {
+          curFromType = "scala.Float";
         }
         if(toType == "scala.Option[scala.Any]") {
           return Some(Success(Some(fromValue)))
         }
-        val key = (fromType,toType);
+        val key = (curFromType,toType);
         if(this.convMap.contains(key)) {
             val conv = this.convMap(key);
             val toValue = conv.tryInto.asInstanceOf[Any=>Try[Any]](fromValue);
             Some(toValue)
         } else {
-            val form = Assembly.get(fromType);
+            val form = Assembly.get(curFromType);
             val to = Assembly.get(toType);
             if(form.isDefined && to.isDefined) {
                if(form.get.isInstOf(to.get)) {

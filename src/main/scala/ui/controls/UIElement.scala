@@ -52,7 +52,7 @@ class UIElement extends INotifyPropertyChanged with Cloneable with IXmlObject de
     protected var resources:UIResource = UIResource.empty();
 
     protected var curViewStateDict:HashMap[String,String] = HashMap.empty;
-    protected var visualStateGroups:VisualStateGroupList = VisualStateGroupList();
+    var visualStateGroups:VisualStateGroupList = VisualStateGroupList();
 
     def hor = this._hor;
     def hor_=(value:LayoutAlignment) = { this._hor = value; this.callPropertyChanged("hor",this) }
@@ -86,7 +86,6 @@ class UIElement extends INotifyPropertyChanged with Cloneable with IXmlObject de
             child.setParent(Some(this));
             child.Awake();
         });
-        this.visualStateGroups.applyType(Assembly.getTypeInfo(this));
     }
 
     def getEntity():Option[Entity] = this.entity;
@@ -292,6 +291,7 @@ class UIElement extends INotifyPropertyChanged with Cloneable with IXmlObject de
     override def clone():UIElement = {
         val cloneObject = super.clone().asInstanceOf[UIElement];
         cloneObject.children = new ListBuffer[UIElement]();
+        cloneObject.visualStateGroups = this.visualStateGroups.clone();
         for(child <- this.children) {
             val cloneChild = child.clone();
             cloneObject.children += cloneChild;

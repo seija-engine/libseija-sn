@@ -31,6 +31,15 @@ object Assembly {
     this.get(name).toRight(NotFoundReflectException(name)).toTry
   }
 
+  def getTypeName(value:Any):String = {
+    var curTypeName = value.getClass().getName();
+    if(curTypeName == "scala.Some") {
+      val innerType = value.asInstanceOf[Option[Any]].get.getClass().getName();
+      return s"scala.Option[${innerType}]";
+    }
+    curTypeName
+  }
+
   def getTypeInfo(obj: Any): Option[TypeInfo] = Option(
     this.typeMap.get(obj.getClass().getName())
   )

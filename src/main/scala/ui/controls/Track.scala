@@ -3,17 +3,20 @@ import core.reflect.*;
 import math.Vector2
 import transform.Transform
 import transform.setPosition
-import math.Vector3
+import math.Vector3 
 import core.Entity
 import ui.core.Rect2D
 import ui.core.FreeLayout
 import ui.core.FreeLayoutItem
 import core.UpdateMgr
 import ui.core.Orientation
+import ui.core.SizeValue;
+import scala.Float;
 
 class Track extends Control derives ReflectType {
   var _orientation: Orientation = Orientation.Horizontal;
   var _value: Float = 0;
+  var _fillSize:Float = 0;
 
   private var startBtn: RepeatButton = RepeatButton();
   private var endBtn: RepeatButton = RepeatButton();
@@ -33,6 +36,12 @@ class Track extends Control derives ReflectType {
     this.updatePosByValue();
   }
 
+  def fillSize: Float = this._fillSize;
+  def fillSize_=(value: Float): Unit = { 
+    _fillSize = value; 
+    this.callPropertyChanged("fillSize", this); 
+  }
+
   override def Awake(): Unit = {
     super.Awake();
   }
@@ -47,6 +56,7 @@ class Track extends Control derives ReflectType {
   override def OnEnter(): Unit = {
     this.createEntity();
     this.loadControlTemplate();
+    this.thumb = this.thumb.clone();
     this.addChild(this.thumb);
     UpdateMgr.add(this.OnUpdate);
     this.cacheSize.x = this.width.getPixel().getOrElse(0);
@@ -84,6 +94,7 @@ class Track extends Control derives ReflectType {
           freeItem._1 = newX;
         }
         this._value = newX / maxPos;
+        this.fillSize = thisRect._1 * this._value;
       }
       case Orientation.Vertical => {
         val newY = freeItem._2 + (-delta.y);
@@ -92,6 +103,7 @@ class Track extends Control derives ReflectType {
           freeItem._2 = newY;
         }
         this._value = newY / maxPos;
+        this.fillSize = thisRect._2 * this._value;
       }
     }
     this.callPropertyChanged("value",this);
@@ -116,12 +128,16 @@ class Track extends Control derives ReflectType {
     val thumbRect = this.thumb.getEntity().get.get[Rect2D]();
     this._orientation match {
       case Orientation.Horizontal => {
-        val maxPos = thisRect._1 - thumbRect._1;
+        val thisWidth = thisRect._1;
+        val maxPos = thisWidth - thumbRect._1;
         freeItem._1 = maxPos * this._value;
+        this.fillSize = thisWidth * this._value;
       }
       case Orientation.Vertical => {
+        val thisHeight = thisRect._2;
         val maxPos = thisRect._2 - thumbRect._2;
         freeItem._2 = maxPos * this._value;
+        this.fillSize = thisHeight * this._value;
       }
     }
   }

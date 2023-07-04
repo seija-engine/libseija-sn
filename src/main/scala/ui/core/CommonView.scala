@@ -30,6 +30,10 @@ object SizeValue {
       case "-" => SizeValue.FormRect
       case _ => SizeValue.Pixel(fromValue.toFloat)    
   }
+
+  given Into[Float,SizeValue] with {
+    override def into(fromValue: Float): SizeValue = SizeValue.Pixel(fromValue)
+  }
 }
 
 

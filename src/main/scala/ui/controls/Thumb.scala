@@ -18,7 +18,7 @@ class Thumb extends Control derives ReflectType {
 
     var curPos:Vector3 = Vector3.zero;
     override def OnEnter(): Unit = {
-        println(s"Thumb Enter ${this.parent} ${this.style}" );
+        //println(s"Thumb Enter ${this.parent} ${this.style}" );
         val thisEntity = this.createBaseEntity(true);
         EventManager.register(thisEntity,EventType.ALL,this.OnElementEvent);
         this.loadControlTemplate();
@@ -73,6 +73,10 @@ class Thumb extends Control derives ReflectType {
           this.IsHover = false;
           this.updateVisualState();
        }
+    }
+
+    override def clone():Thumb = {
+        super.clone().asInstanceOf[Thumb]
     }
 
     override def Exit(): Unit = {

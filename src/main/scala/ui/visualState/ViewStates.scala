@@ -11,4 +11,9 @@ object ViewStates {
     val FocusStates = "FocusStates";    
     val Focused = "Focused";
     val Unfocused = "Unfocused";
+
+
+    val OrientationStates = "OrientationStates";
+    val Horizontal = "Horizontal";
+    val Vertical = "Vertical"
 }

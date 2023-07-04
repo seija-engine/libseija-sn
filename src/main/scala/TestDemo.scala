@@ -25,6 +25,7 @@ class TestDemo extends IGameApp {
     Atlas.getPath("default.scale-vert-trough").get.sliceInfo = Some(Thickness(0,10,0,10));
     Atlas.getPath("default.scale-horz-trough").get.sliceInfo = Some(Thickness(10,0,10,0));
     Atlas.getPath("default.scale-horz-trough-active").get.sliceInfo = Some(Thickness(10,0,10,0));
+    Atlas.getPath("default.scale-vert-trough-active").get.sliceInfo = Some(Thickness(10,0,10,0));
     this.topCanvas = Some(canvas);
   }
   

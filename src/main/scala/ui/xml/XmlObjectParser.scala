@@ -93,18 +93,9 @@ class XmlObjectParser(val nsResolver: XmlNSResolver = XmlNSResolver.default) {
         BindingItem.parse(key, value).logError().map(curObject.asInstanceOf[UIElement].addBindItem(_))
       } else if(value.startsWith("{Res")) {
         val startLen = "{Res".length();
-        var styleName = value.substring(startLen,value.length() - 1);
-        styleName = styleName.trim();
-        if(curObject.isInstanceOf[UIElement]) {
-          val uiElement = curObject.asInstanceOf[UIElement];
-          var findStyle = uiElement.findResourceStyle(styleName);
-          if(findStyle.isEmpty) { findStyle = UIResourceMgr.appResource.findStyle(styleName); }
-          uiElement.setStyle(findStyle);
-        } else {
-          UIResourceMgr.appResource.findStyle(styleName).foreach {style =>  
-             typInfo.getField(key).foreach(f => f.set(curObject,style));
-          }
-        }
+        var resName = value.substring(startLen,value.length() - 1);
+        resName = resName.trim();
+        this.setRes(resName,typInfo,key,curObject);
       } else {
         (for {
           filed <- typInfo.getFieldTry(key)
@@ -143,6 +134,18 @@ class XmlObjectParser(val nsResolver: XmlNSResolver = XmlNSResolver.default) {
         this.parse(childElem).logError().foreach(childObject => {
           curGrowable += childObject;
         })
+      }
+    }
+
+    def setRes(resName:String,typInfo:TypeInfo,key:String,curObject:Any):Unit = {
+      UIResourceMgr.appResource.findRes(resName).foreach {res =>  
+          
+          typInfo.getField(key).foreach(f => {
+            
+            DynTypeConv.convertStrTypeTry(res.getClass().getName(),f.typName,res).foreach {v =>
+              f.set(curObject,v);  
+            }
+          });
       }
     }
 }

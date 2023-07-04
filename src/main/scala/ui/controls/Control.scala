@@ -35,6 +35,7 @@ class Control extends UIElement with ElementNameScope derives ReflectType {
          this.template.get.Awake();
          val typInfo = Assembly.getTypeInfo(this);
          this.template.get.applyType(typInfo);
+         this.visualStateGroups.applyType(typInfo);
        }
        super.Awake();
     }
@@ -68,7 +69,9 @@ class Control extends UIElement with ElementNameScope derives ReflectType {
        None
     }
 
-    def getScopeElement(name:String):Option[UIElement] = { this.nameDict.get(name) }
+    def getScopeElement(name:String):Option[UIElement] = {
+      this.nameDict.get(name) 
+    }
 
     override def setScopeElement(name: String, elem: UIElement): Unit = {
       this.nameDict.put(name,elem);
@@ -105,5 +108,11 @@ class Control extends UIElement with ElementNameScope derives ReflectType {
        } else {
           this.setViewState(ViewStates.CommonStates,ViewStates.Normal);
        }
+    }
+
+    override def clone():Control = {
+       var newControl = super.clone().asInstanceOf[Control];
+       newControl.nameDict = HashMap.empty;
+       newControl
     }
 }

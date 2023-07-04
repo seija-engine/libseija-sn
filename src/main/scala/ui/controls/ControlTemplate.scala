@@ -12,11 +12,14 @@ import scala.util.Success
 import ui.visualState.VisualStateGroupList
 import ui.resources.IApplyStyleType
 import ui.IAwake
+import ui.resources.BaseUIResource
 
 @ContentProperty("content")
-class ControlTemplate extends BaseTemplate with IApplyStyleType with ElementNameScope with IAwake derives ReflectType {
+class ControlTemplate extends BaseTemplate with IApplyStyleType with ElementNameScope with IAwake with BaseUIResource derives ReflectType {
+    var key:String = "";
+    var forType:String = null;
+    def getKey: String = this.key;
     var nameDict:HashMap[String,UIElement] = HashMap.empty;
-
     var content:UIElement = UIElement.zero;
     var visualStateGroups:VisualStateGroupList = VisualStateGroupList();
     override def Awake(): Unit = {

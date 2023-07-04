@@ -16,12 +16,13 @@ class Setter extends IApplyStyleType derives ReflectType {
   override def applyType(typInfo: Option[TypeInfo]): Unit = {
     if(this.target != null) return;
     val info = typInfo.flatMap(_.getField(this.key));
+    this.typInfo = typInfo;
     this.setValue(info);
   }
 
   protected  def setValue(info:Option[FieldInfo]):Unit = {
     if (info.isDefined) {
-      val fromTypName = this.value.getClass().getName();
+      val fromTypName = Assembly.getTypeName(this.value);
       val tryConvValue = DynTypeConv.convertStrTypeTry(fromTypName,info.get.typName,this.value);
       tryConvValue.logError();
       if (tryConvValue.isSuccess) {

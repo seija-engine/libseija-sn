@@ -22,6 +22,10 @@ class VisualStateGroupList extends IApplyStyleType derives ReflectType {
     def applyNameScope(nameScope:ElementNameScope):Unit = {
         this.content.applyNameScope(nameScope);
     }
+
+    override def clone():VisualStateGroupList = {
+        super.clone().asInstanceOf[VisualStateGroupList];
+    }
 }
 
 class VisualStateGroupInnerList extends Growable[VisualStateGroup] derives ReflectType {
