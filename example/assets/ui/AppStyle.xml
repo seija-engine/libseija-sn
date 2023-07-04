@@ -123,6 +123,11 @@
         <Panel>
             <Image imageType="Slice" sprite="default.scale-vert-trough" />
             <Track orientation="Ver">
+                <Track.template>
+                    <ControlTemplate>
+                        <Image imageType="Slice" ver="Start" height="{Binding Owner fillSize}" sprite="default.scale-vert-trough-active" />
+                    </ControlTemplate>
+                </Track.template>
                 <Track.thumb>
                     <Thumb style="{Res SliderThumb}" />
                 </Track.thumb>
@@ -136,7 +141,7 @@
                 <VisualStateGroup name="OrientationStates">
                     <VisualState name="Horizontal">
                         <Setter key="template" value="{Res HorSlider}" />
-                        <Setter/>
+                        <Setter key="width" value="150"/>
                         <Setter key="height" value="26" />
                     </VisualState>
                     <VisualState name="Vertical">

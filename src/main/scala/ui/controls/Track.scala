@@ -12,6 +12,7 @@ import core.UpdateMgr
 import ui.core.Orientation
 import ui.core.SizeValue;
 import scala.Float;
+import ui.core.Canvas
 
 class Track extends Control derives ReflectType {
   var _orientation: Orientation = Orientation.Horizontal;
@@ -69,6 +70,7 @@ class Track extends Control derives ReflectType {
       .spawnEmpty()
       .add[Transform](_.parent = parentEntity)
       .add[Rect2D]()
+      .add[Canvas]()
       .add[FreeLayout](v => {
         v.common.hor = this._hor;
         v.common.ver = this._ver;
@@ -86,6 +88,8 @@ class Track extends Control derives ReflectType {
     val freeItem = this.thumb.getEntity().get.get[FreeLayoutItem]();
     val thisRect = this.getEntity().get.get[Rect2D]();
     val thumbRect = this.thumb.getEntity().get.get[Rect2D]();
+    val halfThumbX:Float = thumbRect._1 * 0.5f;
+    val halfThumbY:Float = thumbRect._2 * 0.5f;
     this._orientation match {
       case Orientation.Horizontal => {
         val newX = freeItem._1 + delta.x;
@@ -94,7 +98,7 @@ class Track extends Control derives ReflectType {
           freeItem._1 = newX;
         }
         this._value = newX / maxPos;
-        this.fillSize = thisRect._1 * this._value;
+        this.fillSize = halfThumbX + newX;
       }
       case Orientation.Vertical => {
         val newY = freeItem._2 + (-delta.y);
@@ -103,7 +107,7 @@ class Track extends Control derives ReflectType {
           freeItem._2 = newY;
         }
         this._value = newY / maxPos;
-        this.fillSize = thisRect._2 * this._value;
+        this.fillSize = halfThumbY + newY;
       }
     }
     this.callPropertyChanged("value",this);

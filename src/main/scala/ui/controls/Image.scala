@@ -95,6 +95,12 @@ class Image extends UIElement derives ReflectType {
             rawLayout.setWidth(this._width);
           }
         }
+        case "height" => {
+          this.entity.foreach {v => 
+            val rawLayout = v.get[ItemLayout]();
+            rawLayout.setHeight(this._height);
+          }
+        }
         case _ => 
   }
 
