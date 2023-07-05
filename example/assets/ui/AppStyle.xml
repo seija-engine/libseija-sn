@@ -153,4 +153,40 @@
             </VisualStateGroupList>
         </Setter>
     </Style>
+
+    <Style key="ScrollBarThumb" forType="Thumb">
+        <Setter key="width" value="13" />
+        <Setter key="height" value="50" />
+        <Setter key="template">
+            <ControlTemplate>
+                <Image Name="BG" hor="End" width="13" margin="0,0,1,0" imageType="Slice"  sprite="default.scrollbar-vert-slider" />
+                <ControlTemplate.visualStateGroups>
+                    <VisualStateGroupList>
+                        <VisualStateGroup name="CommonStates">
+                            <VisualState name="Normal">
+                                <Setter target="BG" key="sprite" value="default.scrollbar-vert-slider" />
+                            </VisualState>
+                            <VisualState name="MouseOver">
+                                <Setter target="BG" key="sprite" value="default.scrollbar-vert-slider-hover" />
+                            </VisualState>
+                            <VisualState name="Pressed">
+                                <Setter target="BG" key="sprite" value="default.scrollbar-vert-slider-active" />
+                            </VisualState>
+                        </VisualStateGroup>
+                    </VisualStateGroupList>
+                </ControlTemplate.visualStateGroups>
+            </ControlTemplate>
+        </Setter>
+    </Style>
+
+    <ControlTemplate key="VerScrollBar" forType="ScrollBar">
+        <Panel>
+            <Image sprite="default.scrollbar-vert-trough" />
+            <Track orientation="Ver">
+                <Track.thumb>
+                    <Thumb style="{Res ScrollBarThumb}" />
+                </Track.thumb>
+            </Track>
+        </Panel>
+    </ControlTemplate>
 </UIResource>

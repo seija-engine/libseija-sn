@@ -26,6 +26,10 @@ class TestDemo extends IGameApp {
     Atlas.getPath("default.scale-horz-trough").get.sliceInfo = Some(Thickness(10,0,10,0));
     Atlas.getPath("default.scale-horz-trough-active").get.sliceInfo = Some(Thickness(10,0,10,0));
     Atlas.getPath("default.scale-vert-trough-active").get.sliceInfo = Some(Thickness(0,10,0,10));
+
+    Atlas.getPath("default.scrollbar-vert-slider").get.sliceInfo = Some(Thickness(0,5,0,5));
+    Atlas.getPath("default.scrollbar-vert-slider-active").get.sliceInfo = Some(Thickness(0,5,0,5));
+    Atlas.getPath("default.scrollbar-vert-slider-hover").get.sliceInfo = Some(Thickness(0,5,0,5));
     this.topCanvas = Some(canvas);
   }
   
@@ -35,7 +39,7 @@ class TestDemo extends IGameApp {
     UIResourceMgr.loadResource("example/assets/ui/AppStyle.xml");
     val viewModel = new TestViewModel();
     this.testViewModel = Some(viewModel);
-    XmlUIElement.fromFile("example/assets/ui/xmltest/testSlider.xml").logError().foreach {loadElement => 
+    XmlUIElement.fromFile("example/assets/ui/xmltest/testScrollBar.xml").logError().foreach {loadElement => 
       loadElement.dataContext = this.testViewModel.get;
       this.topCanvas.get.addElement(loadElement);
     }

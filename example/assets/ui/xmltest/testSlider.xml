@@ -1,8 +1,6 @@
 <Panel isCanvas="true">
     <Image  sprite="default.white" color="#e8e8e7" />
     <StackPanel>
-        <!--<Slider style="{Res HorSlider}" width="150" height="26" />
-        <Slider style="{Res VerSlider}" height="150" width="26" />-->
         <Slider  />
         <Slider orientation="Ver" />
         <ButtonBase>确定</ButtonBase>

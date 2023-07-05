@@ -1,0 +1,6 @@
+<Panel isCanvas="true">
+    <Image  sprite="default.white" color="#e8e8e7" />
+    <StackPanel   >
+        <ScrollBar template="{Res VerScrollBar}" width="22" />
+    </StackPanel>
+</Panel>
