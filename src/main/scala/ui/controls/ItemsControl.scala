@@ -13,23 +13,25 @@ class ItemsControl extends Control with IDataElementGenerator derives ReflectTyp
     var itemTemplate:Option[DataTemplate] = None;
     var warpElement:UIElement = StackPanel();
     
-    var itemCollection:ItemCollection = ItemCollection(this,warpElement)
+    var itemCollection:ItemCollection = ItemCollection(this)
 
+    private var realWarpPanel:UIElement = null;
     override def Awake(): Unit = {
       super.Awake();
-      this.warpElement.Awake();
-      if(this.items.length > 0) {
-        this.itemCollection.setItemSource(items);
-      }
     }
 
     override def OnEnter(): Unit = {
+      if(this.items.length > 0) {
+        this.itemCollection.setItemSource(items);
+      }
       if(this.itemsSource != null) {
         this.itemCollection.setItemSource(this.itemsSource);
       }
-      this.itemCollection.parent = warpElement;
+      this.realWarpPanel = warpElement.clone();
       super.OnEnter();
     }
+
+    def getWarpPanel():UIElement = this.realWarpPanel
 
     def genElement(data:Any):Try[UIElement] = {
       if(itemTemplate.isDefined) {

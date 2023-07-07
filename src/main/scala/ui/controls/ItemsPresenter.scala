@@ -23,8 +23,9 @@ class ItemsPresenter extends UIElement derives ReflectType {
         System.err.println("ItemsPresenter collection or parent is empty");
         return 
       };
-      this.addChild(itemsControl.get.warpElement);
-      this.lstMgr = Some(ItemElementListMgr(itemsControl.get.warpElement,itemsControl.get.itemCollection));
+      val warpPanel = itemsControl.get.getWarpPanel();
+      this.addChild(warpPanel);
+      this.lstMgr = Some(ItemElementListMgr(warpPanel,itemsControl.get.itemCollection));
       this.lstMgr.get.start();
     }
 }

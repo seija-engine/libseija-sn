@@ -1,6 +1,7 @@
 package ui.controls
 import core.reflect.*;
 import core.logError;
+
 class ContentPresenter extends UIElement derives ReflectType {
     var content:Any = null
     var dataTemplate:Option[DataTemplate] = None
@@ -8,10 +9,8 @@ class ContentPresenter extends UIElement derives ReflectType {
         this.initByContentControl();
         if(this.dataTemplate.isEmpty && this.content != null) {
             val dataType = this.content.getClass().getName();
-            //println(s"find ${dataType} ${this.content.getClass()}")
             this.dataTemplate = this.findDataTemplate(dataType);
         }
-        //println(this.dataTemplate);
         super.OnEnter();
         this.dataTemplate match {
             case Some(value) => {

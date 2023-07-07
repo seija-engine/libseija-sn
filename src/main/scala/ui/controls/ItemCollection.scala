@@ -13,7 +13,7 @@ trait IDataElementGenerator {
   def genElement(data:Any):Try[UIElement];
 }
 
-case class ItemCollection(elemGen:IDataElementGenerator,var parent:UIElement) {
+case class ItemCollection(elemGen:IDataElementGenerator) {
     protected var cacheLst:IndexedSeq[Any] = IndexedSeq.empty;
     protected var notifyList:Option[INotifyCollectionChanged] = None;
     protected var cacheElementList:ArrayBuffer[UIElement] = ArrayBuffer.empty;

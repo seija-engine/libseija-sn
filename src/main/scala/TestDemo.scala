@@ -30,6 +30,12 @@ class TestDemo extends IGameApp {
     Atlas.getPath("default.scrollbar-vert-slider").get.sliceInfo = Some(Thickness(0,5,0,5));
     Atlas.getPath("default.scrollbar-vert-slider-active").get.sliceInfo = Some(Thickness(0,5,0,5));
     Atlas.getPath("default.scrollbar-vert-slider-hover").get.sliceInfo = Some(Thickness(0,5,0,5));
+
+    Atlas.getPath("default.scrollbar-horz-slider").get.sliceInfo = Some(Thickness(5,0,5,0));
+    Atlas.getPath("default.scrollbar-horz-slider-active").get.sliceInfo = Some(Thickness(5,0,5,0));
+    Atlas.getPath("default.scrollbar-horz-slider-hover").get.sliceInfo = Some(Thickness(5,0,5,0));
+    Atlas.getPath("default.scrollbar-vert-trough").get.sliceInfo = Some(Thickness(0,0,1,0));
+    Atlas.getPath("default.scrollbar-horz-trough").get.sliceInfo = Some(Thickness(0,0,0,1));
     this.topCanvas = Some(canvas);
   }
   
@@ -39,7 +45,7 @@ class TestDemo extends IGameApp {
     UIResourceMgr.loadResource("example/assets/ui/AppStyle.xml");
     val viewModel = new TestViewModel();
     this.testViewModel = Some(viewModel);
-    XmlUIElement.fromFile("example/assets/ui/xmltest/testScrollBar.xml").logError().foreach {loadElement => 
+    XmlUIElement.fromFile("example/assets/ui/xmltest/testScrollView.xml").logError().foreach {loadElement => 
       loadElement.dataContext = this.testViewModel.get;
       this.topCanvas.get.addElement(loadElement);
     }
@@ -62,7 +68,10 @@ class TestViewModel extends INotifyPropertyChanged derives ReflectType {
     var removeCommand:FCommand = FCommand(this.testRemove);
     var moveCommand:FCommand = FCommand(this.testMove);
     var clearCommand:FCommand = FCommand(this.testClear);
-    var dataList:ObservableList[String] = ObservableList.from(List("Data@1","Data@2","Data@3"));
+    var dataList:ObservableList[String] = ObservableList.from(List(
+      "Data@1",
+      "Data@2",
+      "Data@3"));
  
     def setCount(count:Int) = {
       this.count = count;

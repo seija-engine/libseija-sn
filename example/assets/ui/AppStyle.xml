@@ -56,10 +56,9 @@
     <Style forType="ItemsControl">
         <Setter key="template">
             <ControlTemplate>
-                <Panel width="750" height="500">
+                <Panel isCanvas="true" isClip="true">
                     <Image sprite="default.white" color="#cccccc" />
-                    <Text ver="Start" text="ItemsControl" height="30" />
-                    <ItemsPresenter ver="End" width="750" height="470" />
+                    <ItemsPresenter  />
                 </Panel>
             </ControlTemplate>
         </Setter>
@@ -109,7 +108,8 @@
             <Track>
                 <Track.template>
                     <ControlTemplate>
-                        <Image imageType="Slice" hor="Start" width="{Binding Owner fillSize}" sprite="default.scale-horz-trough-active" />
+                        <Image imageType="Slice" hor="Start" width="{Binding Owner fillSize}"
+                            sprite="default.scale-horz-trough-active" />
                     </ControlTemplate>
                 </Track.template>
                 <Track.thumb>
@@ -125,7 +125,8 @@
             <Track orientation="Ver">
                 <Track.template>
                     <ControlTemplate>
-                        <Image imageType="Slice" ver="Start" height="{Binding Owner fillSize}" sprite="default.scale-vert-trough-active" />
+                        <Image imageType="Slice" ver="Start" height="{Binding Owner fillSize}"
+                            sprite="default.scale-vert-trough-active" />
                     </ControlTemplate>
                 </Track.template>
                 <Track.thumb>
@@ -141,7 +142,7 @@
                 <VisualStateGroup name="OrientationStates">
                     <VisualState name="Horizontal">
                         <Setter key="template" value="{Res HorSlider}" />
-                        <Setter key="width" value="150"/>
+                        <Setter key="width" value="150" />
                         <Setter key="height" value="26" />
                     </VisualState>
                     <VisualState name="Vertical">
@@ -154,23 +155,54 @@
         </Setter>
     </Style>
 
-    <Style key="ScrollBarThumb" forType="Thumb">
+    <Style key="ScrollBarVerThumb" forType="Thumb">
         <Setter key="width" value="13" />
         <Setter key="height" value="50" />
         <Setter key="template">
             <ControlTemplate>
-                <Image Name="BG" hor="End" width="13" margin="0,0,1,0" imageType="Slice"  sprite="default.scrollbar-vert-slider" />
+                <Image Name="BG" imageType="Slice" sprite="default.scrollbar-vert-slider" />
                 <ControlTemplate.visualStateGroups>
                     <VisualStateGroupList>
                         <VisualStateGroup name="CommonStates">
                             <VisualState name="Normal">
-                                <Setter target="BG" key="sprite" value="default.scrollbar-vert-slider" />
+                                <Setter target="BG" key="sprite"
+                                    value="default.scrollbar-vert-slider" />
                             </VisualState>
                             <VisualState name="MouseOver">
-                                <Setter target="BG" key="sprite" value="default.scrollbar-vert-slider-hover" />
+                                <Setter target="BG" key="sprite"
+                                    value="default.scrollbar-vert-slider-hover" />
                             </VisualState>
                             <VisualState name="Pressed">
-                                <Setter target="BG" key="sprite" value="default.scrollbar-vert-slider-active" />
+                                <Setter target="BG" key="sprite"
+                                    value="default.scrollbar-vert-slider-active" />
+                            </VisualState>
+                        </VisualStateGroup>
+                    </VisualStateGroupList>
+                </ControlTemplate.visualStateGroups>
+            </ControlTemplate>
+        </Setter>
+    </Style>
+
+    <Style key="ScrollBarHorThumb" forType="Thumb">
+        <Setter key="width" value="50" />
+        <Setter key="height" value="13" />
+        <Setter key="template">
+            <ControlTemplate>
+                <Image Name="BG" imageType="Slice" sprite="default.scrollbar-horz-slider" />
+                <ControlTemplate.visualStateGroups>
+                    <VisualStateGroupList>
+                        <VisualStateGroup name="CommonStates">
+                            <VisualState name="Normal">
+                                <Setter target="BG" key="sprite"
+                                    value="default.scrollbar-horz-slider" />
+                            </VisualState>
+                            <VisualState name="MouseOver">
+                                <Setter target="BG" key="sprite"
+                                    value="default.scrollbar-horz-slider-hover" />
+                            </VisualState>
+                            <VisualState name="Pressed">
+                                <Setter target="BG" key="sprite"
+                                    value="default.scrollbar-horz-slider-active" />
                             </VisualState>
                         </VisualStateGroup>
                     </VisualStateGroupList>
@@ -181,12 +213,54 @@
 
     <ControlTemplate key="VerScrollBar" forType="ScrollBar">
         <Panel>
-            <Image sprite="default.scrollbar-vert-trough" />
+            <Image imageType="Slice" sprite="default.scrollbar-vert-trough" />
             <Track orientation="Ver">
                 <Track.thumb>
-                    <Thumb style="{Res ScrollBarThumb}" />
+                    <Thumb style="{Res ScrollBarVerThumb}" />
                 </Track.thumb>
             </Track>
         </Panel>
     </ControlTemplate>
+
+    <ControlTemplate key="HorScrollBar" forType="ScrollBar">
+        <Panel>
+            <Image imageType="Slice" sprite="default.scrollbar-horz-trough" />
+            <Track orientation="Hor">
+                <Track.thumb>
+                    <Thumb style="{Res ScrollBarHorThumb}" />
+                </Track.thumb>
+            </Track>
+        </Panel>
+    </ControlTemplate>
+
+    <Style forType="ScrollBar">
+        <Setter key="visualStateGroups">
+            <VisualStateGroupList>
+                <VisualStateGroup name="OrientationStates">
+                    <VisualState name="Horizontal">
+                        <Setter key="template" value="{Res HorScrollBar}" />
+                        <Setter key="height" value="14" />
+                    </VisualState>
+                    <VisualState name="Vertical">
+                        <Setter key="template" value="{Res VerScrollBar}" />
+                        <Setter key="width" value="14" />
+                    </VisualState>
+                </VisualStateGroup>
+            </VisualStateGroupList>
+        </Setter>
+    </Style>
+
+    <Style forType="ScrollViewer">
+        <Setter key="template">
+            <ControlTemplate>
+                <Panel>
+                    <Image sprite="default.white" color="#cccccc" />
+                    <ScrollContentPresenter />
+                    <ScrollBar margin="0,0,14,-1" orientation="Hor" ver="End"  />
+                    <ScrollBar margin="0,0,0,0" orientation="Ver" hor="End" />
+                    
+                </Panel>
+            </ControlTemplate>
+        </Setter>
+    </Style>
 </UIResource>

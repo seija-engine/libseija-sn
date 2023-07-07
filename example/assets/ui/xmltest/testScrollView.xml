@@ -1,0 +1,21 @@
+<Panel isCanvas="true">
+    <Image sprite="default.white" color="#e8e8e7" />
+
+    <ScrollViewer width="480" height="320">
+        <ItemsControl itemsSource="{Binding Data dataList}">
+            <ItemsControl.warpElement>
+                <StackPanel spacing="10" />
+            </ItemsControl.warpElement>
+            <ItemsControl.itemTemplate>
+                <DataTemplate>
+                    <Panel isCanvas="true" height="30">
+                        <Image sprite="default.white" color="#445566" height="30" />
+                        <Text color="#ffffff" text="{Binding Data this}" />
+                    </Panel>
+                </DataTemplate>
+            </ItemsControl.itemTemplate>
+        </ItemsControl>
+    </ScrollViewer>
+
+
+</Panel>
