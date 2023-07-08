@@ -20,8 +20,6 @@ object FreeLayout {
 
 class FreeLayoutBuilder extends RawComponentBuilder {
     var common: CommonView = CommonView()
-    var spacing: Float = 0
-    var orientation: Orientation = Orientation.Horizontal;
     override def build(entity: Entity): Unit = {
       FFISeijaUI.entityAddFreeLayout(core.App.worldPtr, entity.id, common);
     }

@@ -71,12 +71,12 @@ class TestViewModel extends INotifyPropertyChanged derives ReflectType {
     var dataList:ObservableList[String] = ObservableList.from(List(
       "Data@1",
       "Data@2",
-      "Data@3"));
- 
-    def setCount(count:Int) = {
-      this.count = count;
-      this.callPropertyChanged("count",this);
-    }
+      "Data@3","Data@4","Data@5","Data@6","Data@7","Data@8","Data@9","Data@10"));
+
+  def setCount(count: Int): Unit = {
+    this.count = count;
+    this.callPropertyChanged("count", this);
+  }
 
     def testAdd(params:Any):Unit = {
        this.dataList.add(s"Data@${this.dataList.length + 1}");

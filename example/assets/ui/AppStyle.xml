@@ -56,7 +56,7 @@
     <Style forType="ItemsControl">
         <Setter key="template">
             <ControlTemplate>
-                <Panel isCanvas="true" isClip="true">
+                <Panel >
                     <Image sprite="default.white" color="#cccccc" />
                     <ItemsPresenter  />
                 </Panel>
@@ -214,7 +214,7 @@
     <ControlTemplate key="VerScrollBar" forType="ScrollBar">
         <Panel>
             <Image imageType="Slice" sprite="default.scrollbar-vert-trough" />
-            <Track orientation="Ver">
+            <Track orientation="Ver" viewportSize="{Binding Owner viewportSize}">
                 <Track.thumb>
                     <Thumb style="{Res ScrollBarVerThumb}" />
                 </Track.thumb>
@@ -253,11 +253,10 @@
     <Style forType="ScrollViewer">
         <Setter key="template">
             <ControlTemplate>
-                <Panel>
+                <Panel isCanvas="true" isClip="true">
                     <Image sprite="default.white" color="#cccccc" />
-                    <ScrollContentPresenter />
-                    <ScrollBar margin="0,0,14,-1" orientation="Hor" ver="End"  />
-                    <ScrollBar margin="0,0,0,0" orientation="Ver" hor="End" />
+                    <ScrollContentPresenter margin="0,0,16,0" />
+                    <ScrollBar orientation="Ver" hor="End" />
                     
                 </Panel>
             </ControlTemplate>

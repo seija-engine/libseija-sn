@@ -5,11 +5,16 @@ import ui.visualState.ViewStates
 
 class ScrollBar extends RangeBase derives ReflectType {
     var _orientation: Orientation = Orientation.Horizontal;
+    var _viewportSize:Float = 0f;
+
     def orientation: Orientation = _orientation;
+    def viewportSize:Float = this._viewportSize;
     def orientation_=(value: Orientation): Unit = {
         _orientation = value; this.callPropertyChanged("orientation", this);
     }
-
+    def viewportSize_=(value: Float): Unit = {
+        _viewportSize = value; this.callPropertyChanged("viewportSize", this);
+    }
     override def OnEnter(): Unit = {
         this.updateVisualState();
         this.createBaseEntity(true);

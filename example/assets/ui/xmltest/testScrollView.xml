@@ -17,5 +17,5 @@
         </ItemsControl>
     </ScrollViewer>
 
-
+    <Slider ver="End" width="200" />
 </Panel>

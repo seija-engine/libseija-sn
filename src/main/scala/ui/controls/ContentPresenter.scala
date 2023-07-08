@@ -8,7 +8,7 @@ class ContentPresenter extends UIElement derives ReflectType {
     override def OnEnter(): Unit = {
         this.initByContentControl();
         if(this.dataTemplate.isEmpty && this.content != null) {
-            val dataType = this.content.getClass().getName();
+            val dataType = this.content.getClass.getName;
             this.dataTemplate = this.findDataTemplate(dataType);
         }
         super.OnEnter();
@@ -24,7 +24,7 @@ class ContentPresenter extends UIElement derives ReflectType {
                         val contentElement = this.content.asInstanceOf[UIElement];
                         this.addChild(contentElement);
                     } else {
-                        val stringValue = this.content.toString();
+                        val stringValue = this.content.toString;
                         val textElement = new Text();
                         textElement.text = stringValue;
                         this.addChild(textElement);

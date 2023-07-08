@@ -16,14 +16,14 @@ object FFIRuv {
     def runTimePollEvent(runtime:Ptr[Byte]):Unit = _ia_runtime_poll_eventPtr(runtime);
 
     def createHttp(runtime:Ptr[Byte]):Int = _ia_http_createPtr(runtime)
-    def closeHttp(runtime:Ptr[Byte],index:Int) = _ia_http_closePtr(runtime,index);
+    def closeHttp(runtime:Ptr[Byte],index:Int): Unit = _ia_http_closePtr(runtime,index);
 
     def httpSetRequest(runtime:Ptr[Byte],index:Int,method:Byte,url:String):Int = Zone { z =>
         _ia_http_set_request(runtime,index,method,toCString(url)(z))
     }
-    def httpSend(runtime:Ptr[Byte],index:Int) = _ia_http_sendPtr(runtime,index);
+    def httpSend(runtime:Ptr[Byte],index:Int): CInt = _ia_http_sendPtr(runtime,index);
 
-    def httpReadBytes(runtime:Ptr[Byte],index:Int) = _ia_http_read_bytesPtr(runtime,index);
+    def httpReadBytes(runtime:Ptr[Byte],index:Int): Unit = _ia_http_read_bytesPtr(runtime,index);
 
     def setEnvCallBack(runtime:Ptr[Byte],respCall:CFuncPtr,readEndCall:CFuncPtr):Unit = {
         _ia_set_http_cb_list(runtime,CFuncPtr.toPtr(respCall),CFuncPtr.toPtr(readEndCall));

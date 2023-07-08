@@ -17,10 +17,9 @@ import ui.core.Canvas
 class Track extends Control derives ReflectType {
   var _orientation: Orientation = Orientation.Horizontal;
   var _value: Float = 0;
-  var _fillSize:Float = 0;
+  protected var _fillSize:Float = 0;
+  protected var _viewportSize:Float = Float.NaN;
 
-  private var startBtn: RepeatButton = RepeatButton();
-  private var endBtn: RepeatButton = RepeatButton();
   var thumb: Thumb = Thumb();
 
   private var cacheSize: Vector2 = Vector2.zero.clone();
@@ -30,19 +29,20 @@ class Track extends Control derives ReflectType {
   def orientation_=(value: Orientation): Unit = {
     _orientation = value; this.callPropertyChanged("orientation", this);
   }
-
   def value: Float = this._value;
   def value_=(value: Float): Unit = {
     _value = value; this.callPropertyChanged("value", this)
     this.updatePosByValue();
   }
-
   def fillSize: Float = this._fillSize;
-  def fillSize_=(value: Float): Unit = { 
-    _fillSize = value; 
-    this.callPropertyChanged("fillSize", this); 
+  def fillSize_=(value: Float): Unit = {
+    _fillSize = value; this.callPropertyChanged("fillSize", this);
   }
-
+  def viewportSize:Float = this._viewportSize;
+  def viewportSize_=(value: Float): Unit = {
+    _viewportSize = value;
+    this.callPropertyChanged("viewportSize", this);
+  }
   override def Awake(): Unit = {
     super.Awake();
   }
@@ -148,6 +148,11 @@ class Track extends Control derives ReflectType {
 
   protected def onLayoutResize(): Unit = {
     this.updatePosByValue();
+    this.updateThumbSize();
+  }
+
+  protected def updateThumbSize():Unit = {
+    if(this._viewportSize.isNaN) { return; }
   }
 
   override def Exit(): Unit = {
