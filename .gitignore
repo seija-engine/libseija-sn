@@ -2,6 +2,7 @@
 example/config.json
 target
 .bloop
+.idea
 .scalafmt.conf
 /.bsp
 /.metals

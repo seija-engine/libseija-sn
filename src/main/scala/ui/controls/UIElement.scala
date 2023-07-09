@@ -175,7 +175,7 @@ class UIElement extends INotifyPropertyChanged with Cloneable with IXmlObject de
                 }
                 case BindingSource.Data => {
                     val findDataContext = this.findDataContext();
-                    println(s"findDataContext = ${findDataContext}");
+                    //println(s"findDataContext = ${findDataContext}");
                     if(findDataContext != null) {
                         DataBindingManager.binding(findDataContext,this,bindItem).logError() match {
                             case Success(Some(inst)) => this.bindingInstList += inst;

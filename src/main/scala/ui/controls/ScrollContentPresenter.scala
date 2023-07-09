@@ -38,6 +38,7 @@ class ScrollContentPresenter extends UIElement with IScrollInfo derives ReflectT
         val scrollView = this.templateParent.get.asInstanceOf[ScrollViewer];
         this.scrollInfo = Some(this);
         this.scrollViewer = Some(scrollView);
+        scrollView.setScrollInfo(this.scrollInfo);
         if(this.content == null) { this.content = scrollView.content; }
         if(this.content != null) {
             this.content match {

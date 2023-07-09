@@ -197,7 +197,7 @@ object BindingInst {
   def create(src:Any,dst:Any,item:BindingItem):Try[BindingInst] = Try {
     val srcTypeInfo = Assembly.getTypeInfoOrThrow(src);
     val dstTypeInfo = Assembly.getTypeInfoOrThrow(dst);
-    println(s"bindingInst ${src} to ${dst}");
+    //println(s"bindingInst ${src} to ${dst}");
     val srcField:FieldInfo = srcTypeInfo.getFieldTry(item.sourceKey).get;
     val dstField:FieldInfo = dstTypeInfo.getFieldTry(item.dstKey).get;
     BindingInst(item,src,dst,srcTypeInfo,dstTypeInfo,srcField,dstField)
