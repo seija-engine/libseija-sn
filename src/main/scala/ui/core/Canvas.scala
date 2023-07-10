@@ -21,6 +21,6 @@ object Canvas {
 
         override def builder(): BuilderType = new CanvasBuilder()
 
-        override def getRaw(entity: Entity): RawType = ???    
+        override def getRaw(entity: Entity,isMut:Boolean): RawType = ???
     }
 }

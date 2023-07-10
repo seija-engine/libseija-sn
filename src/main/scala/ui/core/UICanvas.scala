@@ -20,5 +20,5 @@ given UICanvasComponent:RawComponent[UICanvas] with {
 
   override def builder(): BuilderType = new UICanvasBuilder()
 
-  override def getRaw(entity: Entity): RawType = ???  
+  override def getRaw(entity: Entity,isMut:Boolean): RawType = ???
 }

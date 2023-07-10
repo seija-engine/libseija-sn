@@ -22,5 +22,5 @@ given MaterialComponent:RawComponent[Handle[Material]] with {
     type BuilderType = MaterialBuilder;
     type RawType = Handle[Material]
     def builder():MaterialBuilder = new MaterialBuilder();
-    def getRaw(entity:Entity):Handle[Material] = { ??? }
+    def getRaw(entity:Entity,isMut:Boolean):Handle[Material] = { ??? }
 }

@@ -15,5 +15,5 @@ given MeshComponent:RawComponent[Handle[Mesh]] with {
     type BuilderType = MeshBuilder;
     type RawType = Handle[Mesh]
     def builder():MeshBuilder = new MeshBuilder();
-    def getRaw(entity:Entity):Handle[Mesh] = { ??? }
+    def getRaw(entity:Entity,isMut:Boolean):Handle[Mesh] = { ??? }
 }

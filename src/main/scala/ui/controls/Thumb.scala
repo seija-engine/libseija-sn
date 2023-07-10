@@ -1,15 +1,16 @@
 package ui.controls
-import core.reflect.*;
-import ui.EventManager;
-import ui.EventType;
-import scalanative.unsigned._;
+import core.reflect.*
+import ui.EventManager
+import ui.EventType
+
+import scalanative.unsigned.*
 import input.Input
 import math.Vector2
 import math.Vector3
-import transform.{Transform,RawTransform}
+import transform.{RawTransform, Transform}
 import transform.getPosition
 import transform.setPosition
-import ui.core.FreeLayoutItem
+import ui.core.{FreeLayoutItem, ItemLayout}
 
 class Thumb extends Control derives ReflectType {
     var OnBeginDragCall:Option[(Vector2) => Unit] = None;
@@ -74,6 +75,23 @@ class Thumb extends Control derives ReflectType {
           this.updateVisualState();
        }
     }
+
+    override def onPropertyChanged(propertyName: String): Unit = {
+      propertyName match
+        case "width" => {
+          this.entity.foreach { v =>
+            val rawLayout = v.get[ItemLayout]();
+            rawLayout.setWidth(this._width);
+          }
+        }
+        case "height" => {
+          this.entity.foreach { v =>
+            val rawLayout = v.get[ItemLayout]();
+            rawLayout.setHeight(this._height);
+          }
+        }
+        case _ =>
+   }
 
     override def clone():Thumb = {
         super.clone().asInstanceOf[Thumb]

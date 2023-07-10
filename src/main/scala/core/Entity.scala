@@ -12,7 +12,7 @@ class Entity(val id:Long) extends AnyVal {
      builder.build(this);
      this
   }
-  def get[T]()(using v:RawComponent[T]):v.RawType = v.getRaw(this)
+  def get[T](isMut:Boolean = false)(using v:RawComponent[T]):v.RawType = v.getRaw(this,isMut)
 
   def insertChild(child:Entity,index:Int):Unit = {
       FFISeijaTransform.transformAddChildIndex(this.id,child.id,index);

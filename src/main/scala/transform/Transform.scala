@@ -30,7 +30,7 @@ object Transform {
     type RawType = RawTransform
     def builder():BuilderType = new TransformBuilder()
 
-    def getRaw(entity:Entity):RawTransform = FFISeijaTransform.transformGet(core.App.worldPtr,entity.id)
+    def getRaw(entity:Entity,isMut:Boolean):RawTransform = FFISeijaTransform.transformGet(core.App.worldPtr,entity.id)
   }
 }
 

@@ -49,7 +49,7 @@ given CameraComponent:RawComponent[Camera] with {
     type BuilderType = CameraBuilder
     type RawType = RawCamera
     def builder():BuilderType = new CameraBuilder()
-    def getRaw(entity:Entity):RawCamera = FFISeijaRender.renderEntityGetCamera(core.App.worldPtr,entity.id)
+    def getRaw(entity:Entity,isMut:Boolean):RawCamera = FFISeijaRender.renderEntityGetCamera(core.App.worldPtr,entity.id)
 }
 
 

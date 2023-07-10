@@ -88,7 +88,7 @@ given FlexLayoutComponent:RawComponent[FlexLayout] with {
   type BuilderType = FlexLayoutBuilder;
   override def builder(): BuilderType = new FlexLayoutBuilder()
 
-  override def getRaw(entity: Entity): RawType = ???    
+  override def getRaw(entity: Entity,isMut:Boolean): RawType = ???
 }
 
 
@@ -118,5 +118,5 @@ given FlexItemComponent:RawComponent[FlexItem] with {
   type BuilderType = FlexItemBuilder;
   override def builder(): BuilderType = new FlexItemBuilder()
 
-  override def getRaw(entity: Entity): RawType = ???
+  override def getRaw(entity: Entity,isMut:Boolean): RawType = ???
 }

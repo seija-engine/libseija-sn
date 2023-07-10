@@ -103,7 +103,7 @@
     </Style>
 
     <ControlTemplate key="HorSlider" forType="Slider">
-        <Panel>
+        <Panel isCanvas="true">
             <Image imageType="Slice" sprite="default.scale-horz-trough" />
             <Track>
                 <Track.template>
@@ -120,7 +120,7 @@
     </ControlTemplate>
 
     <ControlTemplate key="VerSlider" forType="Slider">
-        <Panel>
+        <Panel isCanvas="true">
             <Image imageType="Slice" sprite="default.scale-vert-trough" />
             <Track orientation="Ver">
                 <Track.template>
@@ -142,13 +142,13 @@
                 <VisualStateGroup name="OrientationStates">
                     <VisualState name="Horizontal">
                         <Setter key="template" value="{Res HorSlider}" />
-                        <Setter key="width" value="150" />
+
                         <Setter key="height" value="26" />
                     </VisualState>
                     <VisualState name="Vertical">
                         <Setter key="template" value="{Res VerSlider}" />
                         <Setter key="width" value="26" />
-                        <Setter key="height" value="150" />
+
                     </VisualState>
                 </VisualStateGroup>
             </VisualStateGroupList>
@@ -157,7 +157,7 @@
 
     <Style key="ScrollBarVerThumb" forType="Thumb">
         <Setter key="width" value="13" />
-        <Setter key="height" value="50" />
+        <Setter key="height" value="-" />
         <Setter key="template">
             <ControlTemplate>
                 <Image Name="BG" imageType="Slice" sprite="default.scrollbar-vert-slider" />
@@ -184,7 +184,7 @@
     </Style>
 
     <Style key="ScrollBarHorThumb" forType="Thumb">
-        <Setter key="width" value="50" />
+        <Setter key="width" value="-" />
         <Setter key="height" value="13" />
         <Setter key="template">
             <ControlTemplate>
@@ -212,9 +212,9 @@
     </Style>
 
     <ControlTemplate key="VerScrollBar" forType="ScrollBar">
-        <Panel>
+        <Panel isCanvas="true">
             <Image imageType="Slice" sprite="default.scrollbar-vert-trough" />
-            <Track orientation="Ver" viewportSize="{Binding Owner viewportSize}">
+            <Track orientation="Ver" maximum="{Binding Owner maximum}" viewportSize="{Binding Owner viewportSize}">
                 <Track.thumb>
                     <Thumb style="{Res ScrollBarVerThumb}" />
                 </Track.thumb>
@@ -256,7 +256,7 @@
                 <Panel isCanvas="true" isClip="true">
                     <Image sprite="default.white" color="#cccccc" />
                     <ScrollContentPresenter margin="0,0,16,0" />
-                    <ScrollBar orientation="Ver" hor="End" />
+                    <ScrollBar maximum="{Binding Owner scrollableHeight}" viewportSize="{Binding Owner viewportHeight}" orientation="Ver" hor="End" />
                     
                 </Panel>
             </ControlTemplate>

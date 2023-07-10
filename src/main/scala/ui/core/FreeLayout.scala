@@ -14,7 +14,7 @@ object FreeLayout {
     type RawType = Ptr[Byte]
     override def builder(): BuilderType = new FreeLayoutBuilder()
 
-    override def getRaw(entity: Entity): RawType = stddef.NULL
+    override def getRaw(entity: Entity,isMut:Boolean): RawType = stddef.NULL
   }
 }
 
@@ -33,7 +33,7 @@ object FreeLayoutItem {
     type RawType = Ptr[RawVector2]
     override def builder(): BuilderType = new FreeLayoutItemBuilder()
 
-    override def getRaw(entity: Entity): RawType = {
+    override def getRaw(entity: Entity,isMut:Boolean): RawType = {
       FFISeijaUI.entityGetFreeItem(core.App.worldPtr,entity.id)
     }
   }

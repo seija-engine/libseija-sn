@@ -19,5 +19,5 @@ given UISystemComponent:RawComponent[UISystem] with {
   type BuilderType = UISystemBuilder;
   override def builder(): BuilderType = new UISystemBuilder()
 
-  override def getRaw(entity: Entity): RawType = ???
+  override def getRaw(entity: Entity,isMut:Boolean): RawType = ???
 }

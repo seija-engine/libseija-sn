@@ -1,26 +1,32 @@
 package ui.controls
-import core.Entity;
+import core.Entity
 import ui.binding.INotifyPropertyChanged
-import ui.core.{LayoutAlignment,SizeValue,Thickness,Rect2D,ItemLayout}
-import core.reflect.{autoProps,AutoGetSetter,ReflectType};
+import ui.core.{FFISeijaUI, ItemLayout, LayoutAlignment, Rect2D, SizeValue, Thickness}
+import core.reflect.{AutoGetSetter, ReflectType, autoProps}
+
 import scala.Conversion
-import ui.resources.UIResource;
-import core.logError;
+import ui.resources.UIResource
+import core.logError
+
 import scala.quoted.Expr
 import core.xml.XmlElement
+
 import scala.collection.mutable.ListBuffer
 import transform.Transform
 import ui.binding.BindingItem
 import ui.binding.BindingSource
 import ui.binding.DataBindingManager
 import ui.binding.BindingInst
+
 import scala.util.Success
-import core.copyObject;
+import core.copyObject
 import core.ICopy
 import ui.ContentProperty
-import ui.resources.Style;
-import scala.collection.mutable.HashMap;
+import ui.resources.Style
+
+import scala.collection.mutable.HashMap
 import ui.resources.UIResourceMgr
+
 import scala.collection.mutable.ArrayBuffer
 import ui.visualState.VisualStateGroupList
 import ui.visualState.VisualStateGroup
@@ -54,9 +60,9 @@ class UIElement extends INotifyPropertyChanged with Cloneable with IXmlObject de
     protected var curViewStateDict:HashMap[String,String] = HashMap.empty;
     var visualStateGroups:VisualStateGroupList = VisualStateGroupList();
 
-    def hor = this._hor;
-    def hor_=(value:LayoutAlignment) = { this._hor = value; this.callPropertyChanged("hor",this) }
-    def ver = this._ver;
+    def hor: LayoutAlignment = this._hor;
+    def hor_=(value:LayoutAlignment): Unit = { this._hor = value; this.callPropertyChanged("hor",this) }
+    def ver: LayoutAlignment = this._ver;
     def ver_=(value:LayoutAlignment) = { this._ver = value; this.callPropertyChanged("ver",this) }
     def width = this._width;
     def width_=(value:SizeValue) = { this._width = value; this.callPropertyChanged("width",this) }

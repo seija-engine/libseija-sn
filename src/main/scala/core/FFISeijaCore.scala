@@ -10,7 +10,7 @@ object FFISeijaCore {
     private val coreSpawnEntityPtr = LibSeija.getFunc[CFuncPtr1[Ptr[Byte],Long]]("core_spawn_entity");
     private val initLogPtr = LibSeija.getFunc[CFuncPtr1[CString,Unit]]("init_log");
     private val coreWorldGetTimePtr = LibSeija.getFunc[CFuncPtr1[Ptr[Byte],Ptr[RawTime]]]("core_world_get_time");
-
+    private val isFrameDirtyPtr = LibSeija.getFunc[CFuncPtr3[Ptr[Byte],Long,ULong,Boolean]]("is_frame_dirty")
 
 
     def addCoreModule(appPtr:Ptr[Byte]):Unit = {
@@ -34,7 +34,10 @@ object FFISeijaCore {
     }
 
     def coreWorldGetTime(worldPtr:Ptr[Byte]):Ptr[RawTime] = coreWorldGetTimePtr(worldPtr)
-    
+
+    def isFrameDirty(entity: Entity,checkFrame:ULong):Boolean = {
+     isFrameDirtyPtr(core.App.worldPtr,entity.id,checkFrame)
+    }
     /*
     def coreSpawnEmptyEntity(worldPtr:Ptr[Byte]):FFIEntityMut = {
         val ptr = stackalloc[CStruct4[CUnsignedInt,CUnsignedInt,CSize,CSize]]();

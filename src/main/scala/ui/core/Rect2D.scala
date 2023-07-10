@@ -30,8 +30,8 @@ object Rect2D {
 
     override def builder(): BuilderType = new Rect2DBuilder()
 
-    override def getRaw(entity: Entity): RawType = {
-      FFISeijaUI.entityGetRect2d(core.App.worldPtr,entity.id,false)
+    override def getRaw(entity: Entity,isMut:Boolean): RawType = {
+      FFISeijaUI.entityGetRect2d(core.App.worldPtr,entity.id,isMut)
     }
    
   }

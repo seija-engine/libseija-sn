@@ -2,9 +2,9 @@
     <Image sprite="default.white" color="#e8e8e7" />
 
     <ScrollViewer width="480" height="320">
-        <ItemsControl itemsSource="{Binding Data dataList}">
+        <ItemsControl itemsSource="{Binding Data dataList}" ver="Start">
             <ItemsControl.warpElement>
-                <StackPanel spacing="10" />
+                <StackPanel spacing="10" ver="Start" />
             </ItemsControl.warpElement>
             <ItemsControl.itemTemplate>
                 <DataTemplate>
@@ -17,5 +17,6 @@
         </ItemsControl>
     </ScrollViewer>
 
-    <Slider ver="End" width="200" />
+
+    <ButtonBase  command="{Binding Data lstCommand}" ver="Start" >添加</ButtonBase>
 </Panel>

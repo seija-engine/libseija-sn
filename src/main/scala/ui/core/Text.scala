@@ -61,6 +61,6 @@ object Text {
     type RawType = RawText;
 
     def builder(): BuilderType = new TextBuilder();
-    def getRaw(entity: Entity): RawType = RawText(FFISeijaUI.entityGetText(core.App.worldPtr, entity.id))
+    def getRaw(entity: Entity,isMut:Boolean): RawType = RawText(FFISeijaUI.entityGetText(core.App.worldPtr, entity.id))
   }
 }

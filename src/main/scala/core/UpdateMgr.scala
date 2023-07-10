@@ -10,12 +10,12 @@ case class UpdateInfo(
 object UpdateMgr {
   private var updaterList:ArrayBuffer[UpdateInfo] = ArrayBuffer.empty;
   
-  def add(f:(Float) => Unit) = {
+  def add(f:(Float) => Unit):Unit = {
     val info = UpdateInfo(f,false)
     this.updaterList.addOne(info);
   }
 
-  def remove(f:(Float) => Unit) = {
+  def remove(f:(Float) => Unit):Unit = {
     this.updaterList.find(_.func == f).foreach {info => 
        info.isDelete = true;    
     }

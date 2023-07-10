@@ -1,22 +1,24 @@
 package ui.controls
-import core.reflect.*;
+import core.reflect.*
 import math.Vector2
 import transform.Transform
 import transform.setPosition
-import math.Vector3 
+import math.Vector3
 import core.Entity
 import ui.core.Rect2D
 import ui.core.FreeLayout
 import ui.core.FreeLayoutItem
 import core.UpdateMgr
+import ui.UIModule
 import ui.core.Orientation
-import ui.core.SizeValue;
-import scala.Float;
+import ui.core.SizeValue
+
+import scala.Float
 import ui.core.Canvas
 
-class Track extends Control derives ReflectType {
+class Track extends RangeBase derives ReflectType {
   var _orientation: Orientation = Orientation.Horizontal;
-  var _value: Float = 0;
+
   protected var _fillSize:Float = 0;
   protected var _viewportSize:Float = Float.NaN;
 
@@ -29,11 +31,7 @@ class Track extends Control derives ReflectType {
   def orientation_=(value: Orientation): Unit = {
     _orientation = value; this.callPropertyChanged("orientation", this);
   }
-  def value: Float = this._value;
-  def value_=(value: Float): Unit = {
-    _value = value; this.callPropertyChanged("value", this)
-    this.updatePosByValue();
-  }
+
   def fillSize: Float = this._fillSize;
   def fillSize_=(value: Float): Unit = {
     _fillSize = value; this.callPropertyChanged("fillSize", this);
@@ -59,7 +57,8 @@ class Track extends Control derives ReflectType {
     this.loadControlTemplate();
     this.thumb = this.thumb.clone();
     this.addChild(this.thumb);
-    UpdateMgr.add(this.OnUpdate);
+    //UpdateMgr.add(this.OnUpdate);
+    UIModule.addPostLayoutCall(this.entity.get,this.OnPostLayout);
     this.cacheSize.x = this.width.getPixel().getOrElse(0);
     this.cacheSize.y = this.height.getPixel().getOrElse(0);
   }
@@ -115,7 +114,9 @@ class Track extends Control derives ReflectType {
 
   protected def OnEndDrag(pos: Vector2): Unit = {}
 
-  protected def OnUpdate(dt: Float): Unit = {
+
+
+  protected def OnPostLayout():Unit = {
     val rawRect = this.getEntity().get.get[Rect2D]();
     val x = rawRect._1;
     val y = rawRect._2;
@@ -130,33 +131,45 @@ class Track extends Control derives ReflectType {
     val freeItem = this.thumb.getEntity().get.get[FreeLayoutItem]();
     val thisRect = this.getEntity().get.get[Rect2D]();
     val thumbRect = this.thumb.getEntity().get.get[Rect2D]();
+    val halfThumbX: Float = thumbRect._1 * 0.5f;
+    val halfThumbY: Float = thumbRect._2 * 0.5f;
     this._orientation match {
-      case Orientation.Horizontal => {
-        val thisWidth = thisRect._1;
-        val maxPos = thisWidth - thumbRect._1;
-        freeItem._1 = maxPos * this._value;
-        this.fillSize = thisWidth * this._value;
-      }
-      case Orientation.Vertical => {
-        val thisHeight = thisRect._2;
-        val maxPos = thisRect._2 - thumbRect._2;
-        freeItem._2 = maxPos * this._value;
-        this.fillSize = thisHeight * this._value;
-      }
+          case Orientation.Horizontal => {
+            val thisWidth = thisRect._1
+            val maxPos = thisWidth - thumbRect._1
+            freeItem._1 = maxPos * this._value
+            this.fillSize = thisWidth * this._value + halfThumbX
+          }
+          case Orientation.Vertical => {
+            val thisHeight = thisRect._2
+            val maxPos = thisRect._2 - thumbRect._2
+            freeItem._2 = maxPos * this._value
+            this.fillSize = thisHeight * this._value + halfThumbY
+          }
     }
   }
 
   protected def onLayoutResize(): Unit = {
-    this.updatePosByValue();
-    this.updateThumbSize();
+    this.updateThumbSize()
+    this.updatePosByValue()
   }
 
-  protected def updateThumbSize():Unit = {
-    if(this._viewportSize.isNaN) { return; }
+  override def onPropertyChanged(propertyName: String): Unit = {
+    propertyName match
+      case "viewportSize" => this.updateThumbSize()
+      case "maximum" => this.updateThumbSize()
+      case _ =>
+  }
+
+  private def updateThumbSize():Unit = {
+    if(this._viewportSize.isNaN || this.cacheSize.x == 0 || this.cacheSize.y == 0) return;
+    val endSize = this._viewportSize / this._maximum * this.cacheSize.y;
+    this.thumb.height = SizeValue.Pixel(endSize);
+    this.updatePosByValue()
   }
 
   override def Exit(): Unit = {
-    super.Exit();
-    UpdateMgr.remove(this.OnUpdate);
+    UIModule.removePostLayoutCall(this.entity.get)
+    super.Exit()
   }
 }

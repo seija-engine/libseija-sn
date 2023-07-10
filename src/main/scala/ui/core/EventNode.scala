@@ -43,6 +43,6 @@ object EventNode {
 
       override def builder(): BuilderType = new EventNodeBuilder();
 
-      override def getRaw(entity: Entity): RawType = ???
+      override def getRaw(entity: Entity,isMut:Boolean): RawType = ???
     }
 }

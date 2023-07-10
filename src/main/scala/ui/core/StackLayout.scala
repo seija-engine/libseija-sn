@@ -29,7 +29,7 @@ object StackLayout {
     type RawType = RawStackLayout
     override def builder(): BuilderType = new StackLayoutBuilder()
 
-    override def getRaw(entity: Entity): RawType = {
+    override def getRaw(entity: Entity,isMut:Boolean): RawType = {
       val stack = FFISeijaUI.entityGetStackView(core.App.worldPtr,entity.id);
       val commonView = FFISeijaUI.entityGetCommonView(core.App.worldPtr,entity.id);
       RawStackLayout(commonView,stack)
