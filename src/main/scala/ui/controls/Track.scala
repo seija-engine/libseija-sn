@@ -17,33 +17,51 @@ import scala.Float
 import ui.core.Canvas
 
 class Track extends RangeBase derives ReflectType {
-  var _orientation: Orientation = Orientation.Horizontal;
+  protected var _orientation: Orientation = Orientation.Horizontal
+  protected var _trackLength:Float = 0;
+  protected var _thumbSize:Float = Float.NaN
+  var thumb: Thumb = Thumb()
 
-  protected var _fillSize:Float = 0;
-  protected var _viewportSize:Float = Float.NaN;
-
-  var thumb: Thumb = Thumb();
-
-  private var cacheSize: Vector2 = Vector2.zero.clone();
-  private var curPosRate: Float = 0;
+  //region Setter
 
   def orientation: Orientation = _orientation;
   def orientation_=(value: Orientation): Unit = {
     _orientation = value; this.callPropertyChanged("orientation", this);
   }
+  def trackLength: Float = this._trackLength;
+  def trackLength_=(value: Float): Unit = {
+    _trackLength = value; this.callPropertyChanged("trackLength", this);
+  }
+  def thumbSize:Float = this._thumbSize;
+  def thumbSize_=(value:Float): Unit = {
+    this._thumbSize = value;callPropertyChanged("thumbSize",this)
+  }
+  //endregion
 
-  def fillSize: Float = this._fillSize;
-  def fillSize_=(value: Float): Unit = {
-    _fillSize = value; this.callPropertyChanged("fillSize", this);
+  private def createEntity(): Unit = {
+    val parentEntity = this.parent.flatMap(_.getEntity());
+    val newEntity = Entity.spawnEmpty().add[Transform](_.parent = parentEntity).add[Rect2D]().add[Canvas]()
+      .add[FreeLayout](v => {
+        v.common.hor = this._hor;
+        v.common.ver = this._ver;
+        v.common.uiSize.width = this._width;
+        v.common.uiSize.height = this._height;
+        v.common.padding = this._padding;
+        v.common.margin = this._margin;
+      });
+    this.entity = Some(newEntity);
   }
-  def viewportSize:Float = this._viewportSize;
-  def viewportSize_=(value: Float): Unit = {
-    _viewportSize = value;
-    this.callPropertyChanged("viewportSize", this);
+
+  override def OnEnter(): Unit = {
+    this.createEntity()
+    this.loadControlTemplate()
+    this.thumb = this.thumb.clone()
+    this.addChild(this.thumb)
   }
-  override def Awake(): Unit = {
-    super.Awake();
-  }
+
+  /*
+  private var cacheSize: Vector2 = Vector2.zero.clone()
+
   override def Enter(): Unit = {
     super.Enter();
     this.thumb.getEntity().get.add[FreeLayoutItem]();
@@ -57,13 +75,12 @@ class Track extends RangeBase derives ReflectType {
     this.loadControlTemplate();
     this.thumb = this.thumb.clone();
     this.addChild(this.thumb);
-    //UpdateMgr.add(this.OnUpdate);
     UIModule.addPostLayoutCall(this.entity.get,this.OnPostLayout);
     this.cacheSize.x = this.width.getPixel().getOrElse(0);
     this.cacheSize.y = this.height.getPixel().getOrElse(0);
   }
 
-  protected def createEntity(): Unit = {
+  private def createEntity(): Unit = {
     val parentEntity = this.parent.flatMap(_.getEntity());
     val newEntity = Entity
       .spawnEmpty()
@@ -171,5 +188,5 @@ class Track extends RangeBase derives ReflectType {
   override def Exit(): Unit = {
     UIModule.removePostLayoutCall(this.entity.get)
     super.Exit()
-  }
+  }*/
 }

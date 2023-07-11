@@ -3,12 +3,15 @@ import core.reflect.*;
 
 class RangeBase extends Control derives ReflectType {
     protected var _value:Float = 0;
-    protected var _maximum:Float = 0;
-    protected var _minimum:Float = 0;
+    protected var _maxValue:Float = 0;
+    protected var _minValue:Float = 0;
+    //region Setter
+
     def value:Float = this._value;
-    def maximum:Float = this._maximum;
-    def minimum:Float = this._minimum;
+    def maxValue:Float = this._maxValue;
+    def minValue:Float = this._minValue;
     def value_=(num:Float):Unit = { this._value = num; this.callPropertyChanged("value",this); }
-    def maximum_=(value:Float):Unit = { this._maximum = value; callPropertyChanged("maximum",this); }
-    def minimum_=(value:Float):Unit = { this._minimum = value; callPropertyChanged("minimum",this); }
+    def maxValue_=(value:Float):Unit = { this._maxValue = value; callPropertyChanged("maxValue",this); }
+    def minValue_=(value:Float):Unit = { this._minValue = value; callPropertyChanged("minValue",this); }
+    //endregion
 }

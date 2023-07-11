@@ -1,10 +1,9 @@
 package ui.controls
 import core.reflect.*;
-import ui.EventManager
-import ui.EventType
 import scalanative.unsigned._
 import ui.visualState.ViewStates
 import ui.command.ICommand
+import ui.event.{EventManager, EventType}
 
 class ButtonBase extends ContentControl derives ReflectType {
     var command:Option[ICommand] = None;

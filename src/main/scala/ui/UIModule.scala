@@ -6,11 +6,12 @@ import scalanative.unsafe.*
 import core.{FFISeijaUI, SizeValue}
 import _root_.core.reflect.DynTypeConv
 import _root_.core.reflect.Assembly
-import _root_.core.{Entity,FFISeijaCore}
+import _root_.core.{Entity, FFISeijaCore}
 
 import scala.annotation.StaticAnnotation
 import ui.controls.Image
 import ui.core.SizeValue.*
+import ui.event.EventManager
 
 import scala.collection.mutable;
 

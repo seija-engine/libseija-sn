@@ -1,27 +1,27 @@
-package ui
-import _root_.core.Entity
-import scalanative.unsigned._
-import ui.core.FFISeijaUI
-import ui.core.EventNode.EventNodeComponent;
-import scala.collection.mutable;
-import scala.scalanative.unsafe.CFuncPtr4
-import scala.scalanative.unsafe.Ptr
-import scala.scalanative.unsafe.CFuncPtr3
-object EventType {
-    val NONE = 0.toUInt;
-    val TOUCH_START = 1.toUInt;
-    val TOUCH_END = 2.toUInt;
-    val MOUSE_ENTER = 4.toUInt;
-    val MOUSE_LEAVE = 8.toUInt;
-    val CLICK = 16.toUInt;
-    val BEGIN_DRAG = (1 << 5).toUInt
-    val DRAG = (1 << 6).toUInt
-    val END_DRAG = (1 << 7).toUInt
+package ui.event
 
-    val ALL_TOUCH = TOUCH_START | TOUCH_END | CLICK;
-    val ALL_MOUSE = MOUSE_ENTER | MOUSE_LEAVE;
-    val ALL_DRAG = BEGIN_DRAG | DRAG | END_DRAG;
-    val ALL = ALL_TOUCH | ALL_MOUSE | ALL_DRAG;
+import _root_.core.Entity
+import ui.core.EventNode.EventNodeComponent
+import ui.core.FFISeijaUI
+
+import scala.collection.mutable
+import scala.scalanative.unsafe.{CFuncPtr3, CFuncPtr4, Ptr}
+import scala.scalanative.unsigned.*
+object EventType {
+    val NONE: UInt = 0.toUInt;
+    val TOUCH_START: UInt = 1.toUInt;
+    val TOUCH_END: UInt = 2.toUInt;
+    val MOUSE_ENTER: UInt = 4.toUInt;
+    val MOUSE_LEAVE: UInt = 8.toUInt;
+    val CLICK: UInt = 16.toUInt;
+    val BEGIN_DRAG: UInt = (1 << 5).toUInt
+    val DRAG: UInt = (1 << 6).toUInt
+    val END_DRAG: UInt = (1 << 7).toUInt
+
+    val ALL_TOUCH: UInt = TOUCH_START | TOUCH_END | CLICK;
+    val ALL_MOUSE: UInt = MOUSE_ENTER | MOUSE_LEAVE;
+    val ALL_DRAG: UInt = BEGIN_DRAG | DRAG | END_DRAG;
+    val ALL: UInt = ALL_TOUCH | ALL_MOUSE | ALL_DRAG;
 }
 
 private case class EventInfo(val entity:Entity,callFunc:(UInt,Any) => Unit,args:Any);
@@ -41,7 +41,7 @@ object EventManager {
         true
     }
 
-    def unRegister(entity:Entity) = {
+    def unRegister(entity:Entity): Unit = {
         if(this.eventInfos.contains(entity.id)) {
             this.eventInfos.remove(entity.id);
             FFISeijaUI.entityRemoveEventNode(_root_.core.App.worldPtr,entity.id);
@@ -54,7 +54,7 @@ object EventManager {
 
     def onReadEvent(entityId:Long,typ:UInt,ptr:Ptr[Byte]):Unit = {
        if(this.eventInfos.contains(entityId)) {
-          val info = this.eventInfos.get(entityId).get;
+          val info = this.eventInfos(entityId);
           info.callFunc(typ,info.args);
        }
     }

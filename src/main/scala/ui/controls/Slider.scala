@@ -4,7 +4,8 @@ import ui.controls.Track;
 import ui.core.Orientation
 import ui.visualState.ViewStates
 class Slider extends RangeBase derives ReflectType {
-    var _orientation: Orientation = Orientation.Horizontal;
+    protected var _orientation: Orientation = Orientation.Horizontal;
+    
     def orientation: Orientation = _orientation;
     def orientation_=(value: Orientation): Unit = {
         _orientation = value; this.callPropertyChanged("orientation", this);

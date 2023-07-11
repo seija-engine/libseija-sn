@@ -7,6 +7,8 @@ class ScrollBar extends RangeBase derives ReflectType {
     var _orientation: Orientation = Orientation.Horizontal;
     var _viewportSize:Float = 0f;
 
+    //region Setter
+
     def orientation: Orientation = _orientation;
     def viewportSize:Float = this._viewportSize;
     def orientation_=(value: Orientation): Unit = {
@@ -15,6 +17,8 @@ class ScrollBar extends RangeBase derives ReflectType {
     def viewportSize_=(value: Float): Unit = {
         _viewportSize = value; this.callPropertyChanged("viewportSize", this);
     }
+    //endregion
+
     override def OnEnter(): Unit = {
         this.updateVisualState();
         this.createBaseEntity(true);

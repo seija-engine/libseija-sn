@@ -1,7 +1,5 @@
 package ui.controls
 import core.reflect.*
-import ui.EventManager
-import ui.EventType
 
 import scalanative.unsigned.*
 import input.Input
@@ -11,6 +9,7 @@ import transform.{RawTransform, Transform}
 import transform.getPosition
 import transform.setPosition
 import ui.core.{FreeLayoutItem, ItemLayout}
+import ui.event.{EventManager, EventType, UIRouteEventManager,RouteEvent}
 
 class Thumb extends Control derives ReflectType {
     var OnBeginDragCall:Option[(Vector2) => Unit] = None;
@@ -101,4 +100,10 @@ class Thumb extends Control derives ReflectType {
         EventManager.unRegister(this.entity.get);
         super.Exit();
     }
+}
+
+object Thumb {
+  val StartDragEvent: RouteEvent = UIRouteEventManager.registerEvent("StartDrag",null,classOf[Thumb]);
+  val OnDragEvent:RouteEvent = UIRouteEventManager.registerEvent("OnDragEvent",null,classOf[Thumb])
+  val EndDragEvent:RouteEvent = UIRouteEventManager.registerEvent("EndDrag",null,classOf[Thumb]);
 }

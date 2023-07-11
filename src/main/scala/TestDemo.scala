@@ -17,7 +17,7 @@ import ruv.RuvRuntime
 class TestDemo extends IGameApp {
   var topCanvas:Option[UICanvas] = None;
   var testViewModel:Option[TestViewModel] = None;
-  def loadAsset() = {
+  def loadAsset(): Unit = {
     val canvas = ui.UICanvas.create();
     Atlas.load("default","ui/default.json").get
     ui.Font.load("default","ui/WenQuanYiMicroHei.ttf",true).get
@@ -45,10 +45,12 @@ class TestDemo extends IGameApp {
     UIResourceMgr.loadResource("example/assets/ui/AppStyle.xml");
     val viewModel = new TestViewModel();
     this.testViewModel = Some(viewModel);
-    XmlUIElement.fromFile("example/assets/ui/xmltest/testScrollView.xml").logError().foreach {loadElement =>
+    XmlUIElement.fromFile("example/assets/ui/xmltest/testSlider.xml").logError().foreach {loadElement =>
       loadElement.dataContext = this.testViewModel.get;
       this.topCanvas.get.addElement(loadElement);
     }
+
+    ui.event.UIRouteEventManager.test()
 }
 
   override def OnUpdate(): Unit = {

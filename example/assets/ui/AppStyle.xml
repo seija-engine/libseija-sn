@@ -108,7 +108,7 @@
             <Track>
                 <Track.template>
                     <ControlTemplate>
-                        <Image imageType="Slice" hor="Start" width="{Binding Owner fillSize}"
+                        <Image imageType="Slice" hor="Start" width="{Binding Owner trackLength}"
                             sprite="default.scale-horz-trough-active" />
                     </ControlTemplate>
                 </Track.template>
@@ -125,7 +125,7 @@
             <Track orientation="Ver">
                 <Track.template>
                     <ControlTemplate>
-                        <Image imageType="Slice" ver="Start" height="{Binding Owner fillSize}"
+                        <Image imageType="Slice" ver="Start" height="{Binding Owner trackLength}"
                             sprite="default.scale-vert-trough-active" />
                     </ControlTemplate>
                 </Track.template>

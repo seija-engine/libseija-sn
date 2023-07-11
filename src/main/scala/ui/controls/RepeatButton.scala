@@ -1,9 +1,10 @@
 package ui.controls
 import core.reflect.*;
 import scala.scalanative.unsigned._
-import ui.EventType
 import core.UpdateMgr
 import core.Time
+import ui.event.EventType
+
 class RepeatButton extends ButtonBase derives ReflectType {
     var _delay:Float = 0;
     var _interval:Float = 0.3;

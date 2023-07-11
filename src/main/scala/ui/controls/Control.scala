@@ -7,9 +7,9 @@ import scala.util.Success
 import scala.util.Failure
 import scala.collection.mutable;
 import ui.ElementNameScope
+import ui.event.EventType
 import scala.collection.mutable.HashMap
 import scalanative.unsigned._;
-import ui.EventType
 import ui.visualState.ViewStates
 
 class Control extends UIElement with ElementNameScope derives ReflectType {
