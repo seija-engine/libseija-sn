@@ -1,16 +1,17 @@
 package core
 import scalanative.unsafe._
-import scalanative.unsigned.ULong;
+import scalanative.unsigned.ULong
+import scala.scalanative.unsigned.UInt
 type RawTime = CStruct2[Float,ULong]
 
 object FFISeijaCore {
-    private val addCoreModulePtr = LibSeija.getFunc[CFuncPtr1[Ptr[Byte],Unit]]("core_add_module");
-    private val appSetOnStartPtr = LibSeija.getFunc[CFuncPtr2[Ptr[Byte],Ptr[Byte],Unit]]("app_set_on_start");
-    private val appSetOnUpdatePtr = LibSeija.getFunc[CFuncPtr2[Ptr[Byte],Ptr[Byte],Unit]]("app_set_on_update");
-    private val coreSpawnEntityPtr = LibSeija.getFunc[CFuncPtr1[Ptr[Byte],Long]]("core_spawn_entity");
-    private val initLogPtr = LibSeija.getFunc[CFuncPtr1[CString,Unit]]("init_log");
-    private val coreWorldGetTimePtr = LibSeija.getFunc[CFuncPtr1[Ptr[Byte],Ptr[RawTime]]]("core_world_get_time");
-    private val isFrameDirtyPtr = LibSeija.getFunc[CFuncPtr3[Ptr[Byte],Long,ULong,Boolean]]("is_frame_dirty")
+    private val addCoreModulePtr = LibSeija.getFunc[CFuncPtr1[Ptr[Byte],Unit]]("core_add_module")
+    private val appSetOnStartPtr = LibSeija.getFunc[CFuncPtr2[Ptr[Byte],Ptr[Byte],Unit]]("app_set_on_start")
+    private val appSetOnUpdatePtr = LibSeija.getFunc[CFuncPtr2[Ptr[Byte],Ptr[Byte],Unit]]("app_set_on_update")
+    private val coreSpawnEntityPtr = LibSeija.getFunc[CFuncPtr1[Ptr[Byte],Long]]("core_spawn_entity")
+    private val initLogPtr = LibSeija.getFunc[CFuncPtr1[CString,Unit]]("init_log")
+    private val coreWorldGetTimePtr = LibSeija.getFunc[CFuncPtr1[Ptr[Byte],Ptr[RawTime]]]("core_world_get_time")
+    private val isFrameDirtyPtr = LibSeija.getFunc[CFuncPtr4[Ptr[Byte],Long,ULong,Int,Boolean]]("is_frame_dirty")
 
 
     def addCoreModule(appPtr:Ptr[Byte]):Unit = {
@@ -35,13 +36,8 @@ object FFISeijaCore {
 
     def coreWorldGetTime(worldPtr:Ptr[Byte]):Ptr[RawTime] = coreWorldGetTimePtr(worldPtr)
 
-    def isFrameDirty(entity: Entity,checkFrame:ULong):Boolean = {
-     isFrameDirtyPtr(core.App.worldPtr,entity.id,checkFrame)
+    def isFrameDirty(entity: Entity,checkFrame:ULong,index:Int):Boolean = {
+     isFrameDirtyPtr(core.App.worldPtr,entity.id,checkFrame,index)
     }
-    /*
-    def coreSpawnEmptyEntity(worldPtr:Ptr[Byte]):FFIEntityMut = {
-        val ptr = stackalloc[CStruct4[CUnsignedInt,CUnsignedInt,CSize,CSize]]();
-        coreSpawnEmptyEntityPtr(worldPtr,ptr.asInstanceOf[Ptr[Byte]])
-        FFIEntityMut(ptr._1,ptr._2,ptr._3,ptr._4)
-    }*/
+   
 }

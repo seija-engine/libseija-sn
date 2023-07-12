@@ -83,8 +83,8 @@ object FFISeijaUI {
        entityAddRectPtr(worldPtr,entity,v4Ptr);
     }
 
-    def entityAddUICanvas(worldPtr:Ptr[Byte],entity:Long) = {
-        entityAddUICanvasPtr(worldPtr,entity,0);
+    def entityAddUICanvas(worldPtr: Ptr[Byte], entity: Long): Unit = {
+      entityAddUICanvasPtr(worldPtr, entity, 0);
     }
 
     def entityAddCanvas(worldPtr:Ptr[Byte],entity:Long,isClip:Boolean) = {

@@ -49,8 +49,6 @@ class TestDemo extends IGameApp {
       loadElement.dataContext = this.testViewModel.get;
       this.topCanvas.get.addElement(loadElement);
     }
-
-    ui.event.UIRouteEventManager.test()
 }
 
   override def OnUpdate(): Unit = {

@@ -9,7 +9,7 @@ import ui.core.Rect2D
 import ui.core.FreeLayout
 import ui.core.FreeLayoutItem
 import core.UpdateMgr
-import ui.UIModule
+import ui.{LayoutUtils, UIModule}
 import ui.core.Orientation
 import ui.core.SizeValue
 
@@ -57,6 +57,14 @@ class Track extends RangeBase derives ReflectType {
     this.loadControlTemplate()
     this.thumb = this.thumb.clone()
     this.addChild(this.thumb)
+    LayoutUtils.addPostLayout(this.postLayoutProcess)
+  }
+
+  protected def postLayoutProcess(step:Int):Unit = {
+    if(LayoutUtils.isDirty(this.getEntity().get,step)) {
+      println("track entity dirty")
+      LayoutUtils.addPostLayoutDirtyEntity(this.thumb.getEntity().get)
+    }
   }
 
   override def onPropertyChanged(propertyName: String): Unit = {
@@ -69,6 +77,11 @@ class Track extends RangeBase derives ReflectType {
   protected def updateUIByValue():Unit = {
     val rate = this._value / (this._maxValue - this.minValue)
     val realPos = rate * (this._trackLength - this._thumbSize)
+  }
+
+  override def Exit(): Unit = {
+    LayoutUtils.removePostLayout(this.postLayoutProcess)
+    super.Exit()
   }
   /*
   private var cacheSize: Vector2 = Vector2.zero.clone()

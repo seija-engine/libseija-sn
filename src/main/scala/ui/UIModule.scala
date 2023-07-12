@@ -32,7 +32,7 @@ final case class UIModule() extends IModule {
     }
 
     override def updateECSPtr(worldPtr: Ptr[CSignedChar]): Unit = {
-      FFISeijaUI.SetOnPostLayoutProcess(worldPtr,CFuncPtr.toPtr(CFuncPtr2.fromScalaFunction(UIModule.OnPostUILayout)))
+      LayoutUtils.init(worldPtr)
     }
 
     override def update(): Unit = {
