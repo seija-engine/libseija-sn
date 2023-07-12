@@ -46,15 +46,13 @@ class ScrollViewer extends ContentControl derives ReflectType {
 
   override def Enter(): Unit = {
     super.Enter()
-    UIModule.addPostLayoutCall(this.scrollContent.get.childEntity.get,this.OnPostScrollLayout);
   }
 
   def hookContentPresenter(scrollContent: ScrollContentPresenter):Unit = {
     this.scrollContent = Some(scrollContent)
     this.content match
       case contentElement: UIElement =>
-        scrollContent.addChild(contentElement);
-        UIModule.addPostLayoutCall(scrollContent.getEntity().get, this.OnPostLayout)
+        scrollContent.addChild(contentElement)
       case _ =>
   }
 
@@ -78,8 +76,6 @@ class ScrollViewer extends ContentControl derives ReflectType {
 
   }
   override def Exit(): Unit = {
-    this.scrollContent.flatMap(_.getEntity()).foreach(UIModule.removePostLayoutCall)
-    this.scrollContent.flatMap(_.childEntity).foreach(UIModule.removePostLayoutCall)
     super.Exit()
   }
 }

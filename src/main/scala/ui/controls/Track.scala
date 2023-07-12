@@ -18,8 +18,9 @@ import ui.core.Canvas
 
 class Track extends RangeBase derives ReflectType {
   protected var _orientation: Orientation = Orientation.Horizontal
-  protected var _trackLength:Float = 0;
+  protected var _trackLength:Float = Float.NaN
   protected var _thumbSize:Float = Float.NaN
+  private var _density:Float = 0
   var thumb: Thumb = Thumb()
 
   //region Setter
@@ -28,17 +29,15 @@ class Track extends RangeBase derives ReflectType {
   def orientation_=(value: Orientation): Unit = {
     _orientation = value; this.callPropertyChanged("orientation", this);
   }
-  def trackLength: Float = this._trackLength;
-  def trackLength_=(value: Float): Unit = {
-    _trackLength = value; this.callPropertyChanged("trackLength", this);
-  }
+  def trackLength: Float = this._trackLength
+
   def thumbSize:Float = this._thumbSize;
   def thumbSize_=(value:Float): Unit = {
     this._thumbSize = value;callPropertyChanged("thumbSize",this)
   }
   //endregion
 
-  private def createEntity(): Unit = {
+  private def createEntity(): Entity = {
     val parentEntity = this.parent.flatMap(_.getEntity());
     val newEntity = Entity.spawnEmpty().add[Transform](_.parent = parentEntity).add[Rect2D]().add[Canvas]()
       .add[FreeLayout](v => {
@@ -50,6 +49,7 @@ class Track extends RangeBase derives ReflectType {
         v.common.margin = this._margin;
       });
     this.entity = Some(newEntity);
+    newEntity
   }
 
   override def OnEnter(): Unit = {
@@ -59,6 +59,17 @@ class Track extends RangeBase derives ReflectType {
     this.addChild(this.thumb)
   }
 
+  override def onPropertyChanged(propertyName: String): Unit = {
+    super.onPropertyChanged(propertyName)
+    if(propertyName == "minValue" || propertyName == "maxValue" || propertyName == "value" || propertyName == "trackLength") {
+      this.updateUIByValue()
+    }
+  }
+
+  protected def updateUIByValue():Unit = {
+    val rate = this._value / (this._maxValue - this.minValue)
+    val realPos = rate * (this._trackLength - this._thumbSize)
+  }
   /*
   private var cacheSize: Vector2 = Vector2.zero.clone()
 

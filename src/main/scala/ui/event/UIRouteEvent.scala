@@ -12,11 +12,11 @@ case class RouteEvent(
 
 case class RouteEventArgs(
   val event:RouteEvent,
-  val handled:Boolean = false
+  var handled:Boolean = false
 );
 
 trait IRouteEventElement {
-   val routeEventController:RouteEventController
+   def routeEventController:RouteEventController
    def getRouteEventParent:Option[IRouteEventElement]
 }
 
@@ -29,15 +29,15 @@ case class RouteEventController(elem:IRouteEventElement) {
   def removeEvent(routeEvent: RouteEvent): Unit = {
     this.routeEventDict.remove(routeEvent)
   }
-  
+
   def fireEvent(eventArgs:RouteEventArgs):Unit = {
-      var curElement = elem.getRouteEventParent;
+      var curElement = elem.getRouteEventParent
       while(curElement.isDefined) {
-        val curController = curElement.get.routeEventController;
+        val curController = curElement.get.routeEventController
         val evHandle = curController.routeEventDict.get(eventArgs.event)
         curElement = curElement.get.getRouteEventParent
         evHandle.foreach {handle =>
-          handle.apply(eventArgs);
+          handle.apply(eventArgs)
           if(eventArgs.handled) {
             curElement = None;
           }

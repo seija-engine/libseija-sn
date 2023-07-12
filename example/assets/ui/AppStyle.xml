@@ -105,7 +105,10 @@
     <ControlTemplate key="HorSlider" forType="Slider">
         <Panel isCanvas="true">
             <Image imageType="Slice" sprite="default.scale-horz-trough" />
-            <Track>
+            <Track Name="PART_Track"
+                   minValue="{Binding Owner minValue}"
+                   maxValue="{Binding Owner maxValue}"
+                   value="{Binding Owner value}">
                 <Track.template>
                     <ControlTemplate>
                         <Image imageType="Slice" hor="Start" width="{Binding Owner trackLength}"
@@ -122,7 +125,10 @@
     <ControlTemplate key="VerSlider" forType="Slider">
         <Panel isCanvas="true">
             <Image imageType="Slice" sprite="default.scale-vert-trough" />
-            <Track orientation="Ver">
+            <Track Name="PART_Track" orientation="Ver"
+                   minValue="{Binding Owner minValue}"
+                   maxValue="{Binding Owner maxValue}"
+                   value="{Binding Owner value}">
                 <Track.template>
                     <ControlTemplate>
                         <Image imageType="Slice" ver="Start" height="{Binding Owner trackLength}"

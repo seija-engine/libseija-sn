@@ -32,7 +32,7 @@ final case class UIModule() extends IModule {
     }
 
     override def updateECSPtr(worldPtr: Ptr[CSignedChar]): Unit = {
-      FFISeijaUI.SetOnPostLayout(worldPtr,CFuncPtr.toPtr(CFuncPtr1.fromScalaFunction(UIModule.OnPostUILayout)))
+      FFISeijaUI.SetOnPostLayoutProcess(worldPtr,CFuncPtr.toPtr(CFuncPtr2.fromScalaFunction(UIModule.OnPostUILayout)))
     }
 
     override def update(): Unit = {
@@ -41,22 +41,12 @@ final case class UIModule() extends IModule {
 }
 
 object UIModule {
-  private val postLayoutCallDict:mutable.HashMap[Entity,() => Unit] = mutable.HashMap.empty;
-  def addPostLayoutCall(entity:Entity,callBack:() => Unit):Unit = {
-    this.postLayoutCallDict.put(entity,callBack)
-  }
-
-  def removePostLayoutCall(entity:Entity):Unit = {
-    this.postLayoutCallDict.remove(entity)
-  }
-
-  private def OnPostUILayout(_ptr:Ptr[Byte]):Unit = {
-    val curFrame = _root_.core.Time.getFrameCount();
-    for((entity,callFn) <- this.postLayoutCallDict) {
-      if(FFISeijaCore.isFrameDirty(entity,curFrame)) {
-        callFn()
-        println(s"dirty layout ${entity} = ${curFrame}");
-      }
+  private def OnPostUILayout(step:Int,vec_ptr:Ptr[Byte]):Unit = {
+    println(s"Post 111111 ${step}");
+    if(step == 0) {
+      val id = UICanvas.fst().getEntity().get.id;
+      println(s"${vec_ptr} Scala ${id}")
+      FFISeijaUI.vecAddU64(vec_ptr,id)
     }
   }
 }

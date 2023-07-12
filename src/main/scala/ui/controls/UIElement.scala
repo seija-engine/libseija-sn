@@ -3,46 +3,44 @@ import core.Entity
 import ui.binding.INotifyPropertyChanged
 import ui.core.{FFISeijaUI, ItemLayout, LayoutAlignment, Rect2D, SizeValue, Thickness}
 import core.reflect.{AutoGetSetter, ReflectType, autoProps}
-
 import scala.Conversion
 import ui.resources.UIResource
 import core.logError
-
 import scala.quoted.Expr
 import core.xml.XmlElement
-
 import scala.collection.mutable.ListBuffer
 import transform.Transform
 import ui.binding.BindingItem
 import ui.binding.BindingSource
 import ui.binding.DataBindingManager
 import ui.binding.BindingInst
-
 import scala.util.Success
 import core.copyObject
 import core.ICopy
 import ui.ContentProperty
 import ui.resources.Style
-
 import scala.collection.mutable.HashMap
 import ui.resources.UIResourceMgr
-
 import scala.collection.mutable.ArrayBuffer
 import ui.visualState.VisualStateGroupList
 import ui.visualState.VisualStateGroup
 import core.reflect.Assembly
 import ui.ElementNameScope
+import ui.event.{IRouteEventElement, RouteEventController,RouteEventArgs}
 import ui.xml.IXmlObject
 
+import scala.collection.mutable
 
-class UIElement extends INotifyPropertyChanged with Cloneable with IXmlObject derives ReflectType {
+
+class UIElement extends INotifyPropertyChanged
+  with Cloneable with IXmlObject with IRouteEventElement derives ReflectType {
     protected var entity:Option[Entity] = None
     protected var style:Option[Style] = None
     protected var _dataContext:Any = null;
     protected var isEntered:Boolean = false;
     var templateParent:Option[UIElement] = None;
+    var Name:String = "";
 
-    var Name:String = null;
     protected var _hor:LayoutAlignment = LayoutAlignment.Stretch
     protected var _ver:LayoutAlignment = LayoutAlignment.Stretch
     protected var _width:SizeValue = SizeValue.Auto
@@ -52,19 +50,22 @@ class UIElement extends INotifyPropertyChanged with Cloneable with IXmlObject de
 
     protected var bindItemList:ListBuffer[BindingItem] = ListBuffer.empty
     protected var bindingInstList:ListBuffer[BindingInst] = ListBuffer.empty
-    protected var parent:Option[UIElement] = None;
+    protected var parent:Option[UIElement] = None
+    
     var children:ListBuffer[UIElement] = ListBuffer.empty
 
     protected var resources:UIResource = UIResource.empty();
 
-    protected var curViewStateDict:HashMap[String,String] = HashMap.empty;
+    protected var curViewStateDict:mutable.HashMap[String,String] = mutable.HashMap.empty
     var visualStateGroups:VisualStateGroupList = VisualStateGroupList();
+
+    //region Setter
 
     def hor: LayoutAlignment = this._hor;
     def hor_=(value:LayoutAlignment): Unit = { this._hor = value; this.callPropertyChanged("hor",this) }
     def ver: LayoutAlignment = this._ver;
-    def ver_=(value:LayoutAlignment) = { this._ver = value; this.callPropertyChanged("ver",this) }
-    def width = this._width;
+    def ver_=(value:LayoutAlignment): Unit = { this._ver = value; this.callPropertyChanged("ver",this) }
+    def width: SizeValue = this._width;
     def width_=(value:SizeValue) = { this._width = value; this.callPropertyChanged("width",this) }
     def height = this._height;
     def height_=(value:SizeValue) = { this._height = value; this.callPropertyChanged("height",this) }
@@ -86,12 +87,13 @@ class UIElement extends INotifyPropertyChanged with Cloneable with IXmlObject de
           }
        }};
     }
+    //endregion
 
     def Awake():Unit = {
-        this.children.foreach(child => {
+      this.children.foreach(child => {
             child.setParent(Some(this));
             child.Awake();
-        });
+        })
     }
 
     def getEntity():Option[Entity] = this.entity;
@@ -106,9 +108,11 @@ class UIElement extends INotifyPropertyChanged with Cloneable with IXmlObject de
         this.children.insert(index,elem);
     }
 
-    def setParent(elem:Option[UIElement]) = {
+    def setParent(elem:Option[UIElement]): Unit = {
         this.parent = elem;
     }
+
+    def getParent():Option[UIElement] = this.parent;
 
     def Enter():Unit = {
         this.applyStyle();
@@ -289,6 +293,14 @@ class UIElement extends INotifyPropertyChanged with Cloneable with IXmlObject de
        }
     }
 
+    private var _routeEventController:RouteEventController = RouteEventController(this)
+
+    def routeEventController: RouteEventController = this._routeEventController
+    def setRouteEventElem(elem:IRouteEventElement):Unit = { this._routeEventController = RouteEventController(elem) }
+    def getRouteEventParent: Option[IRouteEventElement] = {
+      this.getParent()
+    }
+
     def Exit():Unit = {
         this.children.foreach(_.Exit());
         this.bindingInstList.foreach(DataBindingManager.removeInst);
@@ -307,9 +319,9 @@ class UIElement extends INotifyPropertyChanged with Cloneable with IXmlObject de
     }
 
     def Release():Unit = {
-        this.Exit();
-        this.children.foreach(_.Release());
-        this.entity.foreach(_.destroy());
+        this.Exit()
+        this.children.foreach(_.Release())
+        this.entity.foreach(_.destroy())
     }
 }
 

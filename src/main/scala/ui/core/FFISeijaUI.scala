@@ -63,7 +63,8 @@ object FFISeijaUI {
 
     private val entitySetLayoutWPtr = LibSeija.getFunc[CFuncPtr3[Ptr[RawCommonView],Byte,Float,Unit]]("entity_set_layout_size_w");
     private val entitySetLayoutHPtr = LibSeija.getFunc[CFuncPtr3[Ptr[RawCommonView],Byte,Float,Unit]]("entity_set_layout_size_h");
-    private val uiSetPostLayoutPtr = LibSeija.getFunc[CFuncPtr2[Ptr[Byte],Ptr[Byte],Unit]]("ui_set_on_post_layout")
+    private val uiSetPostLayoutProcessPtr = LibSeija.getFunc[CFuncPtr2[Ptr[Byte],Ptr[Byte],Unit]]("ui_set_post_layout_process")
+    private val vec_add_u64Ptr = LibSeija.getFunc[CFuncPtr2[Ptr[Byte],Long,Unit]]("vec_add_u64")
 
     def addSpriteSheetModule(appPtr:Ptr[Byte]):Unit = addSpritesheetModulePtr(appPtr)
     def spriteSheetAssetGet(worldPtr:Ptr[Byte],id:Long):RawSpriteSheet = spriteSheetAssetGetPtr(worldPtr,id);
@@ -223,6 +224,7 @@ object FFISeijaUI {
         entitySetLayoutHPtr(view,t,value);
     }
 
-    def SetOnPostLayout(appPtr: Ptr[Byte], func: Ptr[Byte]): Unit = uiSetPostLayoutPtr(appPtr,func)
+    def SetOnPostLayoutProcess(appPtr: Ptr[Byte], func: Ptr[Byte]): Unit = uiSetPostLayoutProcessPtr(appPtr,func)
 
+    def vecAddU64(ptr:Ptr[Byte],num:Long):Unit = vec_add_u64Ptr(ptr,num)
 }

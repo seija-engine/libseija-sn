@@ -112,7 +112,7 @@ class Control extends UIElement with ElementNameScope derives ReflectType {
 
     override def clone():Control = {
        var newControl = super.clone().asInstanceOf[Control];
-       newControl.nameDict = HashMap.empty;
+       newControl.nameDict = mutable.HashMap.empty;
        newControl
     }
 }
