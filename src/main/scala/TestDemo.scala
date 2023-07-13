@@ -59,8 +59,15 @@ class TestDemo extends IGameApp {
 
 import core.reflect.ReflectType;  
 class TestViewModel extends INotifyPropertyChanged derives ReflectType {
+    var _floatNumber:Float = 0
     var count:Int = 0;
     var numCommand:FCommand = FCommand(this.testClick);
+
+    def floatNumber: Float = this._floatNumber
+    def floatNumber_=(value:Float):Unit = {
+      this._floatNumber = value
+      callPropertyChanged("floatNumber",this)
+    }
 
     var lstCommand:FCommand = FCommand(this.testAdd);
     var insertCommand:FCommand = FCommand(this.testInsert);

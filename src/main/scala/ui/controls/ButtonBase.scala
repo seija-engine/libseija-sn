@@ -17,11 +17,11 @@ class ButtonBase extends ContentControl derives ReflectType {
        val thisEntity = this.createBaseEntity(true);
        this.loadControlTemplate();
        val events = EventType.ALL_TOUCH | EventType.ALL_MOUSE;
-       EventManager.register(thisEntity,events,this.OnElementEvent);
+       EventManager.register(thisEntity,events,this.OnElementEvent)
        updateVisualState();
     }
 
-    protected def OnElementEvent(typ:UInt,args:Any):Unit = {
+    protected def OnElementEvent(typ:UInt,px:Float,py:Float,args:Any):Unit = {
        this.processViewStates(typ,args);
        val zero = 0.toUInt;
        if((typ & EventType.TOUCH_START) != zero) {

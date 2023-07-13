@@ -1,6 +1,6 @@
 package ui.controls
-import core.reflect.*;
-import ui.AtlasSprite
+import core.reflect.*
+import ui.{AtlasSprite, LayoutUtils}
 import math.Color
 import ui.core.Thickness
 import ui.core.SpriteType
@@ -40,7 +40,7 @@ class Image extends UIElement derives ReflectType {
     def color_=(value:Color) = { this._color = value; this.callPropertyChanged("color",this) }
 
     override def OnEnter(): Unit = {
-      val spriteType = this.getSpriteType();
+      val spriteType = this.getSpriteType;
       val parentEntity = this.parent.flatMap(_.getEntity());
       //println(s"Image.OnEnter() ${this._sprite.get.name} ${parentEntity} ${this.parent}")
       val entity = Entity.spawnEmpty()
@@ -65,7 +65,7 @@ class Image extends UIElement derives ReflectType {
       this.entity = Some(entity)
     }
 
-    private def getSpriteType():SpriteType = _imageType match {
+    private def getSpriteType:SpriteType = _imageType match {
       case ImageType.Simple => ui.core.SpriteType.Simple
       case ImageType.Slice => { 
         val border = this._sprite.flatMap(_.sliceInfo).getOrElse(Thickness.zero) 
@@ -84,19 +84,26 @@ class Image extends UIElement derives ReflectType {
         }
         case "color" => {
           println(s"set color${this.color}");
-          this.entity.foreach {v => 
+          this.entity.foreach {v =>
             val rawSprite = v.get[Sprite]();
             rawSprite.setColor(this._color);
           }
         }
         case "width" => {
-          this.entity.foreach {v => 
+          val frame = _root_.core.Time.getFrameCount()
+          this.entity.foreach {v =>
+            if(LayoutUtils.isInPostLayout) {
+              LayoutUtils.addPostLayoutDirtyEntity(v)
+            }
             val rawLayout = v.get[ItemLayout]();
             rawLayout.setWidth(this._width);
           }
         }
         case "height" => {
-          this.entity.foreach {v => 
+          this.entity.foreach {v =>
+            if (LayoutUtils.isInPostLayout) {
+              LayoutUtils.addPostLayoutDirtyEntity(v)
+            }
             val rawLayout = v.get[ItemLayout]();
             rawLayout.setHeight(this._height);
           }

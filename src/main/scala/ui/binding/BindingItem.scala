@@ -42,7 +42,7 @@ object BindingItem {
     
     //{Binding Owner checked  Conv=ui.BoolAtlasSprite(default.duikong,default.duihao) Type=Both}
     this.charIndex = 0;
-    this.bufferArray = value.toCharArray();
+    this.bufferArray = value.toCharArray;
     val item = this.takeWhile(_!= ' ').get;
     if(item != "{Binding") throw new Exception("BindingItem parse error")
     val dataSourceType = this.parseIdent().get match

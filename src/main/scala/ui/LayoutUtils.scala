@@ -8,6 +8,8 @@ import scala.collection.mutable
 
 object LayoutUtils {
   private var postLayoutList:mutable.ArrayBuffer[(Int) => Unit] = mutable.ArrayBuffer.empty
+  private var _isInPostLayout:Boolean = false
+  def isInPostLayout: Boolean = this._isInPostLayout
   def init(worldPtr:Ptr[Byte]):Unit = {
     FFISeijaUI.SetOnPostLayoutProcess(worldPtr,
       CFuncPtr.toPtr(CFuncPtr2.fromScalaFunction(postLayoutProcess)))
@@ -22,9 +24,14 @@ object LayoutUtils {
     this.postLayoutList.filterInPlace(_ == callFN)
   }
   protected def postLayoutProcess(step:Int,vecPtr:Ptr[Byte]):Unit = {
+    if(step > 0) {
+      println(s"trigger post step:${step}")
+    }
     _vecPtr = vecPtr
+    _isInPostLayout = true
     this.postLayoutList.foreach(_(step))
     _vecPtr = stddef.NULL
+    _isInPostLayout = false
   }
 
   def isDirty(entity:Entity, index:Int):Boolean = {

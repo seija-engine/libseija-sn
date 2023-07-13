@@ -24,12 +24,12 @@ object EventType {
     val ALL: UInt = ALL_TOUCH | ALL_MOUSE | ALL_DRAG;
 }
 
-private case class EventInfo(val entity:Entity,callFunc:(UInt,Any) => Unit,args:Any);
+private case class EventInfo(val entity:Entity,callFunc:(UInt,Float,Float,Any) => Unit,args:Any);
 
 object EventManager {
     var eventInfos:mutable.HashMap[Long,EventInfo] = mutable.HashMap();
     
-    def register(entity:Entity,typ:UInt,callback:(UInt,Any) => Unit,args:Any = null):Boolean = {
+    def register(entity:Entity,typ:UInt,callback:(UInt,Float,Float,Any) => Unit,args:Any = null):Boolean = {
         if(this.eventInfos.contains(entity.id)) {
             return false;
         }
@@ -49,13 +49,13 @@ object EventManager {
     }
 
     def update():Unit = {
-        FFISeijaUI.readUIEvents(_root_.core.App.worldPtr,CFuncPtr3.fromScalaFunction(onReadEvent));
+        FFISeijaUI.readUIEvents(_root_.core.App.worldPtr,CFuncPtr4.fromScalaFunction(onReadEvent));
     }
 
-    def onReadEvent(entityId:Long,typ:UInt,ptr:Ptr[Byte]):Unit = {
+    def onReadEvent(entityId:Long,typ:UInt,px:Float,py:Float):Unit = {
        if(this.eventInfos.contains(entityId)) {
           val info = this.eventInfos(entityId);
-          info.callFunc(typ,info.args);
+          info.callFunc(typ,px,py,info.args);
        }
     }
 }

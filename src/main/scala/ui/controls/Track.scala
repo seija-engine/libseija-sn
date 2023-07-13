@@ -18,23 +18,34 @@ import ui.core.Canvas
 
 class Track extends RangeBase derives ReflectType {
   protected var _orientation: Orientation = Orientation.Horizontal
-  protected var _trackLength:Float = Float.NaN
-  protected var _thumbSize:Float = Float.NaN
-  private var _density:Float = 0
+  protected var _trackLength: Float = Float.NaN
+  protected var _thumbSize: Float = Float.NaN
+  protected var _fillLength:Float = 0
+  private var _density: Float = Float.NaN
+
+
   var thumb: Thumb = Thumb()
+  private var postDirty: Boolean = false
 
   //region Setter
 
   def orientation: Orientation = _orientation;
   def orientation_=(value: Orientation): Unit = {
-    _orientation = value; this.callPropertyChanged("orientation", this);
+    _orientation = value;
+    this.callPropertyChanged("orientation", this);
   }
   def trackLength: Float = this._trackLength
-
-  def thumbSize:Float = this._thumbSize;
-  def thumbSize_=(value:Float): Unit = {
-    this._thumbSize = value;callPropertyChanged("thumbSize",this)
+  def trackLength_=(value: Float): Unit = {
+    this._trackLength = value;
+    callPropertyChanged("trackLength", this)
   }
+  def thumbSize: Float = this._thumbSize
+  def thumbSize_=(value: Float): Unit = {
+    this._thumbSize = value
+    callPropertyChanged("thumbSize", this)
+  }
+  def fillLength: Float = this._fillLength
+  def fillLength_=(value:Float):Unit = { this._fillLength = value; callPropertyChanged("fillLength",this) }
   //endregion
 
   private def createEntity(): Entity = {
@@ -60,157 +71,74 @@ class Track extends RangeBase derives ReflectType {
     LayoutUtils.addPostLayout(this.postLayoutProcess)
   }
 
-  protected def postLayoutProcess(step:Int):Unit = {
-    if(LayoutUtils.isDirty(this.getEntity().get,step)) {
-      println("track entity dirty")
+  def valueFormDistance(horValue:Float,verValue:Float):Float = {
+    this._orientation match
+      case Orientation.Horizontal => horValue / this._density
+      case Orientation.Vertical => verValue / this._density
+  }
+
+  protected def postLayoutProcess(step: Int): Unit = {
+    if (LayoutUtils.isDirty(this.getEntity().get, step)) {
+      this.postDirty = true
+    }
+    if (this.postDirty) {
+      val thisRect = this.getEntity().get.get[Rect2D]()
+      val thumbRect = this.thumb.getEntity().get.get[Rect2D]()
+      this._orientation match {
+        case Orientation.Horizontal => this.trackLength = thisRect._1 - thumbRect._1
+        case Orientation.Vertical => this.trackLength = thisRect._2 - thumbRect._2
+      }
+      this._density = this.trackLength / (this._maxValue - this._minValue)
+      this.postDirty = false
+      this.setUIByValue()
       LayoutUtils.addPostLayoutDirtyEntity(this.thumb.getEntity().get)
     }
   }
 
   override def onPropertyChanged(propertyName: String): Unit = {
     super.onPropertyChanged(propertyName)
-    if(propertyName == "minValue" || propertyName == "maxValue" || propertyName == "value" || propertyName == "trackLength") {
+    if (propertyName == "minValue" || propertyName == "maxValue" || propertyName == "value") {
       this.updateUIByValue()
     }
   }
 
-  protected def updateUIByValue():Unit = {
-    val rate = this._value / (this._maxValue - this.minValue)
-    val realPos = rate * (this._trackLength - this._thumbSize)
+  protected def updateUIByValue(): Unit = {
+    if (this._value > this._maxValue) {
+      this._value = this._maxValue
+    } else if (this._value < this._minValue) {
+      this._value = this._minValue;
+    }
+
+    if (this._trackLength.isNaN) {
+      this.postDirty = true
+    } else {
+      this.setUIByValue()
+    }
+
+  }
+
+  protected def setUIByValue(): Unit = {
+    val thumbRect = this.thumb.getEntity().get.get[Rect2D]()
+    val halfThumbX: Float = thumbRect._1 * 0.5f
+    val halfThumbY: Float = thumbRect._2 * 0.5f
+    val posValue = this._value * this._density
+
+    //println(s" fillLength:${posValue} trackLenght:${this.trackLength} _density:${this._density}")
+    val freeItem = this.thumb.getEntity().get.get[FreeLayoutItem]()
+
+    this._orientation match
+      case Orientation.Horizontal => {
+        freeItem._1 = posValue
+        this.fillLength = posValue + halfThumbX
+      }
+      case Orientation.Vertical => {
+        freeItem._2 = posValue
+        this.fillLength = posValue + halfThumbY
+      }
   }
 
   override def Exit(): Unit = {
     LayoutUtils.removePostLayout(this.postLayoutProcess)
     super.Exit()
   }
-  /*
-  private var cacheSize: Vector2 = Vector2.zero.clone()
-
-  override def Enter(): Unit = {
-    super.Enter();
-    this.thumb.getEntity().get.add[FreeLayoutItem]();
-    this.thumb.OnBeginDragCall = Some(this.OnStartDrag);
-    this.thumb.OnDragCall = Some(this.OnDrag);
-    this.thumb.OnEndDragCall = Some(this.OnEndDrag);
-  }
-
-  override def OnEnter(): Unit = {
-    this.createEntity();
-    this.loadControlTemplate();
-    this.thumb = this.thumb.clone();
-    this.addChild(this.thumb);
-    UIModule.addPostLayoutCall(this.entity.get,this.OnPostLayout);
-    this.cacheSize.x = this.width.getPixel().getOrElse(0);
-    this.cacheSize.y = this.height.getPixel().getOrElse(0);
-  }
-
-  private def createEntity(): Unit = {
-    val parentEntity = this.parent.flatMap(_.getEntity());
-    val newEntity = Entity
-      .spawnEmpty()
-      .add[Transform](_.parent = parentEntity)
-      .add[Rect2D]()
-      .add[Canvas]()
-      .add[FreeLayout](v => {
-        v.common.hor = this._hor;
-        v.common.ver = this._ver;
-        v.common.uiSize.width = this._width;
-        v.common.uiSize.height = this._height;
-        v.common.padding = this._padding;
-        v.common.margin = this._margin;
-      });
-    this.entity = Some(newEntity);
-  }
-
-  protected def OnStartDrag(pos: Vector2): Unit = {}
-
-  protected def OnDrag(delta: Vector2): Unit = {
-    val freeItem = this.thumb.getEntity().get.get[FreeLayoutItem]();
-    val thisRect = this.getEntity().get.get[Rect2D]();
-    val thumbRect = this.thumb.getEntity().get.get[Rect2D]();
-    val halfThumbX:Float = thumbRect._1 * 0.5f;
-    val halfThumbY:Float = thumbRect._2 * 0.5f;
-    this._orientation match {
-      case Orientation.Horizontal => {
-        val newX = freeItem._1 + delta.x;
-        val maxPos = thisRect._1 - thumbRect._1;
-        if (newX >= 0 && newX <= maxPos) {
-          freeItem._1 = newX;
-        }
-        this._value = newX / maxPos;
-        this.fillSize = halfThumbX + newX;
-      }
-      case Orientation.Vertical => {
-        val newY = freeItem._2 + (-delta.y);
-        val maxPos = thisRect._2 - thumbRect._2;
-        if (newY >= 0 && newY <= maxPos) {
-          freeItem._2 = newY;
-        }
-        this._value = newY / maxPos;
-        this.fillSize = halfThumbY + newY;
-      }
-    }
-    this.callPropertyChanged("value",this);
-  }
-
-  protected def OnEndDrag(pos: Vector2): Unit = {}
-
-
-
-  protected def OnPostLayout():Unit = {
-    val rawRect = this.getEntity().get.get[Rect2D]();
-    val x = rawRect._1;
-    val y = rawRect._2;
-    if (this.cacheSize.x != x || this.cacheSize.y != y) {
-      this.cacheSize.x = x;
-      this.cacheSize.y = y;
-      this.onLayoutResize();
-    }
-  }
-
-  protected def updatePosByValue(): Unit = {
-    val freeItem = this.thumb.getEntity().get.get[FreeLayoutItem]();
-    val thisRect = this.getEntity().get.get[Rect2D]();
-    val thumbRect = this.thumb.getEntity().get.get[Rect2D]();
-    val halfThumbX: Float = thumbRect._1 * 0.5f;
-    val halfThumbY: Float = thumbRect._2 * 0.5f;
-    this._orientation match {
-          case Orientation.Horizontal => {
-            val thisWidth = thisRect._1
-            val maxPos = thisWidth - thumbRect._1
-            freeItem._1 = maxPos * this._value
-            this.fillSize = thisWidth * this._value + halfThumbX
-          }
-          case Orientation.Vertical => {
-            val thisHeight = thisRect._2
-            val maxPos = thisRect._2 - thumbRect._2
-            freeItem._2 = maxPos * this._value
-            this.fillSize = thisHeight * this._value + halfThumbY
-          }
-    }
-  }
-
-  protected def onLayoutResize(): Unit = {
-    this.updateThumbSize()
-    this.updatePosByValue()
-  }
-
-  override def onPropertyChanged(propertyName: String): Unit = {
-    propertyName match
-      case "viewportSize" => this.updateThumbSize()
-      case "maximum" => this.updateThumbSize()
-      case _ =>
-  }
-
-  private def updateThumbSize():Unit = {
-    if(this._viewportSize.isNaN || this.cacheSize.x == 0 || this.cacheSize.y == 0) return;
-    val endSize = this._viewportSize / this._maximum * this.cacheSize.y;
-    this.thumb.height = SizeValue.Pixel(endSize);
-    this.updatePosByValue()
-  }
-
-  override def Exit(): Unit = {
-    UIModule.removePostLayoutCall(this.entity.get)
-    super.Exit()
-  }*/
 }

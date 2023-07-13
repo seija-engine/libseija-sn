@@ -12,27 +12,22 @@ import ui.core.{FreeLayoutItem, ItemLayout}
 import ui.event.{EventManager, EventType, RouteEvent, RouteEventArgs, RouteEventController}
 
 class Thumb extends Control derives ReflectType {
-    var OnBeginDragCall:Option[(Vector2) => Unit] = None;
-    var OnDragCall:Option[(Vector2) => Unit] = None;
-    var OnEndDragCall:Option[(Vector2) => Unit] = None;
-
-    var curPos:Vector3 = Vector3.zero;
     override def OnEnter(): Unit = {
         //println(s"Thumb Enter ${this.parent} ${this.style}" );
         val thisEntity = this.createBaseEntity(true);
-        EventManager.register(thisEntity,EventType.ALL,this.OnElementEvent);
+        EventManager.register(thisEntity,EventType.ALL,this.OnElementEvent)
         this.loadControlTemplate()
         thisEntity.add[FreeLayoutItem]();
     }
 
-    protected def OnElementEvent(typ:UInt,args:Any):Unit = {
+    protected def OnElementEvent(typ:UInt,px:Float,py:Float,args:Any):Unit = {
         this.processViewStates(typ,args);
         val zero = 0.toUInt;
         if((typ & EventType.BEGIN_DRAG) != zero) {
-            this.OnBeginDrag();
+            this.OnBeginDrag()
         }
         if((typ & EventType.DRAG) != zero) {
-            this.OnDrag();
+            this.OnDrag(px,py)
         }
         if((typ & EventType.END_DRAG) != zero) {
             this.OnEndDrag();
@@ -40,20 +35,17 @@ class Thumb extends Control derives ReflectType {
     }
 
     protected def OnBeginDrag():Unit = {
-      this.OnBeginDragCall.foreach(_(Input.getMousePos()))
       this.routeEventController.fireEvent(ThumbDragStartArgs())
       this.IsActive = true;
       this.updateVisualState();
     }
 
-    protected def OnDrag():Unit = {
-      val delta = Input.getMoveDelta();
-      this.OnDragCall.foreach(_(delta))
-      this.routeEventController.fireEvent(ThumbOnDragArgs(delta))
+    protected def OnDrag(dx:Float,dy:Float):Unit = {
+      val delta = Input.getMoveDelta()
+      this.routeEventController.fireEvent(ThumbOnDragArgs(dx,dy))
     }
 
     protected def OnEndDrag():Unit = {
-      this.OnEndDragCall.foreach(_(Input.getMousePos()))
       this.routeEventController.fireEvent(ThumbDragEndArgs())
       this.IsActive = false;
       this.updateVisualState();
@@ -110,7 +102,7 @@ class Thumb extends Control derives ReflectType {
 
 class ThumbDragStartArgs extends RouteEventArgs(Thumb.StartDragEvent,false)
 class ThumbDragEndArgs extends RouteEventArgs(Thumb.EndDragEvent,false)
-class ThumbOnDragArgs(val delta:Vector2) extends RouteEventArgs(Thumb.OnDragEvent,false)
+class ThumbOnDragArgs(val deltaX:Float,val deltaY:Float) extends RouteEventArgs(Thumb.OnDragEvent,false)
 
 object Thumb {
   val StartDragEvent:RouteEvent = RouteEvent("StartDrag",classOf[Thumb])

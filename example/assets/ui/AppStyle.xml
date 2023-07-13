@@ -111,7 +111,7 @@
                    value="{Binding Owner value}">
                 <Track.template>
                     <ControlTemplate>
-                        <Image imageType="Slice" hor="Start" width="{Binding Owner trackLength}"
+                        <Image imageType="Slice" hor="Start" width="{Binding Owner fillLength}"
                             sprite="default.scale-horz-trough-active" />
                     </ControlTemplate>
                 </Track.template>
@@ -131,7 +131,7 @@
                    value="{Binding Owner value}">
                 <Track.template>
                     <ControlTemplate>
-                        <Image imageType="Slice" ver="Start" height="{Binding Owner trackLength}"
+                        <Image imageType="Slice" ver="Start" height="{Binding Owner fillLength}"
                             sprite="default.scale-vert-trough-active" />
                     </ControlTemplate>
                 </Track.template>
