@@ -163,7 +163,6 @@
 
     <Style key="ScrollBarVerThumb" forType="Thumb">
         <Setter key="width" value="13" />
-        <Setter key="height" value="-" />
         <Setter key="template">
             <ControlTemplate>
                 <Image Name="BG" imageType="Slice" sprite="default.scrollbar-vert-slider" />
@@ -190,7 +189,6 @@
     </Style>
 
     <Style key="ScrollBarHorThumb" forType="Thumb">
-        <Setter key="width" value="-" />
         <Setter key="height" value="13" />
         <Setter key="template">
             <ControlTemplate>
@@ -220,7 +218,11 @@
     <ControlTemplate key="VerScrollBar" forType="ScrollBar">
         <Panel isCanvas="true">
             <Image imageType="Slice" sprite="default.scrollbar-vert-trough" />
-            <Track orientation="Ver" maximum="{Binding Owner maximum}" viewportSize="{Binding Owner viewportSize}">
+            <Track Name="PART_Track" orientation="Ver"
+                   thumbSize="{Binding Owner barLength}"
+                   minValue="{Binding Owner minValue}"
+                   maxValue="{Binding Owner maxValue}"
+                   value="{Binding Owner value}">
                 <Track.thumb>
                     <Thumb style="{Res ScrollBarVerThumb}" />
                 </Track.thumb>
@@ -229,9 +231,13 @@
     </ControlTemplate>
 
     <ControlTemplate key="HorScrollBar" forType="ScrollBar">
-        <Panel>
+        <Panel isCanvas="true">
             <Image imageType="Slice" sprite="default.scrollbar-horz-trough" />
-            <Track orientation="Hor">
+            <Track Name="PART_Track" orientation="Hor"
+                   thumbSize="{Binding Owner barLength}"
+                   minValue="{Binding Owner minValue}"
+                   maxValue="{Binding Owner maxValue}"
+                   value="{Binding Owner value}">
                 <Track.thumb>
                     <Thumb style="{Res ScrollBarHorThumb}" />
                 </Track.thumb>
@@ -259,10 +265,12 @@
     <Style forType="ScrollViewer">
         <Setter key="template">
             <ControlTemplate>
-                <Panel isCanvas="true" isClip="true">
+                <Panel isCanvas="true" isClip="true" >
                     <Image sprite="default.white" color="#cccccc" />
                     <ScrollContentPresenter margin="0,0,16,0" />
-                    <ScrollBar maximum="{Binding Owner scrollableHeight}" viewportSize="{Binding Owner viewportHeight}" orientation="Ver" hor="End" />
+                    <ScrollBar orientation="Ver" hor="End"
+                               barLength="{Binding Owner barHeight}"
+                               maxValue="{Binding Owner scrollableHeight}" />
                     
                 </Panel>
             </ControlTemplate>

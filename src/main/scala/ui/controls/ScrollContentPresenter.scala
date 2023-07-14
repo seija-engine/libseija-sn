@@ -1,36 +1,59 @@
 package ui.controls
 import core.reflect.*
 import core.Entity
-import ui.core.FreeLayout;
-import ui.core.FreeLayoutItem;
+import ui.LayoutUtils
+import ui.core.{FreeLayout, FreeLayoutItem, Rect2D}
+import ui.event.{RouteEvent, RouteEventArgs}
 class ScrollContentPresenter extends UIElement derives ReflectType {
-    private var scrollInfo:Option[IScrollInfo] = None
-    var childEntity:Option[Entity] = None;
-    override def OnEnter():Unit = {
-        val entity:Entity = this.createBaseEntity(false);
-        entity.add[FreeLayout](v => {
-            v.common.hor = this._hor;
-            v.common.ver = this._ver;
-            v.common.uiSize.width = this._width;
-            v.common.uiSize.height = this._height;
-            v.common.padding = this._padding;
-            v.common.margin = this._margin;
-        })
-        if(this.templateParent.isDefined && this.templateParent.get.isInstanceOf[ScrollViewer]) {
-          val scrollView = this.templateParent.get.asInstanceOf[ScrollViewer];
-          scrollView.hookContentPresenter(this);
-        }
+  var childEntity: Option[Entity] = None
+
+  override def OnEnter(): Unit = {
+    val entity: Entity = this.createBaseEntity(false);
+    entity.add[FreeLayout](v => {
+      v.common.hor = this._hor;
+      v.common.ver = this._ver;
+      v.common.uiSize.width = this._width;
+      v.common.uiSize.height = this._height;
+      v.common.padding = this._padding;
+      v.common.margin = this._margin;
+    })
+    if (
+      this.templateParent.isDefined && this.templateParent.get
+        .isInstanceOf[ScrollViewer]
+    ) {
+      val scrollView = this.templateParent.get.asInstanceOf[ScrollViewer];
+      scrollView.hookContentPresenter(this);
     }
+    LayoutUtils.addPostLayout(this.onPostLayout)
+  }
 
-    override def Enter():Unit = {
-        super.Enter()
-        val childElement = this.children.head
-        childElement.getEntity().foreach { childEntity =>
-           childEntity.add[FreeLayoutItem]();
-        }
-        this.childEntity = childElement.getEntity()
+  override def Enter(): Unit = {
+    super.Enter()
+    val childElement = this.children.head
+    childElement.getEntity().foreach { childEntity =>
+      childEntity.add[FreeLayoutItem]();
     }
+    this.childEntity = childElement.getEntity()
+  }
 
+  protected def onPostLayout(step: Int): Unit = {
+    if (LayoutUtils.isDirty(this.childEntity.get, step)) {
+      val childRect = this.childEntity.get.get[Rect2D]()
+      this.routeEventController.fireEvent(ScrollSizeChangedEvent(false,childRect._1,childRect._2))
+    }
+    if (LayoutUtils.isDirty(this.entity.get, step)) {
+      val thisRect = this.entity.get.get[Rect2D]()
+      this.routeEventController.fireEvent(ScrollSizeChangedEvent(true, thisRect._1, thisRect._2))
+    }
+  }
 
+  override def Exit(): Unit = {
+    super.Exit()
+    LayoutUtils.removePostLayout(this.onPostLayout)
+  }
+}
 
+class ScrollSizeChangedEvent(val isViewport:Boolean,val width:Float, val height:Float) extends RouteEventArgs(ScrollContentPresenter.ContentChanged,false)
+object ScrollContentPresenter {
+  val ContentChanged:RouteEvent = RouteEvent("ContentChanged",classOf[ScrollContentPresenter])
 }

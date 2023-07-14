@@ -2,7 +2,8 @@ package ui.controls
 import core.UpdateMgr
 import core.reflect.*
 import ui.UIModule
-import ui.core.{Rect2D, Rect2DBuilder};
+import ui.core.{Rect2D, Rect2DBuilder}
+import ui.event.RouteEventArgs;
 
 class ScrollViewer extends ContentControl derives ReflectType {
   protected var _scrollableHeight:Float = 0f
@@ -11,6 +12,8 @@ class ScrollViewer extends ContentControl derives ReflectType {
   protected var _verticalOffset:Float = 0f
   protected var _viewportWidth:Float = 0f
   protected var _viewportHeight:Float = 0f
+  protected var _barWidth:Float = 0f
+  protected var _barHeight:Float = 0f
 
   private var scrollContent:Option[ScrollContentPresenter] = None
 
@@ -22,6 +25,8 @@ class ScrollViewer extends ContentControl derives ReflectType {
   def verticalOffset:Float = this._verticalOffset
   def viewportWidth:Float = this._viewportWidth
   def viewportHeight:Float = this._viewportHeight
+  def barWidth: Float = this._barWidth
+  def barHeight: Float = this._barHeight
   def scrollableHeight_=(value: Float): Unit = {
     this._scrollableHeight = value;
     this.callPropertyChanged("scrollableHeight",this);
@@ -42,10 +47,17 @@ class ScrollViewer extends ContentControl derives ReflectType {
   def viewportHeight_=(value: Float): Unit = {
     this._viewportHeight = value; callPropertyChanged("viewportHeight", this)
   }
+  def barWidth_=(value:Float):Unit = {
+    this._barWidth = value;callPropertyChanged("barWidth",this)
+  }
+  def barHeight_=(value:Float):Unit = {
+    this._barHeight = value;callPropertyChanged("barHeight",this)
+  }
   //endregion
 
   override def Enter(): Unit = {
     super.Enter()
+    this.routeEventController.addEvent(ScrollContentPresenter.ContentChanged,onContentChanged)
   }
 
   def hookContentPresenter(scrollContent: ScrollContentPresenter):Unit = {
@@ -56,26 +68,32 @@ class ScrollViewer extends ContentControl derives ReflectType {
       case _ =>
   }
 
-  private def OnPostLayout():Unit = {
-    this.scrollContent.flatMap(_.getEntity()).foreach { e =>
-      val rect2d = e.get[Rect2D]()
-      this.viewportWidth = rect2d._1;
-      this.viewportHeight = rect2d._2;
-    }
-  }
-
-  private def OnPostScrollLayout():Unit = {
-    this.scrollContent.flatMap(_.childEntity).foreach { e =>
-      val rect2d = e.get[Rect2D]()
-      this.scrollableWidth = rect2d._1;
-      this.scrollableHeight = rect2d._2;
-    }
-  }
-
   override def onPropertyChanged(propertyName: String): Unit = {
 
   }
+
+  protected def onContentChanged(args:RouteEventArgs):Unit = {
+    args.handled = true
+    val sizeArgs:ScrollSizeChangedEvent = args.asInstanceOf[ScrollSizeChangedEvent]
+    var hasDirty = false
+    if(sizeArgs.isViewport) {
+      if (sizeArgs.width != this._viewportWidth) { this.viewportWidth = sizeArgs.width; hasDirty = true }
+      if (sizeArgs.height != this._viewportHeight) { this.viewportHeight = sizeArgs.height; hasDirty = true }
+    } else {
+      if (sizeArgs.width != this._scrollableWidth) {this.scrollableWidth = sizeArgs.width; hasDirty = true }
+      if (sizeArgs.height != this._scrollableHeight) { this.scrollableHeight = sizeArgs.height;  hasDirty = true }
+    }
+
+    if(hasDirty) {
+      this.barWidth = (this.viewportWidth / this.scrollableWidth) * this.viewportWidth
+      this.barHeight = (this.viewportHeight / this.scrollableHeight) * this.viewportHeight
+      println(s"barW:${this.barWidth} barH:${this.barHeight}")
+    }
+  }
+
   override def Exit(): Unit = {
     super.Exit()
+    this.routeEventController.removeEvent(ScrollContentPresenter.ContentChanged)
   }
+
 }

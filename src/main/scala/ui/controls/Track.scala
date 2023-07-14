@@ -72,6 +72,7 @@ class Track extends RangeBase derives ReflectType {
   }
 
   def valueFormDistance(horValue:Float,verValue:Float):Float = {
+
     this._orientation match
       case Orientation.Horizontal => horValue / this._density
       case Orientation.Vertical => verValue / this._density
@@ -82,13 +83,6 @@ class Track extends RangeBase derives ReflectType {
       this.postDirty = true
     }
     if (this.postDirty) {
-      val thisRect = this.getEntity().get.get[Rect2D]()
-      val thumbRect = this.thumb.getEntity().get.get[Rect2D]()
-      this._orientation match {
-        case Orientation.Horizontal => this.trackLength = thisRect._1 - thumbRect._1
-        case Orientation.Vertical => this.trackLength = thisRect._2 - thumbRect._2
-      }
-      this._density = this.trackLength / (this._maxValue - this._minValue)
       this.postDirty = false
       this.setUIByValue()
       LayoutUtils.addPostLayoutDirtyEntity(this.thumb.getEntity().get)
@@ -97,33 +91,32 @@ class Track extends RangeBase derives ReflectType {
 
   override def onPropertyChanged(propertyName: String): Unit = {
     super.onPropertyChanged(propertyName)
-    if (propertyName == "minValue" || propertyName == "maxValue" || propertyName == "value") {
-      this.updateUIByValue()
-    }
-  }
-
-  protected def updateUIByValue(): Unit = {
-    if (this._value > this._maxValue) {
-      this._value = this._maxValue
-    } else if (this._value < this._minValue) {
-      this._value = this._minValue;
+    val isThumbSize = propertyName == "thumbSize"
+    if (isThumbSize) {
+      this._orientation match
+        case Orientation.Horizontal => this.thumb.width = SizeValue.Pixel(this.thumbSize)
+        case Orientation.Vertical => this.thumb.height = SizeValue.Pixel(this.thumbSize)
     }
 
-    if (this._trackLength.isNaN) {
-      this.postDirty = true
-    } else {
+    if (this._trackLength.isNaN) { this.postDirty = true; return }
+    val hasDirty = propertyName == "minValue" || propertyName == "maxValue" || propertyName == "value" || isThumbSize;
+    if(hasDirty) {
+      this._value = this.clipValue(this._value)
       this.setUIByValue()
+      if(LayoutUtils.postLayoutStep >= 0) {
+        LayoutUtils.addPostLayoutDirtyEntity(this.thumb.getEntity().get)
+      }
     }
-
   }
 
   protected def setUIByValue(): Unit = {
     val thumbRect = this.thumb.getEntity().get.get[Rect2D]()
+    val thisRect = this.getEntity().get.get[Rect2D]()
+    this.updateTrackAndDensity(thisRect._1, thisRect._2, thumbRect._1, thumbRect._2)
+
     val halfThumbX: Float = thumbRect._1 * 0.5f
     val halfThumbY: Float = thumbRect._2 * 0.5f
     val posValue = this._value * this._density
-
-    //println(s" fillLength:${posValue} trackLenght:${this.trackLength} _density:${this._density}")
     val freeItem = this.thumb.getEntity().get.get[FreeLayoutItem]()
 
     this._orientation match
@@ -135,6 +128,14 @@ class Track extends RangeBase derives ReflectType {
         freeItem._2 = posValue
         this.fillLength = posValue + halfThumbY
       }
+  }
+
+  protected def updateTrackAndDensity(rectW:Float,rectH:Float,thumbW:Float,thumbH:Float):Unit = {
+    this._orientation match {
+      case Orientation.Horizontal => this.trackLength = rectW - thumbW
+      case Orientation.Vertical => this.trackLength = rectH - thumbH
+    }
+    this._density = this.trackLength / (this._maxValue - this._minValue)
   }
 
   override def Exit(): Unit = {

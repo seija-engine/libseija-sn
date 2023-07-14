@@ -41,7 +41,6 @@ class Thumb extends Control derives ReflectType {
     }
 
     protected def OnDrag(dx:Float,dy:Float):Unit = {
-      val delta = Input.getMoveDelta()
       this.routeEventController.fireEvent(ThumbOnDragArgs(dx,dy))
     }
 

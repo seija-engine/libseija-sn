@@ -32,6 +32,7 @@ final case class UIModule() extends IModule {
     }
 
     override def update(): Unit = {
-        EventManager.update()
+      LayoutUtils.OnUpdate()
+      EventManager.update()
     }
 }

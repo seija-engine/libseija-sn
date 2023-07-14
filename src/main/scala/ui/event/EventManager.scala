@@ -55,7 +55,7 @@ object EventManager {
     def onReadEvent(entityId:Long,typ:UInt,px:Float,py:Float):Unit = {
        if(this.eventInfos.contains(entityId)) {
           val info = this.eventInfos(entityId);
-          info.callFunc(typ,px,py,info.args);
+          info.callFunc(typ,px,-py,info.args);
        }
     }
 }

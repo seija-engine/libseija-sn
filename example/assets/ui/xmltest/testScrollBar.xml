@@ -1,6 +1,6 @@
 <Panel isCanvas="true">
     <Image  sprite="default.white" color="#e8e8e7" />
-   
-    <ScrollBar orientation="Hor" ver="End"  />
-    <ScrollBar orientation="Ver" hor="End" />
+
+    <ScrollBar orientation="Hor" minValue="0" maxValue="100"  width="400"  />
+    <ScrollBar orientation="Ver" minValue="0" maxValue="100"  height="400" />
 </Panel>

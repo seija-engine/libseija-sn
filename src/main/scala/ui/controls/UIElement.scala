@@ -66,8 +66,8 @@ class UIElement extends INotifyPropertyChanged
     def ver: LayoutAlignment = this._ver;
     def ver_=(value:LayoutAlignment): Unit = { this._ver = value; this.callPropertyChanged("ver",this) }
     def width: SizeValue = this._width;
-    def width_=(value:SizeValue) = { this._width = value; this.callPropertyChanged("width",this) }
-    def height = this._height;
+    def width_=(value:SizeValue): Unit = { this._width = value; this.callPropertyChanged("width",this) }
+    def height: SizeValue = this._height;
     def height_=(value:SizeValue) = { this._height = value; this.callPropertyChanged("height",this) }
     def padding = this._padding;
     def padding_=(value:Thickness) = { this._padding = value; this.callPropertyChanged("padding",this) }
@@ -309,11 +309,12 @@ class UIElement extends INotifyPropertyChanged
 
     override def clone():UIElement = {
         val cloneObject = super.clone().asInstanceOf[UIElement];
-        cloneObject.children = new ListBuffer[UIElement]();
-        cloneObject.visualStateGroups = this.visualStateGroups.clone();
+        cloneObject.children = new ListBuffer[UIElement]()
+        cloneObject.setRouteEventElem(cloneObject)
+        cloneObject.visualStateGroups = this.visualStateGroups.clone()
         for(child <- this.children) {
-            val cloneChild = child.clone();
-            cloneObject.children += cloneChild;
+            val cloneChild = child.clone()
+            cloneObject.addChild(cloneChild)
         }
         cloneObject
     }

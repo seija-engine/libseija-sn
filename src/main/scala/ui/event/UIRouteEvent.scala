@@ -32,6 +32,7 @@ case class RouteEventController(elem:IRouteEventElement) {
 
   def fireEvent(eventArgs:RouteEventArgs):Unit = {
       var curElement = elem.getRouteEventParent
+
       while(curElement.isDefined) {
         val curController = curElement.get.routeEventController
         val evHandle = curController.routeEventDict.get(eventArgs.event)
@@ -39,7 +40,7 @@ case class RouteEventController(elem:IRouteEventElement) {
         evHandle.foreach {handle =>
           handle.apply(eventArgs)
           if(eventArgs.handled) {
-            curElement = None;
+            curElement = None
           }
         }
       }

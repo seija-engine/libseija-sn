@@ -58,7 +58,7 @@ class Slider extends RangeBase derives ReflectType {
       }
     }
 
-    protected def clipValue(newValue:Float):Float = {
+     override protected def clipValue(newValue:Float):Float = {
       val clipValue = if(newValue < this._minValue) {
         this._minValue
       } else if(newValue > this._maxValue) {
