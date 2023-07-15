@@ -36,6 +36,20 @@ class ScrollContentPresenter extends UIElement derives ReflectType {
     this.childEntity = childElement.getEntity()
   }
 
+  def setVerticalOffset(value:Float):Unit = this.childEntity.foreach { entity =>
+     val freeItem = entity.get[FreeLayoutItem](true)
+     freeItem._2 = -value
+     if(LayoutUtils.postLayoutStep >= 0) {
+        LayoutUtils.addPostLayoutDirtyEntity(entity)
+     }
+  }
+  
+ 
+
+  def setHorizontalOffset(value:Float):Unit = {
+
+  }
+
   protected def onPostLayout(step: Int): Unit = {
     if (LayoutUtils.isDirty(this.childEntity.get, step)) {
       val childRect = this.childEntity.get.get[Rect2D]()

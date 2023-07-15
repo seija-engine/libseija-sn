@@ -267,7 +267,7 @@
             <ControlTemplate>
                 <Panel isCanvas="true" isClip="true" >
                     <Image sprite="default.white" color="#cccccc" />
-                    <ScrollContentPresenter margin="0,0,16,0" />
+                    <ScrollContentPresenter />
                     <ScrollBar orientation="Ver" hor="End"
                                barLength="{Binding Owner barHeight}"
                                maxValue="{Binding Owner scrollableHeight}" />

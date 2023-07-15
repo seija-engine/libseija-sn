@@ -2,8 +2,8 @@ package ui.controls
 import core.UpdateMgr
 import core.reflect.*
 import ui.UIModule
-import ui.core.{Rect2D, Rect2DBuilder}
-import ui.event.RouteEventArgs;
+import ui.core.{Orientation, Rect2D, Rect2DBuilder}
+import ui.event.RouteEventArgs
 
 class ScrollViewer extends ContentControl derives ReflectType {
   protected var _scrollableHeight:Float = 0f
@@ -16,6 +16,8 @@ class ScrollViewer extends ContentControl derives ReflectType {
   protected var _barHeight:Float = 0f
 
   private var scrollContent:Option[ScrollContentPresenter] = None
+  private var contentWidth:Float = 0
+  protected var contentHeight:Float = 0
 
   //region Setter
 
@@ -58,6 +60,8 @@ class ScrollViewer extends ContentControl derives ReflectType {
   override def Enter(): Unit = {
     super.Enter()
     this.routeEventController.addEvent(ScrollContentPresenter.ContentChanged,onContentChanged)
+    this.routeEventController.addEvent(ScrollBar.ScrollValueChanged,this.onScrollValueChanged)
+
   }
 
   def hookContentPresenter(scrollContent: ScrollContentPresenter):Unit = {
@@ -80,14 +84,31 @@ class ScrollViewer extends ContentControl derives ReflectType {
       if (sizeArgs.width != this._viewportWidth) { this.viewportWidth = sizeArgs.width; hasDirty = true }
       if (sizeArgs.height != this._viewportHeight) { this.viewportHeight = sizeArgs.height; hasDirty = true }
     } else {
-      if (sizeArgs.width != this._scrollableWidth) {this.scrollableWidth = sizeArgs.width; hasDirty = true }
-      if (sizeArgs.height != this._scrollableHeight) { this.scrollableHeight = sizeArgs.height;  hasDirty = true }
+      if (sizeArgs.width != this._scrollableWidth) {this.contentWidth = sizeArgs.width; hasDirty = true }
+      if (sizeArgs.height != this._scrollableHeight) { this.contentHeight = sizeArgs.height;  hasDirty = true }
     }
-
     if(hasDirty) {
-      this.barWidth = (this.viewportWidth / this.scrollableWidth) * this.viewportWidth
-      this.barHeight = (this.viewportHeight / this.scrollableHeight) * this.viewportHeight
-      println(s"barW:${this.barWidth} barH:${this.barHeight}")
+      this.scrollableWidth = this.contentWidth - this._viewportWidth
+      this.scrollableHeight = this.contentHeight - this._viewportHeight
+      this.barWidth = (this.viewportWidth / this.contentWidth) * this.viewportWidth
+      this.barHeight = (this.viewportHeight / this.contentHeight) * this.viewportHeight
+      this.scrollContent.foreach(_.setVerticalOffset(this.verticalOffset))
+      
+    }
+  }
+
+  protected def onScrollValueChanged(args:RouteEventArgs):Unit = {
+    args.handled = true
+    val scrollArgs = args.asInstanceOf[ScrollValueChangedEventArgs]
+    scrollArgs.ori match {
+      case Orientation.Horizontal => {
+        this.horizontalOffset = scrollArgs.value
+        
+      }
+      case Orientation.Vertical => {
+        this.verticalOffset = scrollArgs.value
+        this.scrollContent.foreach(_.setVerticalOffset(this.verticalOffset))
+      }
     }
   }
 
