@@ -53,6 +53,8 @@ object LayoutUtils {
   def addPostLayoutDirtyEntity(entity:Entity):Boolean = {
     if(_vecPtr == stddef.NULL || this.frameSet.contains(entity.id)) return false
     FFISeijaUI.vecAddU64(_vecPtr,entity.id)
+    //val e = Exception(s"test========================:${entity}");
+    //e.printStackTrace();
     this.frameSet.add(entity.id)
     true
   }

@@ -10,6 +10,7 @@ import transform.getPosition
 import transform.setPosition
 import ui.core.{FreeLayoutItem, ItemLayout}
 import ui.event.{EventManager, EventType, RouteEvent, RouteEventArgs, RouteEventController}
+import ui.LayoutUtils
 
 class Thumb extends Control derives ReflectType {
     override def OnEnter(): Unit = {
@@ -80,8 +81,12 @@ class Thumb extends Control derives ReflectType {
         }
         case "height" => {
           this.entity.foreach { v =>
-            val rawLayout = v.get[ItemLayout]();
-            rawLayout.setHeight(this._height);
+            val frame = _root_.core.Time.getFrameCount();
+            if(LayoutUtils.isInPostLayout) {
+              val rawLayout = v.get[ItemLayout]();
+              rawLayout.setHeight(this._height);
+              LayoutUtils.addPostLayoutDirtyEntity(v);
+            }
           }
         }
         case _ =>

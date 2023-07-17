@@ -30,6 +30,7 @@ import ui.event.{IRouteEventElement, RouteEventController,RouteEventArgs}
 import ui.xml.IXmlObject
 
 import scala.collection.mutable
+import transform.FFISeijaTransform
 
 
 class UIElement extends INotifyPropertyChanged
@@ -47,6 +48,7 @@ class UIElement extends INotifyPropertyChanged
     protected var _height:SizeValue = SizeValue.Auto
     protected var _padding:Thickness = Thickness.zero
     protected var _margin:Thickness = Thickness.zero
+    protected var _active:Boolean = true
 
     protected var bindItemList:ListBuffer[BindingItem] = ListBuffer.empty
     protected var bindingInstList:ListBuffer[BindingInst] = ListBuffer.empty
@@ -73,6 +75,9 @@ class UIElement extends INotifyPropertyChanged
     def padding_=(value:Thickness) = { this._padding = value; this.callPropertyChanged("padding",this) }
     def margin = this._margin;
     def margin_=(value:Thickness) = { this._margin = value; this.callPropertyChanged("margin",this) }
+    def active = this._active
+    def active_=(value:Boolean):Unit = { this._active = value; callPropertyChanged("active",this)  }
+
     def setStyle(style:Option[Style]):Unit = {
         this.style = style;
     }
@@ -149,6 +154,13 @@ class UIElement extends INotifyPropertyChanged
        }
     }
 
+    override def onPropertyChanged(propertyName: String): Unit = {
+        if(propertyName == "active" && this.isEntered) {
+            //println(s"set ACtive:${this.entity.get}=${this._active}");
+            this.getEntity().get.setActive(this._active)
+        }
+    }
+
     protected def createBaseEntity(addBaseLayout:Boolean = true):Entity = {
         val parentEntity = this.parent.flatMap(_.getEntity());
         val newEntity = Entity.spawnEmpty().add[Transform](_.parent = parentEntity).add[Rect2D]()
@@ -162,8 +174,15 @@ class UIElement extends INotifyPropertyChanged
                 v.common.margin = this._margin;
             })
         }
+        this.addEntityStateInfo(newEntity);
         this.entity = Some(newEntity);
         newEntity
+    }
+
+    protected def addEntityStateInfo(entity:Entity):Unit = {
+        if(this._active == false) {
+            FFISeijaTransform.addStateInfo(entity,this._active)
+        }
     }
 
     def addBindItem(bindItem:BindingItem) = {

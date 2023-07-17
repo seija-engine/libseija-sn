@@ -60,6 +60,9 @@ object DynTypeConv {
         if (fromType == "java.lang.Float") {
           curFromType = "scala.Float";
         }
+        if (fromType == "java.lang.Boolean") {
+          curFromType = "scala.Boolean";
+        }
         if(curFromType == toType) { return Some(Success(fromValue)) }
         if(toType.startsWith("scala.Option") && toType.endsWith(curFromType + "]")) {
             return Some(Success(Some(fromValue)))

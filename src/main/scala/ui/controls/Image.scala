@@ -62,6 +62,7 @@ class Image extends UIElement derives ReflectType {
               }
               v.color = this._color;
           })
+      this.addEntityStateInfo(entity)
       this.entity = Some(entity)
     }
 

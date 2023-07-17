@@ -21,9 +21,15 @@ class Entity(val id:Long) extends AnyVal {
   def setParent(parent:Option[Entity]) = {
     parent match
       case None => FFISeijaTransform.transformSetParent(core.App.worldPtr,this.id,0,true);
-      case Some(value) => FFISeijaTransform.transformSetParent(core.App.worldPtr,this.id,value.id,false);
-    
-    
+      case Some(value) => FFISeijaTransform.transformSetParent(core.App.worldPtr,this.id,value.id,false); 
+  }
+
+  def setActive(active:Boolean):Unit = {
+    FFISeijaTransform.setActive(this,active)
+  }
+
+  def isActiveGlobal():Boolean = {
+    FFISeijaTransform.isActiveGlobal(this)
   }
 
   def destroy():Unit = {

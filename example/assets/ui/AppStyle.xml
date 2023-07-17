@@ -268,7 +268,8 @@
                 <Panel isCanvas="true" isClip="true" >
                     <Image sprite="default.white" color="#cccccc" />
                     <ScrollContentPresenter />
-                    <ScrollBar orientation="Ver" hor="End"
+                    <ScrollBar active="{Binding Owner showVerBar}" 
+                               orientation="Ver" hor="End"
                                barLength="{Binding Owner barHeight}"
                                maxValue="{Binding Owner scrollableHeight}" />
                     
