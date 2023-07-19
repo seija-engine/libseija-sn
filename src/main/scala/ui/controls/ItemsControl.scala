@@ -11,7 +11,7 @@ class ItemsControl extends Control with IDataElementGenerator derives ReflectTyp
     var items:ArrayBuffer[Any] = ArrayBuffer.empty;
     var itemsSource:IndexedSeq[Any] = null;
     var itemTemplate:Option[DataTemplate] = None;
-    var warpElement:UIElement = StackPanel();
+    var warpElement:UIElement = this.defaultWrapPanel
     
     var itemCollection:ItemCollection = ItemCollection(this)
 
@@ -21,7 +21,7 @@ class ItemsControl extends Control with IDataElementGenerator derives ReflectTyp
     }
 
     override def OnEnter(): Unit = {
-      if(this.items.length > 0) {
+      if(this.items.nonEmpty) {
         this.itemCollection.setItemSource(items);
       }
       if(this.itemsSource != null) {
@@ -31,15 +31,19 @@ class ItemsControl extends Control with IDataElementGenerator derives ReflectTyp
       super.OnEnter();
     }
 
-    def getWarpPanel():UIElement = this.realWarpPanel
+    protected def defaultWrapPanel:Panel = StackPanel()
+
+    def getWarpPanel:UIElement = this.realWarpPanel
 
     def genElement(data:Any):Try[UIElement] = {
-      if(itemTemplate.isDefined) {
-        val tryElement = this.itemTemplate.get.LoadContent(this,None).logError();
-        tryElement.foreach(item => item.dataContext = data);
-        return tryElement;
+      this.itemTemplate.orElse(this.findDataTemplate(data.getClass().getName())) match {
+        case Some(template) => {
+          val tryElement = template.LoadContent(this,None).logError()
+          tryElement.foreach(item => item.dataContext = data)
+          tryElement
+        }
+        case _ => Failure(Exception("not found itemTemplate"))
       }
-      Failure(Exception("not found itemTemplate"))
     }
 }
 

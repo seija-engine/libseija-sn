@@ -45,7 +45,7 @@ class TestDemo extends IGameApp {
     UIResourceMgr.loadResource("example/assets/ui/AppStyle.xml");
     val viewModel = new TestViewModel();
     this.testViewModel = Some(viewModel);
-    XmlUIElement.fromFile("example/assets/ui/xmltest/testScrollView.xml").logError().foreach {loadElement =>
+    XmlUIElement.fromFile("example/assets/ui/xmltest/testMenu.xml").logError().foreach {loadElement =>
       loadElement.dataContext = this.testViewModel.get;
       this.topCanvas.get.addElement(loadElement);
     }
@@ -80,10 +80,10 @@ class TestViewModel extends INotifyPropertyChanged derives ReflectType {
       "Data@2",
       "Data@3","Data@4","Data@5"));
 
-  def setCount(count: Int): Unit = {
-    this.count = count;
-    this.callPropertyChanged("count", this);
-  }
+    def setCount(count: Int): Unit = {
+      this.count = count;
+      this.callPropertyChanged("count", this);
+    }
 
     def testAdd(params:Any):Unit = {
        this.dataList.add(s"Data@${this.dataList.length + 1}");

@@ -1,0 +1,15 @@
+<Panel isCanvas="true">
+    <Image  sprite="default.white" color="#e8e8e7" />
+    <Menu ver="Start" margin="0,0,0,0" height="25">
+        <String>File</String>
+        <String>Setting</String>
+        <Menu.template>
+            <ControlTemplate>
+                <Panel>
+                    <Image sprite="default.white" color="#d8d8d8" />
+                    <ItemsPresenter />
+                </Panel>
+            </ControlTemplate>
+        </Menu.template>
+    </Menu>
+</Panel>

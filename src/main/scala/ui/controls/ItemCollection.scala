@@ -47,6 +47,7 @@ case class ItemElementListMgr(val parent:UIElement,val collection:ItemCollection
     def start():Unit = {
        for(data <- this.collection.getDataList) {
          val newElement = collection.elemGen.genElement(data);
+         println(newElement)
          newElement match {
           case Success(value) => parent.addChild(value);
           case Failure(exception) => System.err.println(exception.toString());

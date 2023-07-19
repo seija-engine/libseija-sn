@@ -65,9 +65,7 @@
     </Style>
 
     <DataTemplate dataType="java.lang.String">
-        <Panel>
-            <Text fontSize="20" text="{Binding Data this}" />
-        </Panel>
+        <Text width="60" height="30" fontSize="20" text="{Binding Data this}" />
     </DataTemplate>
 
     <DataTemplate dataType="TestViewModel">
