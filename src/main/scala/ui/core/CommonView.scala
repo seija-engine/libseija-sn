@@ -105,10 +105,11 @@ case class CommonView(
   var hor:LayoutAlignment = LayoutAlignment.Stretch,
   var ver:LayoutAlignment = LayoutAlignment.Stretch,
   var useRectSize:Boolean = false,
+  var pixelPerfact:Boolean = true,
   var uiSize:UISize = UISize(SizeValue.Auto,SizeValue.Auto)
 );
 
-type RawCommonView = CStruct5[RawThickness,RawThickness,Byte,Byte,Boolean]
+type RawCommonView = CStruct6[RawThickness,RawThickness,Byte,Byte,Boolean,Boolean]
 
 given CommonViewToFFI:RawFFI[CommonView,Ptr[RawCommonView]] with {
     override def toRaw(value: CommonView, ptr: Ptr[RawCommonView]): Unit = {
@@ -117,6 +118,7 @@ given CommonViewToFFI:RawFFI[CommonView,Ptr[RawCommonView]] with {
     ptr._3 = value.hor.v;
     ptr._4 = value.ver.v;
     ptr._5 = value.useRectSize;
+    ptr._6 = value.pixelPerfact;
   }
 }
 

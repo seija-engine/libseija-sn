@@ -1,7 +1,7 @@
 <Panel isCanvas="true">
     <Image  sprite="default.white" color="#e8e8e7" />
-    <Menu ver="Start" margin="0,0,0,0" height="25">
-        <String>File</String>
+    <Menu ver="Start" margin="0,0.5,0,0" height="25">
+        <String>Seija In</String>
         <String>Setting</String>
         <Menu.template>
             <ControlTemplate>
