@@ -8,6 +8,6 @@ import scala.runtime.Static
  
 @ContentProperty("content")
 class ContentControl extends Control derives ReflectType {
-    var content:Any = null;
-    var dataTemplate:Option[DataTemplate] = None
+    var content:Any = _
+    var contentTemplate:Option[DataTemplate] = None
 }

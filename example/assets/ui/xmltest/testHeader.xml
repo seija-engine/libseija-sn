@@ -1,0 +1,21 @@
+<Panel>
+    <Image sprite="default.white" color="#e8e8e7" />
+    <MenuItem header="MenuItemHeader">
+        <MemuItem.template>
+            <ControlTemplate>
+                <StackPanel >
+                    <Panel height="30">
+                        <ContentPresenter contentSource="header" />
+                    </Panel>
+                    <ItemsPresenter  />
+                </StackPanel>
+            </ControlTemplate>
+        </MemuItem.template>
+        <String>A</String>
+        <String>B</String>
+        <String>C</String>
+        <String>D</String>
+    </MenuItem>
+
+    <ButtonBase ver="End">OK</ButtonBase>
+</Panel>
