@@ -7,7 +7,7 @@ import core.Entity
 type SVector3 = CStruct3[CFloat,CFloat,CFloat]
 type SVector4 = CStruct4[CFloat,CFloat,CFloat,CFloat]
 type STransform = CStruct3[SVector4,SVector4,SVector3]
-type RawTransform = STransform;
+type RawTransform = CStruct6[SVector4,SVector4,SVector4,SVector4,SVector4,SVector4]
 
 class Transform;
 
@@ -37,11 +37,13 @@ object Transform {
 
 
 extension (t:RawTransform) {
-    def getPosition():Vector3 = {
+    def getLocalPosition:Vector3 = {
         Vector3(t._3._1,t._3._2,t._3._3)
     }
-    def setPosition(v3:Vector3):Unit = {
-        v3.toPtr(t.at3)
+
+    def getWorldPosition:Vector3 = {
+      Vector3(t._6._1,t._6._2,t._6._3)
     }
+
 }
     

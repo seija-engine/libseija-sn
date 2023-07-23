@@ -1,10 +1,10 @@
 <Panel>
     <Image sprite="default.white" color="#e8e8e7" />
     
-    <ButtonBase ver="Center">
+    <ButtonBase ver="Start">
         <StackPanel>
             <Text text="123"/>
-            <Popup width="300" height="200">
+            <Popup hor="Center" ver="Center" isOpen="true">
                 <Panel width="300" height="200">
                     <Image sprite="default.white" color="#000000aa" />
                 </Panel>

@@ -6,8 +6,7 @@ import input.Input
 import math.Vector2
 import math.Vector3
 import transform.{RawTransform, Transform}
-import transform.getPosition
-import transform.setPosition
+import transform.getLocalPosition
 import ui.core.{FreeLayoutItem, ItemLayout}
 import ui.event.{EventManager, EventType, RouteEvent, RouteEventArgs, RouteEventController}
 import ui.LayoutUtils

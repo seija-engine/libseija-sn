@@ -2,7 +2,6 @@ package ui.controls
 import core.reflect.*
 import math.Vector2
 import transform.Transform
-import transform.setPosition
 import math.Vector3
 import core.Entity
 import ui.core.Rect2D

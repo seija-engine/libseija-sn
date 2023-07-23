@@ -16,7 +16,7 @@ class EventNodeBuilder extends RawComponentBuilder {
   var eventType:UInt = 0.toUInt;
   var stopCapture:Boolean = false;
   var stopBubble:Boolean = false;
-  var useCapture:Boolean = false;
+  var useCapture:Boolean = true;
   override def build(entity: Entity): Unit = {
     val eventNodePtr = stackalloc[RawEventNode]();
     eventNodePtr._1 = EventNode.NONE;
