@@ -1,7 +1,6 @@
 import core.IGameApp
 import ui.Atlas
 import ui.core.Thickness
-import ui.UICanvas
 import ui.xml.XmlUIElement
 import core.reflect.Assembly
 import ui.binding.INotifyPropertyChanged
@@ -15,10 +14,9 @@ import ruv.FFIRuv
 import ruv.RuvRuntime
 
 class TestDemo extends IGameApp {
-  var topCanvas:Option[UICanvas] = None;
   var testViewModel:Option[TestViewModel] = None;
   def loadAsset(): Unit = {
-    val canvas = ui.UICanvas.create();
+    ui.CanvasManager.init()
     Atlas.load("default","ui/default.json").get
     ui.Font.load("default","ui/WenQuanYiMicroHei.ttf",true).get
     Atlas.getPath("default.button").get.sliceInfo = Some(Thickness(5,5,5,5));
@@ -36,18 +34,17 @@ class TestDemo extends IGameApp {
     Atlas.getPath("default.scrollbar-horz-slider-hover").get.sliceInfo = Some(Thickness(5,0,5,0));
     Atlas.getPath("default.scrollbar-vert-trough").get.sliceInfo = Some(Thickness(0,0,1,0));
     Atlas.getPath("default.scrollbar-horz-trough").get.sliceInfo = Some(Thickness(0,0,0,1));
-    this.topCanvas = Some(canvas);
   }
   
   override def OnStart(): Unit = {
     Assembly.add[TestViewModel]();
-    this.loadAsset();
+    this.loadAsset()
     UIResourceMgr.loadResource("example/assets/ui/AppStyle.xml");
     val viewModel = new TestViewModel();
     this.testViewModel = Some(viewModel);
-    XmlUIElement.fromFile("example/assets/ui/xmltest/testHeader.xml").logError().foreach {loadElement =>
+    XmlUIElement.fromFile("example/assets/ui/xmltest/testPopup.xml").logError().foreach {loadElement =>
       loadElement.dataContext = this.testViewModel.get;
-      this.topCanvas.get.addElement(loadElement);
+      ui.CanvasManager.fst().addElement(loadElement)
     }
 }
 

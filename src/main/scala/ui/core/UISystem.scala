@@ -5,7 +5,7 @@ import core.Entity
 import core.RawComponentBuilder
 import ui.core.FFISeijaUI
 
-class UISystem;
+class UISystem
 
 
 class UISystemBuilder extends RawComponentBuilder {

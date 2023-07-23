@@ -117,7 +117,7 @@ class UIElement extends INotifyPropertyChanged
         this.parent = elem;
     }
 
-    def getParent():Option[UIElement] = this.parent;
+    def getParent:Option[UIElement] = this.parent;
 
     def Enter():Unit = {
         this.applyStyle();
@@ -317,7 +317,7 @@ class UIElement extends INotifyPropertyChanged
     def routeEventController: RouteEventController = this._routeEventController
     def setRouteEventElem(elem:IRouteEventElement):Unit = { this._routeEventController = RouteEventController(elem) }
     def getRouteEventParent: Option[IRouteEventElement] = {
-      this.getParent()
+      this.getParent
     }
 
     def Exit():Unit = {

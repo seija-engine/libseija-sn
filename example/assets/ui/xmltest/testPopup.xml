@@ -1,0 +1,16 @@
+<Panel>
+    <Image sprite="default.white" color="#e8e8e7" />
+    
+    <ButtonBase ver="Center">
+        <StackPanel>
+            <Text text="123"/>
+            <Popup width="300" height="200">
+                <Panel width="300" height="200">
+                    <Image sprite="default.white" color="#000000aa" />
+                </Panel>
+            </Popup>
+            
+        </StackPanel>
+    </ButtonBase>
+    
+</Panel>
