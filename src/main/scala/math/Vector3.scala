@@ -10,10 +10,10 @@ case class Vector3(var x:Float,var y:Float,var z:Float) {
 
     def mulScalar(other:Float):Vector3 = Vector3(x * other,y * other,z * other)
 
-    def toPtr(ptr:Ptr[CStruct3[Float,Float,Float]]) = {
-        ptr._1 = x
-        ptr._2 = y
-        ptr._3 = z
+    def toPtr(ptr: Ptr[CStruct3[Float, Float, Float]]): Unit = {
+      ptr._1 = x
+      ptr._2 = y
+      ptr._3 = z
     }
     def toPtr4(ptr:Ptr[CStruct4[Float,Float,Float,Float]]) = {
         ptr._1 = x

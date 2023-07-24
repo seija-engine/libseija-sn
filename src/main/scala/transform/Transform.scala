@@ -9,7 +9,9 @@ type SVector4 = CStruct4[CFloat,CFloat,CFloat,CFloat]
 type STransform = CStruct3[SVector4,SVector4,SVector3]
 type RawTransform = CStruct6[SVector4,SVector4,SVector4,SVector4,SVector4,SVector4]
 
-class Transform;
+class Transform
+
+case class TransformMatrix(pos:Vector3,scale:Vector3,r:Quat)
 
 class TransformBuilder extends RawComponentBuilder {
     var position:Vector3 = new Vector3(0,0,0)
@@ -32,6 +34,8 @@ object Transform {
 
     def getRaw(entity:Entity,isMut:Boolean):RawTransform = FFISeijaTransform.transformGet(core.App.worldPtr,entity.id)
   }
+
+  def relativeTo(child:Entity,parent:Option[Entity]):TransformMatrix =FFISeijaTransform.calcRelative(child, parent)
 }
 
 

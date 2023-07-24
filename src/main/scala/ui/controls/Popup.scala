@@ -4,7 +4,7 @@ import core.reflect.{Into, ReflectType}
 import ui.{ContentProperty, LayoutUtils}
 import core.{Entity, UpdateMgr}
 import _root_.core.Time
-import transform.{RawTransform, Transform, getWorldPosition}
+import transform.{FFISeijaTransform, RawTransform, Transform, getWorldPosition}
 import ui.core.{FreeLayoutItem, ItemLayout, LayoutAlignment, Rect2D}
 
 import scala.scalanative.unsigned.ULong
@@ -42,7 +42,7 @@ class Popup extends UIElement derives ReflectType {
   var _target:UIElement = null
 
 
-  private var waitSetFrame:Option[ULong] = None
+  private var waitSetPos:Boolean =  false
   //region Setter
 
   def isOpen: Boolean = this._isOpen
@@ -64,7 +64,7 @@ class Popup extends UIElement derives ReflectType {
   //endregion
 
   override def OnEnter(): Unit = {
-    UpdateMgr.add(this.OnUpdate)
+    LayoutUtils.addPostLayout(OnPostLayout)
     val topEntity = ui.CanvasManager.popup().getEntity().get
     val newEntity = Entity.spawnEmpty()
                           .add[Transform](_.parent = Some(topEntity) )
@@ -82,28 +82,24 @@ class Popup extends UIElement derives ReflectType {
     this.entity = Some(newEntity)
     this.addChild(this.cloneChild())
     if(this._isOpen) {
-      this.waitSetFrame = Some(Time.getFrameCount())
+      this.waitSetPos = true
     }
   }
 
-  protected def OnUpdate(dt:Float):Unit = {
-    val curFrame = Time.getFrameCount()
-
-    if(this.waitSetFrame.isDefined && curFrame > this.waitSetFrame.get ) {
-
+  protected def OnPostLayout(step:Int):Unit = {
+    if(this.waitSetPos) {
       val targetElement:Option[UIElement] =  Option(this._target).orElse(this.parent)
-      targetElement.foreach {element =>
+      targetElement.foreach { element =>
         val targetEntity = element.getEntity().get
         val thisEntity = this.getEntity().get
         val thisRect = thisEntity.get[Rect2D]()
         val thisWidth = thisRect._1
         val thisHeight = thisRect._2
-        println(s"this size:${thisWidth},${thisHeight}")
-        val parentT:RawTransform = targetEntity.get[Transform]()
-        val parentPos = parentT.getWorldPosition
-        println(s"parent pos:${parentPos}")
+        val mat4 = Transform.relativeTo(targetEntity,Some(ui.CanvasManager.fst().getEntity().get))
+
+        println(s"targetSize:${thisWidth},${thisHeight} pos:${mat4.pos}")
       }
-      this.waitSetFrame = None
+      this.waitSetPos = false
     }
   }
 
@@ -111,6 +107,6 @@ class Popup extends UIElement derives ReflectType {
 
   override def Exit(): Unit = {
     super.Exit()
-    UpdateMgr.remove(this.OnUpdate)
+    LayoutUtils.removePostLayout(OnPostLayout)
   }
 } 
