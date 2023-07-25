@@ -1,5 +1,7 @@
 package math
-import scalanative.unsafe.{Ptr,CStruct3,CStruct4}
+import scalanative.unsafe.{CFloat, CStruct3, CStruct4, Ptr}
+
+type RawVector3 = CStruct3[CFloat,CFloat,CFloat]
 
 case class Vector3(var x:Float,var y:Float,var z:Float) {
     def +(other:Vector3):Vector3 = Vector3(x + other.x,y + other.y,z + other.z)
@@ -10,12 +12,12 @@ case class Vector3(var x:Float,var y:Float,var z:Float) {
 
     def mulScalar(other:Float):Vector3 = Vector3(x * other,y * other,z * other)
 
-    def toPtr(ptr: Ptr[CStruct3[Float, Float, Float]]): Unit = {
+    def setToPtr(ptr: Ptr[RawVector3]): Unit = {
       ptr._1 = x
       ptr._2 = y
       ptr._3 = z
     }
-    def toPtr4(ptr:Ptr[CStruct4[Float,Float,Float,Float]]) = {
+    def setToPtr4(ptr:Ptr[CStruct4[Float,Float,Float,Float]]) = {
         ptr._1 = x
         ptr._2 = y
         ptr._3 = z

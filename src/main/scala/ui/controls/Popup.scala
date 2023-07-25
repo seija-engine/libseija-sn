@@ -3,20 +3,20 @@ import ui.controls.UIElement
 import core.reflect.{Into, ReflectType}
 import ui.{ContentProperty, LayoutUtils}
 import core.{Entity, UpdateMgr}
+import math.{Vector3,Vector2}
 import _root_.core.Time
 import transform.{FFISeijaTransform, RawTransform, Transform, getWorldPosition}
 import ui.core.{FreeLayoutItem, ItemLayout, LayoutAlignment, Rect2D}
-
 import scala.scalanative.unsigned.ULong
 
 enum PlacementMode(v:Int) {
-  case Absolute extends PlacementMode(0)
-  case Center extends PlacementMode(1)
-  case Left extends PlacementMode(2)
-  case Right extends PlacementMode(3)
-  case Top extends PlacementMode(4)
-  case Bottom extends PlacementMode(5)
-  case Mouse extends PlacementMode(6)
+  case Center extends PlacementMode(0)
+  case Left extends PlacementMode(1)
+  case Right extends PlacementMode(2)
+  case Top extends PlacementMode(3)
+  case Bottom extends PlacementMode(4)
+  case Mouse extends PlacementMode(5)
+  case Absolute extends PlacementMode(6)
 }
 
 object PlacementMode {
@@ -88,19 +88,71 @@ class Popup extends UIElement derives ReflectType {
 
   protected def OnPostLayout(step:Int):Unit = {
     if(this.waitSetPos) {
-      val targetElement:Option[UIElement] =  Option(this._target).orElse(this.parent)
-      targetElement.foreach { element =>
-        val targetEntity = element.getEntity().get
-        val thisEntity = this.getEntity().get
-        val thisRect = thisEntity.get[Rect2D]()
-        val thisWidth = thisRect._1
-        val thisHeight = thisRect._2
-        val mat4 = Transform.relativeTo(targetEntity,Some(ui.CanvasManager.fst().getEntity().get))
-
-        println(s"targetSize:${thisWidth},${thisHeight} pos:${mat4.pos}")
-      }
+      val targetPos = this.calcPopupPos()
+      val thisEntity = this.getEntity().get
+      val freeItem = thisEntity.get[FreeLayoutItem]()
+      freeItem._1 = targetPos.x
+      freeItem._2 = targetPos.y
+      LayoutUtils.addPostLayoutDirtyEntity(ui.CanvasManager.popup().getEntity().get)
       this.waitSetPos = false
     }
+  }
+
+  protected def calcPopupPos():Vector2 = {
+    val thisEntity = this.getEntity().get
+    val thisRect = thisEntity.get[Rect2D]().toData
+    val (targetUIPos,targetRect) = this.calcTargetInfo()
+    val ltPos:Vector2 = this._mode match {
+      case PlacementMode.Center => Vector2(targetUIPos.x,targetUIPos.y)
+      case PlacementMode.Left => {
+        val xOffset = targetUIPos.x - (thisRect.width + targetRect.width * targetRect.anchorX)
+        val yOffset =  targetUIPos.y - targetRect.top
+        Vector2(xOffset,yOffset)
+      }
+      case PlacementMode.Right => {
+        val xOffset = targetUIPos.x +  targetRect.width * targetRect.anchorX
+        val yOffset =  targetUIPos.y - targetRect.top
+        Vector2(xOffset, yOffset)
+      }
+      case PlacementMode.Top => {
+        val xOffset = targetUIPos.x - (thisRect.width + targetRect.width * targetRect.anchorX)
+        val yOffset =  targetUIPos.y - targetRect.top
+        Vector2(xOffset, yOffset)
+      }
+      case PlacementMode.Bottom => {
+        val xOffset = targetUIPos.x - targetRect.width * targetRect.anchorX
+        val yOffset =  targetUIPos.y - targetRect.top
+        Vector2(xOffset, yOffset)
+      }
+      case PlacementMode.Absolute | PlacementMode.Mouse => ???
+    }
+    ltPos
+  }
+
+  private def calcTargetInfo():(Vector3,math.Rect2D) = {
+    if(isHasTargetMode) {
+      val targetElement: Option[UIElement] = Option(this._target).orElse(this.parent)
+      if(targetElement.isEmpty) {
+        System.err.println("popup need target")
+        return (Vector3.zero,math.Rect2D.zero)
+      }
+      val targetEntity = targetElement.get.getEntity().get
+      val mat4 = Transform.relativeTo(targetEntity,Some(ui.CanvasManager.fst().getEntity().get))
+      val targetPos = ui.core.FFISeijaUI.toUIPos(mat4.pos)
+      val targetRect = targetEntity.get[Rect2D]()
+      return (targetPos,targetRect.toData)
+    }
+    ???
+  }
+
+  private def isHasTargetMode:Boolean = {
+    this._mode match
+      case PlacementMode.Center |
+           PlacementMode.Left   |
+           PlacementMode.Right  |
+           PlacementMode.Top    |
+           PlacementMode.Bottom => true
+      case _ => false
   }
 
   protected def cloneChild():UIElement = this._child.clone()

@@ -1,6 +1,6 @@
 package ui.core
 import scalanative.unsafe._
-import math.RawVector4
+import math.{RawVector4,RawVector3,Vector3}
 import math.Vector4
 import _root_.core.{Entity,RawFFI,LibSeija}
 import math.Vector4RawFFI
@@ -65,6 +65,7 @@ object FFISeijaUI {
     private val entitySetLayoutHPtr = LibSeija.getFunc[CFuncPtr3[Ptr[RawCommonView],Byte,Float,Unit]]("entity_set_layout_size_h");
     private val uiSetPostLayoutProcessPtr = LibSeija.getFunc[CFuncPtr2[Ptr[Byte],Ptr[Byte],Unit]]("ui_set_post_layout_process")
     private val vec_add_u64Ptr = LibSeija.getFunc[CFuncPtr2[Ptr[Byte],Long,Unit]]("vec_add_u64")
+    private val ui_to_ui_posPtr = LibSeija.getFunc[CFuncPtr3[Ptr[Byte],Ptr[RawVector3],Ptr[RawVector3],Unit]]("ui_to_ui_pos")
 
     def addSpriteSheetModule(appPtr:Ptr[Byte]):Unit = addSpritesheetModulePtr(appPtr)
     def spriteSheetAssetGet(worldPtr:Ptr[Byte],id:Long):RawSpriteSheet = spriteSheetAssetGetPtr(worldPtr,id);
@@ -74,7 +75,7 @@ object FFISeijaUI {
     def addUIModule(appPtr:Ptr[Byte]):Unit = addUIModulePtr(appPtr)
     def renderConfigSetUI(config:Ptr[Byte]):Unit = renderConfigSetUIPtr(config)
 
-    def entityAddRect(worldPtr:Ptr[Byte],entity:Long,size:Vector4) = {
+    def entityAddRect(worldPtr:Ptr[Byte],entity:Long,size:Vector4): Unit = {
        val v4Ptr:Ptr[RawVector4] = stackalloc[RawVector4]()
        v4Ptr._1 = size.x;
        v4Ptr._2 = size.y;
@@ -227,4 +228,12 @@ object FFISeijaUI {
     def SetOnPostLayoutProcess(appPtr: Ptr[Byte], func: Ptr[Byte]): Unit = uiSetPostLayoutProcessPtr(appPtr,func)
 
     def vecAddU64(ptr:Ptr[Byte],num:Long):Unit = vec_add_u64Ptr(ptr,num)
+
+    def toUIPos(pos:Vector3):Vector3 = {
+      val outPtr = stackalloc[RawVector3]()
+      val curPtr = stackalloc[RawVector3]()
+      pos.setToPtr(curPtr)
+      ui_to_ui_posPtr(core.App.worldPtr,curPtr,outPtr)
+      Vector3(outPtr._1,outPtr._2,outPtr._3)
+    }
 }

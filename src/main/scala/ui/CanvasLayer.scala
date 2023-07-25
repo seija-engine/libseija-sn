@@ -12,7 +12,7 @@ class CanvasLayer(cameraEntity:Entity,layerZ:Float,isPopup:Boolean) extends UIEl
         t.parent = Some(cameraEntity)
         t.position = Vector3(0, 0, layerZ)
       }).add[ui.core.Canvas]()
-    if(isPopup) {
+    if(!isPopup) {
       thisEntity.add[ui.core.ItemLayout]()
     } else {
       thisEntity.add[ui.core.FreeLayout]()

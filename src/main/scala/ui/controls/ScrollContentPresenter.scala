@@ -53,11 +53,11 @@ class ScrollContentPresenter extends UIElement derives ReflectType {
   protected def onPostLayout(step: Int): Unit = {
     if (LayoutUtils.isDirty(this.childEntity.get, step)) {
       val childRect = this.childEntity.get.get[Rect2D]()
-      this.routeEventController.fireEvent(ScrollSizeChangedEvent(false,childRect._1,childRect._2))
+      this.routeEventController.fireEvent(ScrollSizeChangedEvent(false,childRect.width,childRect.height))
     }
     if (LayoutUtils.isDirty(this.entity.get, step)) {
       val thisRect = this.entity.get.get[Rect2D]()
-      this.routeEventController.fireEvent(ScrollSizeChangedEvent(true, thisRect._1, thisRect._2))
+      this.routeEventController.fireEvent(ScrollSizeChangedEvent(true, thisRect.width, thisRect.height))
     }
   }
 

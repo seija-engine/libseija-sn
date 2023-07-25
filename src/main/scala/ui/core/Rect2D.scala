@@ -3,10 +3,10 @@ package ui.core
 import core.RawComponent
 import core.Entity
 import core.RawComponentBuilder
-import math.Vector4
+import math.{RawVector4, Vector3, Vector4}
 import ui.core.FFISeijaUI
+
 import scala.scalanative.unsafe.Ptr
-import math.RawVector4
 
 
 class Rect2D
@@ -26,14 +26,22 @@ class Rect2DBuilder extends RawComponentBuilder {
 object Rect2D {
   given Rect2dComponent:RawComponent[Rect2D] with {
     type BuilderType = Rect2DBuilder;
-    type RawType = Ptr[RawVector4];
+    type RawType = RawRect2D
 
     override def builder(): BuilderType = new Rect2DBuilder()
 
     override def getRaw(entity: Entity,isMut:Boolean): RawType = {
-      FFISeijaUI.entityGetRect2d(core.App.worldPtr,entity.id,isMut)
+      RawRect2D(FFISeijaUI.entityGetRect2d(core.App.worldPtr,entity.id,isMut))
     }
    
   }
 }
 
+case class RawRect2D(ptr: Ptr[RawVector4]) extends AnyVal {
+  def width:Float = ptr._1
+  def height:Float = ptr._2
+  def anchorX:Float = ptr._3
+  def anchorY:Float = ptr._4
+
+  def toData:math.Rect2D = math.Rect2D(width, height, anchorX, anchorY)
+}

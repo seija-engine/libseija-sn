@@ -111,10 +111,10 @@ class Track extends RangeBase derives ReflectType {
   protected def setUIByValue(): Unit = {
     val thumbRect = this.thumb.getEntity().get.get[Rect2D]()
     val thisRect = this.getEntity().get.get[Rect2D]()
-    this.updateTrackAndDensity(thisRect._1, thisRect._2, thumbRect._1, thumbRect._2)
+    this.updateTrackAndDensity(thisRect.width, thisRect.height, thumbRect.width, thumbRect.height)
 
-    val halfThumbX: Float = thumbRect._1 * 0.5f
-    val halfThumbY: Float = thumbRect._2 * 0.5f
+    val halfThumbX: Float = thumbRect.width * 0.5f
+    val halfThumbY: Float = thumbRect.height * 0.5f
     val posValue = this._value * this._density
     val freeItem = this.thumb.getEntity().get.get[FreeLayoutItem]()
 
