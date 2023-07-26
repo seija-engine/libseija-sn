@@ -53,6 +53,30 @@
         </Setter>
     </Style>
 
+    <Style forType="CheckBox">
+        <Setter key="template">
+            <ControlTemplate>
+                <StackPanel orientation="Hor" hor="Center" ver="Center"> 
+                    <Image Name="IMG" width="16" height="16" sprite="default.checkbox-unchecked" />
+                    <ContentPresenter />
+                </StackPanel>
+
+                <ControlTemplate.visualStateGroups>
+                    <VisualStateGroupList>
+                        <VisualStateGroup name="CheckStates">
+                            <VisualState name="Checked">
+                                <Setter target="IMG" key="sprite" value="default.checkbox-checked" />
+                            </VisualState>
+                            <VisualState name="Unchecked">
+                                <Setter target="IMG" key="sprite" value="default.checkbox-unchecked" />
+                            </VisualState>
+                        </VisualStateGroup>
+                    </VisualStateGroupList>
+                </ControlTemplate.visualStateGroups>
+            </ControlTemplate>
+        </Setter>
+    </Style>
+
     <Style forType="ItemsControl">
         <Setter key="template">
             <ControlTemplate>

@@ -16,4 +16,9 @@ object ViewStates {
     val OrientationStates = "OrientationStates";
     val Horizontal = "Horizontal";
     val Vertical = "Vertical"
+
+
+    val CheckStates = "CheckStates"
+    val Checked = "Checked"
+    val Unchecked = "Unchecked"
 }

@@ -43,6 +43,7 @@ class Popup extends UIElement derives ReflectType {
 
 
   private var waitSetPos:Boolean =  false
+  private var _curIsShow:Boolean = false
   //region Setter
 
   def isOpen: Boolean = this._isOpen
@@ -83,6 +84,16 @@ class Popup extends UIElement derives ReflectType {
     this.addChild(this.cloneChild())
     if(this._isOpen) {
       this.waitSetPos = true
+      this._curIsShow = true
+    }
+  }
+
+  override def onPropertyChanged(propertyName: String): Unit = {
+    super.onPropertyChanged(propertyName)
+    if(!this.isEntered) { return }
+    if(propertyName == "isOpen" && this._isOpen != this._curIsShow) {
+      
+      println(s"isOpen Changed:${this._isOpen}")
     }
   }
 
@@ -91,8 +102,8 @@ class Popup extends UIElement derives ReflectType {
       val targetPos = this.calcPopupPos()
       val thisEntity = this.getEntity().get
       val freeItem = thisEntity.get[FreeLayoutItem]()
-      freeItem._1 = targetPos.x
-      freeItem._2 = targetPos.y
+      freeItem._1 = targetPos.x.round
+      freeItem._2 = targetPos.y.round
       LayoutUtils.addPostLayoutDirtyEntity(ui.CanvasManager.popup().getEntity().get)
       this.waitSetPos = false
     }
@@ -103,7 +114,10 @@ class Popup extends UIElement derives ReflectType {
     val thisRect = thisEntity.get[Rect2D]().toData
     val (targetUIPos,targetRect) = this.calcTargetInfo()
     val ltPos:Vector2 = this._mode match {
-      case PlacementMode.Center => Vector2(targetUIPos.x,targetUIPos.y)
+      case PlacementMode.Center => {
+        Vector2(targetUIPos.x - thisRect.width * 0.5f,
+                targetUIPos.y - thisRect.height * 0.5f)
+      }
       case PlacementMode.Left => {
         val xOffset = targetUIPos.x - (thisRect.width + targetRect.width * targetRect.anchorX)
         val yOffset =  targetUIPos.y - targetRect.top
@@ -115,13 +129,13 @@ class Popup extends UIElement derives ReflectType {
         Vector2(xOffset, yOffset)
       }
       case PlacementMode.Top => {
-        val xOffset = targetUIPos.x - (thisRect.width + targetRect.width * targetRect.anchorX)
-        val yOffset =  targetUIPos.y - targetRect.top
+        val xOffset = targetUIPos.x - targetRect.width * targetRect.anchorX
+        val yOffset =  targetUIPos.y - targetRect.height * 0.5f - thisRect.height
         Vector2(xOffset, yOffset)
       }
       case PlacementMode.Bottom => {
         val xOffset = targetUIPos.x - targetRect.width * targetRect.anchorX
-        val yOffset =  targetUIPos.y - targetRect.top
+        val yOffset =  targetUIPos.y + targetRect.height * 0.5f
         Vector2(xOffset, yOffset)
       }
       case PlacementMode.Absolute | PlacementMode.Mouse => ???

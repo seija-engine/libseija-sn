@@ -1,16 +1,17 @@
 <Panel>
     <Image sprite="default.white" color="#e8e8e7" />
     
-    <ButtonBase ver="Start" margin="0,10,0,0">
-        <StackPanel>
+    <CheckBox ver="Center" hor="Center" margin="0,10,0,0">
+        <Panel width="30">
             <Text text="123"/>
             <Popup hor="Center" ver="Center" isOpen="true" mode="Bottom">
-                <Panel width="300" height="200">
-                    <Image sprite="default.white" color="#000000aa" />
+                <Panel width="200" height="100">
+                    <Image sprite="default.white" color="#000000" />
+                    <Text text="OP Start!" color="#ffffff" />
                 </Panel>
             </Popup>
             
-        </StackPanel>
-    </ButtonBase>
+        </Panel>
+    </CheckBox>
     
 </Panel>
