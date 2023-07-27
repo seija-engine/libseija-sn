@@ -56,7 +56,7 @@
     <Style forType="CheckBox">
         <Setter key="template">
             <ControlTemplate>
-                <StackPanel orientation="Hor" hor="Center" ver="Center"> 
+                <StackPanel orientation="Hor"> 
                     <Image Name="IMG" width="16" height="16" sprite="default.checkbox-unchecked" />
                     <ContentPresenter />
                 </StackPanel>

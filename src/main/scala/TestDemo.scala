@@ -34,6 +34,8 @@ class TestDemo extends IGameApp {
     Atlas.getPath("default.scrollbar-horz-slider-hover").get.sliceInfo = Some(Thickness(5,0,5,0));
     Atlas.getPath("default.scrollbar-vert-trough").get.sliceInfo = Some(Thickness(0,0,1,0));
     Atlas.getPath("default.scrollbar-horz-trough").get.sliceInfo = Some(Thickness(0,0,0,1));
+
+    Atlas.getPath("default.frame").get.sliceInfo = Some(Thickness(1,1,1,1));
   }
   
   override def OnStart(): Unit = {
@@ -43,6 +45,7 @@ class TestDemo extends IGameApp {
     val viewModel = new TestViewModel();
     this.testViewModel = Some(viewModel);
     XmlUIElement.fromFile("example/assets/ui/xmltest/testPopup.xml").logError().foreach {loadElement =>
+      loadElement.addIDScope();
       loadElement.dataContext = this.testViewModel.get;
       ui.CanvasManager.fst().addElement(loadElement)
     }

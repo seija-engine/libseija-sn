@@ -7,7 +7,7 @@ import math.{Vector3,Vector2}
 import _root_.core.Time
 import transform.{FFISeijaTransform, RawTransform, Transform, getWorldPosition}
 import ui.core.{FreeLayoutItem, ItemLayout, LayoutAlignment, Rect2D}
-import scala.scalanative.unsigned.ULong
+import scala.scalanative.unsigned._
 
 enum PlacementMode(v:Int) {
   case Center extends PlacementMode(0)
@@ -42,7 +42,7 @@ class Popup extends UIElement derives ReflectType {
   var _target:UIElement = null
 
 
-  private var waitSetPos:Boolean =  false
+  private var waitSetFrame:Option[ULong] =  None
   private var _curIsShow:Boolean = false
   //region Setter
 
@@ -65,6 +65,11 @@ class Popup extends UIElement derives ReflectType {
   //endregion
 
   override def OnEnter(): Unit = {
+    this._active = this._isOpen
+    this._curIsShow = this._isOpen
+    if(this._active) {
+      this.waitSetFrame = Some(Time.getFrameCount())
+    }
     LayoutUtils.addPostLayout(OnPostLayout)
     val topEntity = ui.CanvasManager.popup().getEntity().get
     val newEntity = Entity.spawnEmpty()
@@ -82,36 +87,36 @@ class Popup extends UIElement derives ReflectType {
     newEntity.add[FreeLayoutItem]()
     this.entity = Some(newEntity)
     this.addChild(this.cloneChild())
-    if(this._isOpen) {
-      this.waitSetPos = true
-      this._curIsShow = true
-    }
+            
   }
 
   override def onPropertyChanged(propertyName: String): Unit = {
     super.onPropertyChanged(propertyName)
     if(!this.isEntered) { return }
     if(propertyName == "isOpen" && this._isOpen != this._curIsShow) {
-      
-      println(s"isOpen Changed:${this._isOpen}")
+      this._curIsShow = this._isOpen
+      this.active =  this._isOpen
+      this.waitSetFrame = Some(Time.getFrameCount() + 1.toULong)
     }
   }
 
   protected def OnPostLayout(step:Int):Unit = {
-    if(this.waitSetPos) {
+    val curFrame = Time.getFrameCount()
+    if(this.waitSetFrame.isDefined && curFrame == this.waitSetFrame.get) {
       val targetPos = this.calcPopupPos()
       val thisEntity = this.getEntity().get
       val freeItem = thisEntity.get[FreeLayoutItem]()
       freeItem._1 = targetPos.x.round
       freeItem._2 = targetPos.y.round
       LayoutUtils.addPostLayoutDirtyEntity(ui.CanvasManager.popup().getEntity().get)
-      this.waitSetPos = false
+      this.waitSetFrame = None
     }
   }
 
   protected def calcPopupPos():Vector2 = {
     val thisEntity = this.getEntity().get
     val thisRect = thisEntity.get[Rect2D]().toData
+    println(s"thisRect:${thisRect}")
     val (targetUIPos,targetRect) = this.calcTargetInfo()
     val ltPos:Vector2 = this._mode match {
       case PlacementMode.Center => {
@@ -151,9 +156,13 @@ class Popup extends UIElement derives ReflectType {
         return (Vector3.zero,math.Rect2D.zero)
       }
       val targetEntity = targetElement.get.getEntity().get
+      println(s"targetEntity:${targetElement}")
       val mat4 = Transform.relativeTo(targetEntity,Some(ui.CanvasManager.fst().getEntity().get))
+       println(s"mat4:${mat4.pos}")
       val targetPos = ui.core.FFISeijaUI.toUIPos(mat4.pos)
+      println(s"targetPos:${targetPos}")
       val targetRect = targetEntity.get[Rect2D]()
+      println(s"targetRect:${targetRect.toData}")
       return (targetPos,targetRect.toData)
     }
     ???

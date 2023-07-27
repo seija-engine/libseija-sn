@@ -1,17 +1,20 @@
 <Panel>
     <Image sprite="default.white" color="#e8e8e7" />
-    
-    <CheckBox ver="Center" hor="Center" margin="0,10,0,0">
-        <Panel width="30">
-            <Text text="123"/>
-            <Popup hor="Center" ver="Center" isOpen="true" mode="Bottom">
-                <Panel width="200" height="100">
-                    <Image sprite="default.white" color="#000000" />
-                    <Text text="OP Start!" color="#ffffff" />
-                </Panel>
-            </Popup>
-            
-        </Panel>
-    </CheckBox>
-    
+    <StackPanel  ver="Center">
+        <CheckBox Id="Check" width="50" height="25" margin="0,10,0,0">
+            <Panel width="50" >
+                <Text text="123" />
+                <Popup  width="200" height="50" hor="Center" ver="Center" isOpen="{Binding Id=Check isChecked}" mode="Right">
+                    <Panel>
+                        <Image sprite="default.white" color="#ffffff" />
+                        <Image imageType="Slice" sprite="default.frame" color="#ffffff" />
+                        
+                        <Text  fontSize="20" text="PopTips 原神 启动!" color="#000000" />
+                    </Panel>
+                </Popup>
+
+            </Panel>
+        </CheckBox>
+        <Slider isInteger="true" width="200" minValue="0" maxValue="10" value="5" />
+    </StackPanel>
 </Panel>

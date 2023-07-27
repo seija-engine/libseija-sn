@@ -41,6 +41,7 @@ class UIElement extends INotifyPropertyChanged
     protected var isEntered:Boolean = false;
     var templateParent:Option[UIElement] = None;
     var Name:String = "";
+    var Id:String = "";
 
     protected var _hor:LayoutAlignment = LayoutAlignment.Stretch
     protected var _ver:LayoutAlignment = LayoutAlignment.Stretch
@@ -60,6 +61,8 @@ class UIElement extends INotifyPropertyChanged
 
     protected var curViewStateDict:mutable.HashMap[String,String] = mutable.HashMap.empty
     var visualStateGroups:VisualStateGroupList = VisualStateGroupList();
+
+    private var idScope:Option[IDScope] = None
 
     //region Setter
 
@@ -103,6 +106,21 @@ class UIElement extends INotifyPropertyChanged
 
     def getEntity():Option[Entity] = this.entity;
 
+    def addIDScope():Unit = {
+        this.idScope = Some(IDScope())
+    }
+
+    def findIdScope():Option[IDScope] = {
+        var curElement:Option[UIElement] = Some(this);
+        while(curElement.isDefined) {
+            if(curElement.get.idScope.isDefined) {
+                return curElement.get.idScope
+            }
+            curElement = curElement.get.parent
+        }
+        None
+    }
+
     def addChild(elem:UIElement) = {
        elem.parent = Some(this);
        this.children.addOne(elem);
@@ -120,6 +138,11 @@ class UIElement extends INotifyPropertyChanged
     def getParent:Option[UIElement] = this.parent;
 
     def Enter():Unit = {
+        if(this.Id != null && this.Id != "") {
+            findIdScope().foreach { idScope =>
+                idScope.addElement(this.Id,this)
+            }
+        }
         this.applyStyle();
         this.applyBindItems();
         this.OnEnter();
@@ -191,7 +214,7 @@ class UIElement extends INotifyPropertyChanged
     }
     def applyBindItems():Unit = {
        for(bindItem <- this.bindItemList) {
-            bindItem.sourceType match
+            bindItem.sourceType match {
                 case BindingSource.Owner => {
                     if(this.templateParent.isDefined) {
                       DataBindingManager.binding(this.templateParent.get,this,bindItem).logError() match {
@@ -212,7 +235,15 @@ class UIElement extends INotifyPropertyChanged
                         }
                     }
                 }
-            
+                case BindingSource.ID(name) => {
+                    this.findIdScope().flatMap(_(name)).foreach {findElement =>
+                       DataBindingManager.binding(findElement,this,bindItem)  match {
+                            case Success(Some(inst)) => this.bindingInstList += inst;
+                            case _ => {}
+                        }
+                    }
+                }
+            }
        }
     }
 

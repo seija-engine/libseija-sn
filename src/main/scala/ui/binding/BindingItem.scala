@@ -9,6 +9,7 @@ import scala.util.Success
 enum BindingSource(val value:Int) {
   case Owner extends BindingSource(0)
   case Data  extends BindingSource(1)
+  case ID(name:String)    extends BindingSource(2)
 }
 
 enum BindingType(val value:Int) {
@@ -41,13 +42,19 @@ object BindingItem {
   def parse(key:String,value:String):Try[BindingItem] = Try {
     
     //{Binding Owner checked  Conv=ui.BoolAtlasSprite(default.duikong,default.duihao) Type=Both}
+    //{Binding Id=CheckName checked  Conv=ui.BoolAtlasSprite(default.duikong,default.duihao) Type=Both}
     this.charIndex = 0;
     this.bufferArray = value.toCharArray;
     val item = this.takeWhile(_!= ' ').get;
     if(item != "{Binding") throw new Exception("BindingItem parse error")
-    val dataSourceType = this.parseIdent().get match
+    val dataSourceType:BindingSource = this.parseIdent().get match
       case "Data" => BindingSource.Data
       case "Owner" => BindingSource.Owner
+      case "Id" => {
+        this.charIndex += 1;
+        val ident = this.parseIdent()
+        BindingSource.ID(ident.get)
+      }
       case  s => throw new Exception(s"unsupported BindingSource:${s}")
     this.skipWhite();
     val fieldName = this.parseIdent().get;
