@@ -6,6 +6,7 @@ import ui.ContentProperty;
 import core.logError;
 import scala.util.Try
 import scala.util.Failure
+import scala.util.Success
 @ContentProperty("items")
 class ItemsControl extends Control with IDataElementGenerator derives ReflectType {
     var items:ArrayBuffer[Any] = ArrayBuffer.empty;
@@ -42,7 +43,14 @@ class ItemsControl extends Control with IDataElementGenerator derives ReflectTyp
           tryElement.foreach(item => item.dataContext = data)
           tryElement
         }
-        case _ => Failure(Exception("not found itemTemplate"))
+
+        case _ => {
+          if(data.isInstanceOf[UIElement]) {
+            val newElement = data.asInstanceOf[UIElement]
+            return Success(newElement.clone())
+          }
+          Failure(Exception("not found itemTemplate"))
+        }
       }
     }
 }

@@ -355,6 +355,11 @@ class UIElement extends INotifyPropertyChanged
         this.children.foreach(_.Exit());
         this.bindingInstList.foreach(DataBindingManager.removeInst);
         this.bindingInstList.clear();
+        if(this.Id != null && this.Id != "") {
+            this.idScope.foreach { scope =>
+                scope.removeElement(this.Id)
+            }
+        }
     }
 
     override def clone():UIElement = {

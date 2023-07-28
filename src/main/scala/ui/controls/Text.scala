@@ -38,6 +38,7 @@ class Text extends UIElement derives ReflectType {
             v.font = this._font.get.handle;
         })
     }
+    println(s"add text:${this.text}")
   }
 
   override def onPropertyChanged(propertyName: String): Unit = {
