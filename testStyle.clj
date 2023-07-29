@@ -1,43 +1,68 @@
+[
+  (style "MenuItem" {
+    :width 123 :height 456
+    :template 
+    <ControlTemplate>
+        <#vsm>
+        (fn [vmDict]
+           (match (vmDict "Common")
+              "Normal" #(log 123)
+              "Hover"  #(log 456)
+           )
+        )
+        </#vsm>
+
+        <Panel>
+            <Image sprite="default.white" color="#ffffff" />
+            <Image sprite="default.checkbox" />
+            <Text>hh</Text>
+        </Panel>
+        
+    </ControlTemplate>
+
+  })
+]
 (style :key "SliderThumb" :for-type "Thumb"
     {
         :width 26
         :height 26
-        :template (control-template
-                    {:vsm 
-                       {
-                        :state-name "CommonStates"
-                        :hover  { :sprite "default.scale-slider-hover" }
-                        :active { :sprite "default.scale-slider-active" }
-                        :normal {:sprite "default.scale-slider" }
-                       }
-                    }
-                    [
-                        (image {:name "BG" :sprite "default.scale-slider"})
-                    ]
-                  )
+        :template <ControlTemplate>
+                     <Image Name="BG" sprite="default.scale-slider" />
+                     <ControlTemplate.VSM>
+                        (match [(% :common) (% :checked)]
+                            ["Hover","Checked"]     #((set! "BG" :sprite "default.scale-slider-hover"))
+                            ["Hover","Unchecked"]   #((set! "BG" :sprite "default.scale-slider-normal"))
+                            ["Normal","Checked"]    #((set!   "BG" :sprite "default.scale-slider-normal"))
+                            ["Normal","Unchecked"]  #((set! "BG" :sprite "default.scale-slider-normal"))
+                        )
+                     </ControlTemplate:VSM>
+                  </ControlTemplate>
     }
 )
-<Style key="SliderThumb" forType="Thumb">
-        <Setter key="width" value="26" />
-        <Setter key="height" value="26" />
-        <Setter key="template">
-            <ControlTemplate>
-                <Image Name="BG" sprite="default.scale-slider" />
-                <ControlTemplate.visualStateGroups>
-                    <VisualStateGroupList>
-                        <VisualStateGroup name="CommonStates">
-                            <VisualState name="Normal">
-                                <Setter target="BG" key="sprite" value="default.scale-slider" />
-                            </VisualState>
-                            <VisualState name="MouseOver">
-                                <Setter target="BG" key="sprite" value="default.scale-slider-hover" />
-                            </VisualState>
-                            <VisualState name="Pressed">
-                                <Setter target="BG" key="sprite" value="default.scale-slider-active" />
-                            </VisualState>
-                        </VisualStateGroup>
-                    </VisualStateGroupList>
-                </ControlTemplate.visualStateGroups>
-            </ControlTemplate>
-        </Setter>
-    </Style>
+
+(add-template "MenuHeader" "MenuItem"
+    <ControlTemplate>
+      
+    </ControlTemplate>
+)
+
+(def checkTemplate 
+    <ControlTemplate>
+        
+    </ControlTemplate>
+)
+
+(add-style "MyCheck" "CheckBox"
+    {
+        :width 120 :height 230
+        :template @checkTemplate
+    }
+)
+
+(def lst [1 2 3])
+<Root>
+@(if (= tmplId  1)
+  <List>@(map lst #(<ListItem index=@idx />))</List>
+  <Single index=@tmplId />
+)
+</Root>

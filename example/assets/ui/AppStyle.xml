@@ -329,5 +329,18 @@
                 </Panel>
             </ControlTemplate>
         </Setter>
+        <Setter.script>
+            (props-trigger ctx "Role" 
+             (fn [roleValue]
+                (match roleValue
+                  "TopLevelHeader" (fn [] 
+                    (set! :template (find "TopLevelMenu"))
+                  )
+                  "TopLevelItem"   (fn [] )
+                  "SubmenuHeader"  (fn [] )
+                )            
+             )
+            )
+        </Setter.script>
     </Style>
 </UIResource>
