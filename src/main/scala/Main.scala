@@ -17,7 +17,11 @@ import core.reflect.Assembly
 import ruv.RUVModule;
 object Main {
   def main(args: Array[String]): Unit = {
-    runSeija();
+    println(s"run main")
+    val fs = scala.io.Source.fromFile("example/assets/test.clj")
+    val parser = sxml.parser.Parser.fromSource(fs)
+    parser.parseALL()
+    //runSeija()
   }
 
   def runSeija() = {
