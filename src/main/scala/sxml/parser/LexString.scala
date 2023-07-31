@@ -1,6 +1,7 @@
 package sxml.parser
 import scala.collection.mutable.ArrayBuffer
 import scala.io.Source
+import scala.util.boundary
 
 case class LexPos(line:Int,col:Int)
 class LexString(source:Source,maxCache:Int = 4) {

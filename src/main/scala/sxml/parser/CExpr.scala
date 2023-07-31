@@ -12,7 +12,7 @@ enum CExpr {
 
 enum LitValue {
     case LLong(value:Long)
-    case LFloat(value:Float)
+    case LFloat(value:Double)
     case LString(value:String)
     case LBool(value:Boolean)
     case LChar(value:Char)
