@@ -5,7 +5,9 @@ import scala.collection.mutable.ArrayBuffer
 import java.lang.Long as JLong
 import java.lang.Integer as JInteger
 import java.lang.Double as JDouble
-import input.KeyCode.D
+import scala.util.boundary,boundary.break
+import scala.collection.mutable
+
 case class TextSpan[T](start:LexPos,end:LexPos,value:T)
 
 
@@ -16,12 +18,14 @@ class Parser(lexString: LexString) {
     while(curExpr.isSuccess) {
       exprList += curExpr.get
       println(curExpr.get)
+      this.lexString.skipWhitespace()
       if(this.lexString.lookahead(1).isEmpty) {
         return exprList
       }
       curExpr = this.parse()
       if(curExpr.isFailure) {
-        System.err.println(curExpr.failed.get)
+        val posError = curExpr.failed.get.asInstanceOf[PosError];
+        println(s"Error:${posError} Pos:${posError.Pos}")
       }
     }
     exprList
@@ -34,23 +38,50 @@ class Parser(lexString: LexString) {
       val ret = curChr.get match
         case '"' => this.parseString()
         case ';' => this.parseComment()
-        case '(' => ???
-        case '[' => ???
+        case '\\' => this.parseChar()
+        case '(' => this.parseList()
+        case '@' => {
+          val start = this.lexString.pos
+          val expr = this.parse()
+          if(expr.isFailure) return expr
+          val end = this.lexString.pos
+          Success(TextSpan(start,end,CExpr.SUnWrap(expr.get.value) ))
+        }
+        case '#' => {
+          val start = this.lexString.pos
+          val expr = this.parse()
+          if(expr.isFailure) return expr
+          val end = this.lexString.pos
+          Success(TextSpan(start,end,CExpr.SDispatch(expr.get.value) ))
+        }
+        case '[' => this.parseVector()
+        case '{' => this.parseMap()
+        case '<' => {
+          val nextChar = this.lexString.lookahead(1)
+          if(nextChar.isDefined && CharUtils.isXMLSymStart(nextChar.get)) {
+            this.parseXML()
+          } else {
+            this.parseSymbol('<')
+          }
+        }
         case '-' => {
           val nchr = this.lexString.lookahead(1);
           if(nchr.isDefined && nchr.get.isDigit) {
             this.lexString.next()
-            return this.parseNumber(nchr.get,true)
+            this.parseNumber(nchr.get,true)
+          } else {
+            val end = this.lexString.pos
+            Success(TextSpan(end,end,CExpr.SSymbol(None,"-")))
           }
-          ???
         }
         case  chr  => {
           if(chr.isDigit) { return this.parseNumber(chr,false) }
-          ???
+          val sym = this.parseSymbol(chr)
+          sym
         }
       return ret
     }
-    Failure(ErrorEOF())
+    Failure(ErrorEOF(this.lexString.pos))
   }
 
   private def parseString():Try[TextSpan[CExpr]] = {
@@ -67,8 +98,8 @@ class Parser(lexString: LexString) {
         case Some('r') =>  { this.lexString.next(); outBuilder.append('\r') }
         case Some('n') =>  { this.lexString.next(); outBuilder.append('\n') }
         case Some('\\') => { this.lexString.next(); outBuilder.append('\\') }
-        case Some(_) => { return Failure(ErrCharInGap()) }
-        case None => return Failure(ErrorEOF())
+        case Some(_) => { return Failure(ErrCharInGap(this.lexString.pos)) }
+        case None => return Failure(ErrorEOF(this.lexString.pos))
       if(normalString.isDefined) normalString = this.lexString.takeWhile(normalF)
     }
     val end = this.lexString.pos
@@ -80,8 +111,147 @@ class Parser(lexString: LexString) {
     val start = this.lexString.pos
     val commentString = this.lexString.takeWhile(chr => chr != '\r' && chr != '\n').getOrElse("")
     val end = this.lexString.pos
-    val expr = CExpr.SComment(commentString.toString())
+    val expr = CExpr.SComment(commentString.toString)
     Success(TextSpan(start, end, expr))
+  }
+
+  private def parseChar():Try[TextSpan[CExpr]] = {
+    val start = this.lexString.pos
+    val token = this.lexString.takeWhile(chr => chr == ',' || (CharUtils.isSymChar(chr) && !chr.isWhitespace ) )
+    val end = this.lexString.pos
+    token match
+      case Some(value) => {
+        if(value.length == 1) {
+          val expr = CExpr.SLit(LitValue.LChar(value(0)))
+          return Success(TextSpan(start,end,expr))
+        }
+        val strValue = value.toString
+        strValue match
+          case "newline" => Success(TextSpan(start,end,CExpr.SLit(LitValue.LChar('\n'))))
+          case "space" => Success(TextSpan(start,end,CExpr.SLit(LitValue.LChar(' '))))
+          case "tab" => Success(TextSpan(start,end,CExpr.SLit(LitValue.LChar('\t'))))
+          case "return" => Success(TextSpan(start,end,CExpr.SLit(LitValue.LChar('\r'))))
+          case _ => Failure(UnsupportedCharacter(this.lexString.pos,strValue))
+      }
+      case None => Failure(ErrorEOF(this.lexString.pos))
+  }
+
+  private def parseVector():Try[TextSpan[CExpr]] = Try {
+    val start = this.lexString.pos
+    val exprList = this.readList(']').get
+    val end = this.lexString.pos
+    val expr = CExpr.SVector(exprList)
+    TextSpan(start,end,expr)
+  }
+
+  private def parseList():Try[TextSpan[CExpr]] = Try {
+    val start = this.lexString.pos
+    val exprList = this.readList(')').get
+    val end = this.lexString.pos
+    val expr = CExpr.SList(exprList)
+    TextSpan(start,end,expr)
+  }
+
+  private def parseMap():Try[TextSpan[CExpr]] = Try {
+    val start = this.lexString.pos
+    val exprList = this.readList('}').get
+    val end = this.lexString.pos
+    val expr = CExpr.SMap(exprList)
+    TextSpan(start,end,expr)
+  }
+
+  private def parseXML():Try[TextSpan[CExpr]] = Try {
+    val start = this.lexString.pos
+    val fstChar = this.lexString.lookahead(1)
+    if(fstChar.isEmpty || !CharUtils.isXMLSymStart(fstChar.get)) {
+      throw InvalidXMLTag(this.lexString.pos,fstChar.getOrElse(' '))
+    }
+    val xmlTag = this.lexString.takeWhile(chr => CharUtils.isXMLSym(chr))
+    val xmlTagName = xmlTag.getOrElse(throw InvalidXMLTag(this.lexString.pos,' '))
+    var attrList:ArrayBuffer[(String,CExpr)] = ArrayBuffer.empty
+    var isSingleXml = false
+    boundary(while(true) {
+      this.lexString.skipWhitespace()
+      val nextChar = this.lexString.lookahead(1)
+      if(nextChar.isEmpty) break()
+      if(nextChar.get == '/') {
+        if(this.lexString.lookahead(2) == Some('>')) {
+          this.lexString.next()
+          this.lexString.next()
+          isSingleXml = true
+          break()
+        }
+      } else if(nextChar.get == '>') {
+        isSingleXml = false
+        this.lexString.next()
+        break()
+      } else {
+        if(CharUtils.isXMLSymStart(nextChar.get)) {
+          val attrName = this.parseXMLSymbol().get
+          val mbEq = this.lexString.lookahead(1)
+          if(mbEq == Some('=')) {
+            this.lexString.next()
+          } else { throw XMLAttrMustPair(this.lexString.pos,attrName) }
+          val attrValue = this.parse().get
+          attrList.addOne((attrName,attrValue.value))
+        } else {
+          throw InvalidXMLAttrKey(this.lexString.pos,nextChar.get)
+        }
+      }
+    })
+    
+    if(isSingleXml) {
+      val end = this.lexString.pos
+      TextSpan(start,end,CExpr.SXMLElement(xmlTagName.toString(),attrList,ArrayBuffer.empty))
+    } else {
+      var childList:ArrayBuffer[CExpr] = ArrayBuffer.empty
+      boundary(while(true) {
+        this.lexString.skipWhitespace()
+        val lk1 = this.lexString.lookahead(1)
+        val lk2 = this.lexString.lookahead(2)
+       
+        if(lk1 == Some('<') && lk2 == Some('/')) {
+          this.lexString.next()
+          this.lexString.next()
+          this.lexString.dropWhile(CharUtils.isXMLSym)
+          this.lexString.next()
+          break()
+        }
+        val expr = this.parse().get
+        childList += expr.value
+      })
+      val end = this.lexString.pos
+      TextSpan(start,end,CExpr.SXMLElement(xmlTagName.toString(),attrList,childList))
+    }
+  }
+
+  private def parseXMLSymbol():Try[String] = Try {
+    val fstChar = this.lexString.lookahead(1)
+    if(fstChar.isEmpty || !CharUtils.isXMLSymStart(fstChar.get)) {
+      throw InvalidXMLTag(this.lexString.pos,fstChar.getOrElse(' '))
+    }
+    this.lexString.takeWhile(chr => CharUtils.isXMLSym(chr)).map(_.toString)
+                  .getOrElse(throw InvalidXMLTag(this.lexString.pos,' '))
+  }
+
+  private def readList(endChar:Char):Try[ArrayBuffer[CExpr]] = Try {
+    val lst:ArrayBuffer[CExpr] = ArrayBuffer.empty
+    var isRun = true
+    while(isRun) {
+      this.lexString.skipWhitespace()
+      val nextChar = this.lexString.lookahead(1)
+      nextChar match
+        case Some(chr) => {
+          if(chr == endChar) {
+            this.lexString.next()
+            isRun = false
+          } else {
+            lst += this.parse().get.value
+          }
+        }
+        case None => throw ErrorEOF(this.lexString.pos)
+    }
+    lst
   }
 
   private def isHexDigit(chr:Char):Boolean = {
@@ -97,7 +267,7 @@ class Parser(lexString: LexString) {
       case('0',Some('x')) => {
         this.lexString.next()
         val hex = this.lexString.takeWhile(isHexDigit).getOrElse("")
-        if(hex == "") throw ErrExpectedHex()
+        if(hex == "") throw ErrExpectedHex(this.lexString.pos)
         var hexNumber = JLong.parseLong(hex.toString(),16)
         val end = this.lexString.pos
         val expr = CExpr.SLit(LitValue.LLong(hexNumber))
@@ -114,7 +284,7 @@ class Parser(lexString: LexString) {
             e match {
               case Some(exp) => {
                 val mbF = sciToF64(intValue, exp.toInt);
-                if(mbF.isEmpty) { throw ErrNumberOutOfRange() }
+                if(mbF.isEmpty) { throw ErrNumberOutOfRange(this.lexString.pos) }
                 val end = this.lexString.pos
                 val expr = CExpr.SLit(LitValue.LFloat(if(isNeg) -mbF.get else mbF.get))
                 TextSpan(start,end,expr)
@@ -133,7 +303,7 @@ class Parser(lexString: LexString) {
             mbE match {
               case Some(e) => {
                 val valf = sciToF64(dvalue, e.toInt);
-                if(valf.isEmpty) throw ErrNumberOutOfRange()
+                if(valf.isEmpty) throw ErrNumberOutOfRange(this.lexString.pos)
                 val end = this.lexString.pos
                 val expr = CExpr.SLit(LitValue.LFloat(if(isNeg) -valf.get else valf.get))
                 TextSpan(start,end,expr)
@@ -145,7 +315,7 @@ class Parser(lexString: LexString) {
               }
             }
           }
-          case _ => throw ErrLexeme()
+          case _ => throw ErrLexeme(this.lexString.pos)
       }
   }
 
@@ -154,7 +324,7 @@ class Parser(lexString: LexString) {
       case '0' => {
         val nextChr = this.lexString.lookahead(1)
         if(nextChr.isDefined && nextChr.get.isDigit) {
-          return Failure(ErrLeadingZero())
+          return Failure(ErrLeadingZero(this.lexString.pos))
         }
         return Success(Some("0"))
       }
@@ -175,7 +345,7 @@ class Parser(lexString: LexString) {
         this.lexString.next()
         val mbChr2 = this.lexString.lookahead(1)
         if(mbChr2.isDefined && mbChr2.get.isDigit) {
-          return Failure(ErrLeadingZero())
+          return Failure(ErrLeadingZero(this.lexString.pos))
         } else {
           return Success(Some("0"))
         }
@@ -220,7 +390,7 @@ class Parser(lexString: LexString) {
             val intValue = if(isNeg) { -JLong.parseLong(v) } else { JLong.parseLong(v) }
             Some(intValue)
           }
-          case None => { throw ErrExpectedExponent() }
+          case None => { throw ErrExpectedExponent(this.lexString.pos) }
         }
       }
       case _ => None
@@ -239,6 +409,72 @@ class Parser(lexString: LexString) {
       Some(dc * Math.pow(d10,de))
     }
   }
+
+  private def parseSymbol(chrStart:Char):Try[TextSpan[CExpr]] = Try {
+    val start = this.lexString.pos
+    if(!CharUtils.isSymCharStart(chrStart)) {
+      throw InvalidSymbolChar(this.lexString.pos,chrStart)
+    }
+    if(chrStart == ':') {
+      this.parseKeyworld().get
+    } else {
+      var isNS = false
+      var nsName:StringBuilder = StringBuilder()
+      var lastName:StringBuilder = StringBuilder()
+      lastName.append(chrStart)
+      var curLookChar = this.lexString.lookahead(1)
+      boundary(while(curLookChar.isDefined) {
+        
+        if(curLookChar.isDefined && (curLookChar.get.isWhitespace || !CharUtils.isSymChar(curLookChar.get))) {
+          break()
+        }
+        if(curLookChar.get == '/') {
+          if(isNS) throw ErrSymbol(this.lexString.pos,nsName.toString())
+          nsName.append(lastName)
+          lastName.clear()
+          isNS = true
+          this.lexString.next()
+        } else {
+          lastName.append(curLookChar.get)
+          this.lexString.next()
+        }
+        curLookChar = this.lexString.lookahead(1)
+      })
+      val lastString = lastName.toString()
+      val end = this.lexString.pos
+      val langSym = if(nsName.length() == 0) {
+        lastString match
+          case "nil" => Some(TextSpan(start,end,CExpr.Nil))
+          case "true" => Some(TextSpan(start,end,CExpr.SLit(LitValue.LBool(true))))
+          case "false" => Some(TextSpan(start,end,CExpr.SLit(LitValue.LBool(false))))
+          case _ => None
+      } else { None }
+      langSym match
+        case Some(value) => value
+        case None => {
+          val expr = CExpr.SSymbol(if(isNS) Some(nsName.toString()) else None,lastString)
+          TextSpan(start,end,expr)
+        }
+    }
+  }
+
+  private def parseKeyworld():Try[TextSpan[CExpr]] = Try {
+    val start = this.lexString.pos
+    val takeString = this.lexString.takeWhile(chr => !chr.isWhitespace && CharUtils.isSymChar(chr) && chr != '/' )
+    takeString.foreach(sb => sb.insert(0,':'))
+    val allString = takeString.map(_.toString).getOrElse("")
+    if(allString.length() == 1 || allString == "::" || allString.endsWith(":") || allString.startsWith(":::")) {
+      throw ErrSymbol(this.lexString.pos,allString)
+    }
+    var isLocal = false
+    if(allString.startsWith("::")) {
+      isLocal = true
+    }
+    val end = this.lexString.pos
+    val expr = CExpr.SKeyworld(allString,isLocal)
+    TextSpan(start,end,expr)
+  }
+
 
 }
 

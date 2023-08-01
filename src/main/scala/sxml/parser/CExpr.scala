@@ -1,12 +1,18 @@
 package sxml.parser
-import scala.collection.immutable
+import scala.collection.mutable.ArrayBuffer
 
 enum CExpr {
     case Nil
-    case SList(lst:List[CExpr])
+    case SList(lst:ArrayBuffer[CExpr])
+    case SVector(lst:ArrayBuffer[CExpr])
+    case SMap(lst:ArrayBuffer[CExpr])
     case SComment(value:String)
-    case SVector(lst:List[CExpr])
+    case SSymbol(ns:Option[String],value:String)
+    case SXMLElement(tag:String,attrList:ArrayBuffer[(String,CExpr)],child:ArrayBuffer[CExpr])
+    case SKeyworld(value:String,isLocal:Boolean)
     case SXMLExpr(value:XmlExpr)
+    case SUnWrap(value:CExpr)
+    case SDispatch(value:CExpr)
     case SLit(value:LitValue)
 }
 

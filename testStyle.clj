@@ -48,7 +48,6 @@
 
 (def checkTemplate 
     <ControlTemplate>
-        
     </ControlTemplate>
 )
 
@@ -60,6 +59,7 @@
 )
 
 (def lst [1 2 3])
+(def tmplId 1000)
 <Root>
 @(if (= tmplId  1)
   <List>@(map lst #(<ListItem index=@idx />))</List>

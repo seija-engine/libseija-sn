@@ -1,11 +1,10 @@
 package sxml.parser
 import scala.collection.mutable.ArrayBuffer
 import scala.io.Source
-import scala.util.boundary
 
 case class LexPos(line:Int,col:Int)
 class LexString(source:Source,maxCache:Int = 4) {
-  private var curLine:Int = 0
+  private var curLine:Int = 1
   private var curCol:Int = 0
 
   private var aheadCount:Int = 0
@@ -81,6 +80,16 @@ class LexString(source:Source,maxCache:Int = 4) {
       }
     }
     if(sb.isEmpty) None else Some(sb)
+  }
+
+  def dropWhile(f:Char => Boolean):Unit = {
+    var chr = this.lookahead(1)
+    while(chr.isDefined) {
+      if(f(chr.get)) { 
+        this.next()
+        chr = this.lookahead(1) 
+      } else { chr = None }
+    }
   }
 
   def putBack(chr:Char):Unit = {
