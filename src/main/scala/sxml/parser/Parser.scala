@@ -8,36 +8,41 @@ import java.lang.Double as JDouble
 import scala.util.boundary,boundary.break
 import scala.collection.mutable
 
-case class TextSpan[T](start:LexPos,end:LexPos,value:T)
+case class TextSpan[T](pos:SpanPos,value:T)
+object TextSpan {
+  def apply[T](start:LexPos,end:LexPos,value:T):TextSpan[T] = TextSpan(SpanPos(start,end),value)
+}
+case class SpanPos(start:LexPos,end:LexPos)
 
+case class ParseModule(val name:String,exprList:ArrayBuffer[TextSpan[CExpr]])
 
-class Parser(lexString: LexString) {
-  def parseALL():ArrayBuffer[TextSpan[CExpr]] = {
-    var curExpr:Try[TextSpan[CExpr]] = this.parse()
+class Parser(sourceName:String,lexString: LexString) {
+
+  def parseModule():Try[ParseModule] = Try {
+     val exprList = this.parseALL().get
+     ParseModule(sourceName,exprList)
+  }
+
+  def parseALL():Try[ArrayBuffer[TextSpan[CExpr]]] = Try {
+    var curExpr:TextSpan[CExpr] = this.parse().get
     val exprList:ArrayBuffer[TextSpan[CExpr]] = ArrayBuffer.empty
-    while(curExpr.isSuccess) {
-      exprList += curExpr.get
-      println(curExpr.get)
-      this.lexString.skipWhitespace()
+    boundary(while(true) {
+      exprList += curExpr
+      this.skipWhitespace()
       if(this.lexString.lookahead(1).isEmpty) {
-        return exprList
+        break()
       }
-      curExpr = this.parse()
-      if(curExpr.isFailure) {
-        val posError = curExpr.failed.get.asInstanceOf[PosError];
-        println(s"Error:${posError} Pos:${posError.Pos}")
-      }
-    }
+      curExpr = this.parse().get
+    })
     exprList
   }
 
   private def parse():Try[TextSpan[CExpr]] = {
-    this.lexString.skipWhitespace()
+    this.skipWhitespace()
     val curChr = this.lexString.next()
     if(curChr.isDefined) {
       val ret = curChr.get match
         case '"' => this.parseString()
-        case ';' => this.parseComment()
         case '\\' => this.parseChar()
         case '(' => this.parseList()
         case '@' => {
@@ -84,6 +89,26 @@ class Parser(lexString: LexString) {
     Failure(ErrorEOF(this.lexString.pos))
   }
 
+  def skipWhitespace():Unit = {
+    boundary(while(true)  {
+      println("loop this f1")
+      val nextChar = this.lexString.lookahead(1)
+       println(s"loop this f1:${nextChar}")
+      if(nextChar.isEmpty) {
+        break()
+      }
+      this.skipWhitespace()
+      println(s"loop this f2:${this.lexString.lookahead(1)}")
+      if(this.lexString.lookahead(1) == Some(';')) {
+        this.lexString.next()
+        this.skipComment()
+      } else {
+        break()
+      }
+      println("loop this f")
+    })
+  }
+
   private def parseString():Try[TextSpan[CExpr]] = {
     val start:LexPos = this.lexString.pos
     val normalF = (chr:Char) => chr != '"' && chr != '\\'
@@ -107,13 +132,7 @@ class Parser(lexString: LexString) {
     Success(TextSpan(start, end, expr))
   }
 
-  private def parseComment():Try[TextSpan[CExpr]] = {
-    val start = this.lexString.pos
-    val commentString = this.lexString.takeWhile(chr => chr != '\r' && chr != '\n').getOrElse("")
-    val end = this.lexString.pos
-    val expr = CExpr.SComment(commentString.toString)
-    Success(TextSpan(start, end, expr))
-  }
+  private def skipComment():Unit = { this.lexString.dropWhile(chr => chr != '\r' && chr != '\n') }
 
   private def parseChar():Try[TextSpan[CExpr]] = {
     val start = this.lexString.pos
@@ -171,7 +190,7 @@ class Parser(lexString: LexString) {
     var attrList:ArrayBuffer[(String,CExpr)] = ArrayBuffer.empty
     var isSingleXml = false
     boundary(while(true) {
-      this.lexString.skipWhitespace()
+      this.skipWhitespace()
       val nextChar = this.lexString.lookahead(1)
       if(nextChar.isEmpty) break()
       if(nextChar.get == '/') {
@@ -206,7 +225,7 @@ class Parser(lexString: LexString) {
     } else {
       var childList:ArrayBuffer[CExpr] = ArrayBuffer.empty
       boundary(while(true) {
-        this.lexString.skipWhitespace()
+        this.skipWhitespace()
         val lk1 = this.lexString.lookahead(1)
         val lk2 = this.lexString.lookahead(2)
        
@@ -234,11 +253,11 @@ class Parser(lexString: LexString) {
                   .getOrElse(throw InvalidXMLTag(this.lexString.pos,' '))
   }
 
-  private def readList(endChar:Char):Try[ArrayBuffer[CExpr]] = Try {
-    val lst:ArrayBuffer[CExpr] = ArrayBuffer.empty
+  private def readList(endChar:Char):Try[ArrayBuffer[TextSpan[CExpr]]] = Try {
+    val lst:ArrayBuffer[TextSpan[CExpr]] = ArrayBuffer.empty
     var isRun = true
     while(isRun) {
-      this.lexString.skipWhitespace()
+      this.skipWhitespace()
       val nextChar = this.lexString.lookahead(1)
       nextChar match
         case Some(chr) => {
@@ -246,7 +265,7 @@ class Parser(lexString: LexString) {
             this.lexString.next()
             isRun = false
           } else {
-            lst += this.parse().get.value
+            lst += this.parse().get
           }
         }
         case None => throw ErrorEOF(this.lexString.pos)
@@ -479,8 +498,8 @@ class Parser(lexString: LexString) {
 }
 
 object Parser {
-  def fromSource(codeSource:Source):Parser = {
+  def fromSource(sourceName:String,codeSource:Source):Parser = {
     val lexString = LexString(codeSource)
-    new Parser(lexString)
+    new Parser(sourceName,lexString)
   }
 }

@@ -3,10 +3,10 @@ import scala.collection.mutable.ArrayBuffer
 
 enum CExpr {
     case Nil
-    case SList(lst:ArrayBuffer[CExpr])
-    case SVector(lst:ArrayBuffer[CExpr])
-    case SMap(lst:ArrayBuffer[CExpr])
-    case SComment(value:String)
+    case SList(lst:ArrayBuffer[TextSpan[CExpr]])
+    case SVector(lst:ArrayBuffer[TextSpan[CExpr]])
+    case SMap(lst:ArrayBuffer[TextSpan[CExpr]])
+    //case SComment(value:String)
     case SSymbol(ns:Option[String],value:String)
     case SXMLElement(tag:String,attrList:ArrayBuffer[(String,CExpr)],child:ArrayBuffer[CExpr])
     case SKeyworld(value:String,isLocal:Boolean)

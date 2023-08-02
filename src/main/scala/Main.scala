@@ -18,9 +18,11 @@ import ruv.RUVModule;
 object Main {
   def main(args: Array[String]): Unit = {
     println(s"run main")
-    val fs = scala.io.Source.fromFile("example/assets/test.clj")
-    val parser = sxml.parser.Parser.fromSource(fs)
-    parser.parseALL()
+    val fs = scala.io.Source.fromFile("example/assets/test2.clj")
+    val parser = sxml.parser.Parser.fromSource("test2.clj",fs)
+    val astModule = parser.parseModule().get
+    val trans = sxml.compiler.Translator()
+    trans.translateModule(astModule)
     //runSeija()
   }
 
