@@ -89,24 +89,16 @@ class Parser(sourceName:String,lexString: LexString) {
     Failure(ErrorEOF(this.lexString.pos))
   }
 
-  def skipWhitespace():Unit = {
-    boundary(while(true)  {
-      println("loop this f1")
+  def skipWhitespace():Unit = boundary {
+    while(true) {
       val nextChar = this.lexString.lookahead(1)
-       println(s"loop this f1:${nextChar}")
-      if(nextChar.isEmpty) {
-        break()
-      }
-      this.skipWhitespace()
-      println(s"loop this f2:${this.lexString.lookahead(1)}")
+      if(nextChar.isEmpty) { break() }
+      this.lexString.skipWhitespace()
       if(this.lexString.lookahead(1) == Some(';')) {
         this.lexString.next()
         this.skipComment()
-      } else {
-        break()
-      }
-      println("loop this f")
-    })
+      } else { break() }
+    }
   }
 
   private def parseString():Try[TextSpan[CExpr]] = {

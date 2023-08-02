@@ -6,14 +6,13 @@ import sxml.parser.ParseModule
 import sxml.parser.TextSpan
 import scala.collection.mutable.ArrayBuffer
 import sxml.parser.SpanPos
-import scala.util.Success
 import sxml.vm.Alternative
 
 
 class Translator {
     def translateModule(parseModule:ParseModule):Unit = {
-        for(cexpr <- parseModule.exprList) {
-           val vmExpr = this.translate(cexpr).get
+        for(cExpr <- parseModule.exprList) {
+           val vmExpr = this.translate(cExpr).get
            println(s"VMExpr:${vmExpr}")
         }
     }
@@ -48,14 +47,14 @@ class Translator {
       if(lst.isEmpty) throw InvalidList(pos)
       lst.head.value match
         case CExpr.SSymbol(ns, value) => {
-          val buildIn = this.tryBuildinFunc(value,pos,lst).get
+          val buildIn = this.tryBuildInFunc(value,pos,lst).get
           if(buildIn.isDefined) buildIn.get else {  translateInvoke(pos,lst).get }
         }
         case CExpr.SList(_) => {  translateInvoke(pos,lst).get }
         case _ => throw InvalidList(pos)
     }
 
-    protected def tryBuildinFunc(fstName:String,pos:SpanPos,lst:ArrayBuffer[TextSpan[CExpr]]):Try[Option[TextSpan[VMExpr]]] = Try {
+    protected def tryBuildInFunc(fstName:String, pos:SpanPos, lst:ArrayBuffer[TextSpan[CExpr]]):Try[Option[TextSpan[VMExpr]]] = Try {
       fstName match
         case "if" => Some(translateIf(pos,lst).get)
         case "def" => Some(translateDef(pos,lst).get)
@@ -77,7 +76,7 @@ class Translator {
 
     protected def translateIf(pos:SpanPos,lst:ArrayBuffer[TextSpan[CExpr]]):Try[TextSpan[VMExpr]] = Try {
       if(lst.length < 3 || lst.length > 4) throw InvalidIf(pos)
-      val predExpr = translate(lst(1)).get.getOrElse(throw InvalidIf(pos))
+      val condExpr = translate(lst(1)).get.getOrElse(throw InvalidIf(pos))
       val trueExpr = translate(lst(2)).get.getOrElse(throw InvalidIf(pos))
       var alts:Vector[Alternative] = Vector(Alternative(AltPattern.Literal(LitValue.LBool(true)),trueExpr))
       if(lst.length > 3) {
@@ -86,7 +85,7 @@ class Translator {
       } else {
         alts = alts.appended(Alternative(AltPattern.Literal(LitValue.LBool(false)),TextSpan(pos,VMExpr.VMNil)))
       }
-      TextSpan(pos,VMExpr.VMMatch(predExpr,alts))
+      TextSpan(pos,VMExpr.VMMatch(condExpr,alts))
     }
 
     protected def translateDef(pos:SpanPos,lst:ArrayBuffer[TextSpan[CExpr]]):Try[TextSpan[VMExpr]] = Try {
@@ -100,6 +99,25 @@ class Translator {
     }
     
     protected def translateFn(pos:SpanPos,lst:ArrayBuffer[TextSpan[CExpr]]):Try[TextSpan[VMExpr]] = Try {
-      ???
+      //(fn [a b] ...)
+      val argSyms:Vector[Symbol] = lst(1).value match
+        case CExpr.SVector(args) => {
+          var argSyms:Vector[Symbol] = Vector.empty
+          val argsList = args.map(v => translate(v).get.getOrElse(throw InvalidList(pos)))
+          for(arg <- argsList) {
+            arg.value match
+              case VMExpr.VMSymbol(value) => argSyms = argSyms.appended(value)
+              case _ => throw InvalidList(pos)
+          }
+          argSyms
+        }
+        case _ => throw InvalidList(pos)
+
+        var bodyList:Vector[TextSpan[VMExpr]] = Vector.empty
+        for(idx <- 2.until(lst.length)) {
+          val expr = translate(lst(idx)).get.getOrElse(throw InvalidFN(pos))
+          bodyList = bodyList.appended(expr)
+        }
+        TextSpan(pos,VMExpr.VMFunc(argSyms,bodyList))
     }
 }

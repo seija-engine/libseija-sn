@@ -10,6 +10,7 @@ enum VMExpr {
     case VMCall(fn:TextSpan[VMExpr],args:Vector[TextSpan[VMExpr]])
     case VMMatch(value:TextSpan[VMExpr],alts:Vector[Alternative])
     case VMDef(name:Symbol,expr:TextSpan[VMExpr])
+    case VMFunc(args:Vector[Symbol],bodyLst:Vector[TextSpan[VMExpr]])
 }
 
 

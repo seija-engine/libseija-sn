@@ -10,3 +10,4 @@ sealed class TransError(pos:SpanPos) extends Exception {
 case class InvalidList(pos:SpanPos) extends TransError(pos)
 case class InvalidIf(pos:SpanPos) extends TransError(pos)
 case class InvalidDef(pos:SpanPos) extends TransError(pos)
+case class InvalidFN(pos:SpanPos) extends TransError(pos)
