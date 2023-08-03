@@ -1,12 +1,13 @@
 package sxml.compiler
 import scala.util.Try
-import sxml.vm.{VMExpr,Symbol,AltPattern}
+import sxml.vm.{VMExpr,Symbol,AltPattern,vmExprCastTo}
 import sxml.parser.{CExpr,LitValue}
 import sxml.parser.ParseModule
 import sxml.parser.TextSpan
 import scala.collection.mutable.ArrayBuffer
 import sxml.parser.SpanPos
 import sxml.vm.Alternative
+import scala.reflect.ClassTag
 
 
 class Translator {
@@ -24,10 +25,9 @@ class Translator {
             case CExpr.SVector(lst) => Some(translateVector(cExpr.pos,lst).get)
             case CExpr.SList(lst) => Some(translateList(cExpr.pos,lst).get)
             case CExpr.SSymbol(ns, value) => Some(TextSpan(cExpr.pos,VMExpr.VMSymbol(Symbol(ns,value))))
-            case CExpr.SMap(lst) => None
+            case CExpr.SMap(lst) => Some(translateMap(cExpr.pos,lst).get)
             case CExpr.SXMLElement(tag, attrList, child) => None
             case CExpr.SKeyworld(value, isLocal) => None
-            case CExpr.SXMLExpr(value) => None
             case CExpr.SUnWrap(value) => None
             case CExpr.SDispatch(value)  => None
       vmExpr
@@ -41,6 +41,16 @@ class Translator {
           }
         }
         TextSpan(pos,VMExpr.VMArray(vecList))
+    }
+
+    protected def translateMap(pos:SpanPos,lst:ArrayBuffer[TextSpan[CExpr]]):Try[TextSpan[VMExpr]] = Try {
+      var vecList:Vector[TextSpan[VMExpr]] = Vector.empty
+        for(cExpr <- lst) {
+          this.translate(cExpr).get.foreach {v =>
+            vecList = vecList.appended(v)
+          }
+        }
+        TextSpan(pos,VMExpr.VMMap(vecList))
     }
 
     protected def translateList(pos:SpanPos,lst:ArrayBuffer[TextSpan[CExpr]]):Try[TextSpan[VMExpr]] = Try {
@@ -59,6 +69,10 @@ class Translator {
         case "if" => Some(translateIf(pos,lst).get)
         case "def" => Some(translateDef(pos,lst).get)
         case "fn" => Some(translateFn(pos,lst).get)
+        case "defn" => Some(translateDeFn(pos,lst).get)
+        case "let" => Some(translateLet(pos,lst,false).get)
+        case "loop" => Some(translateLet(pos,lst,true).get)
+        case "recur" => Some(translateRecur(pos,lst).get)
         case "match" => None
         case _ => None
     }
@@ -100,7 +114,21 @@ class Translator {
     
     protected def translateFn(pos:SpanPos,lst:ArrayBuffer[TextSpan[CExpr]]):Try[TextSpan[VMExpr]] = Try {
       //(fn [a b] ...)
-      val argSyms:Vector[Symbol] = lst(1).value match
+      if(lst.length < 2) throw InvalidFN(pos)
+      val argSyms:Vector[Symbol] = this.takeArrayArgSyms(pos,lst(1).value).get
+      var bodyList:Vector[TextSpan[VMExpr]] = Vector.empty
+      for(idx <- 2.until(lst.length)) {
+        val expr = translate(lst(idx)).get.getOrElse(throw InvalidFN(pos))
+        bodyList = bodyList.appended(expr)
+      }
+      if(bodyList.isEmpty) {
+        bodyList = bodyList.appended(TextSpan(pos,VMExpr.VMNil))
+      }
+      TextSpan(pos,VMExpr.VMFunc(argSyms,bodyList))
+    }
+
+    protected def takeArrayArgSyms(pos:SpanPos,cExpr:CExpr):Try[Vector[Symbol]] = Try {
+      cExpr match
         case CExpr.SVector(args) => {
           var argSyms:Vector[Symbol] = Vector.empty
           val argsList = args.map(v => translate(v).get.getOrElse(throw InvalidList(pos)))
@@ -112,12 +140,52 @@ class Translator {
           argSyms
         }
         case _ => throw InvalidList(pos)
+    }
 
-        var bodyList:Vector[TextSpan[VMExpr]] = Vector.empty
-        for(idx <- 2.until(lst.length)) {
-          val expr = translate(lst(idx)).get.getOrElse(throw InvalidFN(pos))
-          bodyList = bodyList.appended(expr)
-        }
-        TextSpan(pos,VMExpr.VMFunc(argSyms,bodyList))
+    protected def translateDeFn(pos:SpanPos,lst:ArrayBuffer[TextSpan[CExpr]]):Try[TextSpan[VMExpr]] = Try {
+      //(defn name [args1 args2] ...)
+      val nameSymbol = translateCastTo[VMExpr.VMSymbol](lst(1)).get.getOrElse(throw InvalidDefFN(pos))
+      val argSyms = this.takeArrayArgSyms(pos,lst(2).value).get
+
+      var bodyList:Vector[TextSpan[VMExpr]] = Vector.empty
+      for(idx <- 3.until(lst.length)) {
+        val expr = translate(lst(idx)).get.getOrElse(throw InvalidFN(pos))
+        bodyList = bodyList.appended(expr)
+      }
+      if(bodyList.isEmpty) {
+        bodyList = bodyList.appended(TextSpan(pos,VMExpr.VMNil))
+      }
+      TextSpan(pos,VMExpr.VMDef(nameSymbol.value,TextSpan(pos,VMExpr.VMFunc(argSyms,bodyList))))
+    }
+
+    protected def translateRecur(pos:SpanPos,lst:ArrayBuffer[TextSpan[CExpr]]):Try[TextSpan[VMExpr]] = Try {
+      val exprList = this.takeBodyList(pos,1,lst).get
+      TextSpan(pos,VMExpr.VMRecur(exprList))
+    }
+
+    protected def translateLet(pos:SpanPos,lst:ArrayBuffer[TextSpan[CExpr]],isLoop:Boolean):Try[TextSpan[VMExpr]] = Try {
+      val lets = translateCastTo[VMExpr.VMArray](lst(1)).get.getOrElse(throw InvalidLetFN(pos))
+      val bodyList = this.takeBodyList(pos,2,lst).get
+      TextSpan(pos,VMExpr.VMLet(lets.value,bodyList,isLoop))
+    }
+
+    protected def takeBodyList(pos:SpanPos,offsetIdx:Int,lst:ArrayBuffer[TextSpan[CExpr]]):Try[Vector[TextSpan[VMExpr]]] = Try {
+      var bodyList:Vector[TextSpan[VMExpr]] = Vector.empty
+      for(idx <- offsetIdx.until(lst.length)) {
+        val expr = translate(lst(idx)).get.getOrElse(throw InvalidFN(pos))
+        bodyList = bodyList.appended(expr)
+      }
+      if(bodyList.isEmpty) {
+        bodyList = bodyList.appended(TextSpan(pos,VMExpr.VMNil))
+      }
+      bodyList
+    }
+
+    inline protected def translateCastTo[T <: VMExpr](cExpr:TextSpan[CExpr]):Try[Option[T]] = Try {
+      val vmExpr:Option[TextSpan[VMExpr]] = translate(cExpr).get
+      vmExpr match
+        case None => None
+        case Some(value) => vmExprCastTo[T](value.value)
     }
 }
+
