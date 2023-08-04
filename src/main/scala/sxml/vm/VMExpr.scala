@@ -8,13 +8,15 @@ enum VMExpr {
     case VMArray(value:Vector[TextSpan[VMExpr]])
     case VMMap(value:Vector[TextSpan[VMExpr]])
     case VMSymbol(value:Symbol)
-    case VMKeyworld(value:Symbol)
+    case VMKeyworld(value:String,isLocal:Boolean)
     case VMCall(fn:TextSpan[VMExpr],args:Vector[TextSpan[VMExpr]])
     case VMMatch(value:TextSpan[VMExpr],alts:Vector[Alternative])
     case VMDef(name:Symbol,expr:TextSpan[VMExpr])
     case VMFunc(args:Vector[Symbol],bodyLst:Vector[TextSpan[VMExpr]])
     case VMLet(lets:Vector[TextSpan[VMExpr]],bodyLst:Vector[TextSpan[VMExpr]],isLoop:Boolean)
     case VMRecur(lst:Vector[TextSpan[VMExpr]])
+    case VMXml(tag:String,attrs:Vector[(String,TextSpan[VMExpr])],child:Vector[TextSpan[VMExpr]])
+    case VMUnWrap(value:TextSpan[VMExpr])
 }
 
 inline def vmExprCastTo[T <: VMExpr](vmExpr:VMExpr):Option[T] = if(vmExpr.isInstanceOf[T]) Some(vmExpr.asInstanceOf[T]) else None

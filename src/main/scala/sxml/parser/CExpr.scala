@@ -7,10 +7,10 @@ enum CExpr {
     case SVector(lst:ArrayBuffer[TextSpan[CExpr]])
     case SMap(lst:ArrayBuffer[TextSpan[CExpr]])
     case SSymbol(ns:Option[String],value:String)
-    case SXMLElement(tag:String,attrList:ArrayBuffer[(String,CExpr)],child:ArrayBuffer[CExpr])
+    case SXMLElement(tag:String,attrList:ArrayBuffer[(String,TextSpan[CExpr])],child:ArrayBuffer[TextSpan[CExpr]])
     case SKeyworld(value:String,isLocal:Boolean)
-    case SUnWrap(value:CExpr)
-    case SDispatch(value:CExpr)
+    case SUnWrap(value:TextSpan[CExpr])
+    case SDispatch(value:TextSpan[CExpr])
     case SLit(value:LitValue)
 }
 

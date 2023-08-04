@@ -18,39 +18,87 @@ class Translator {
         }
     }
 
-    def translate(cExpr:TextSpan[CExpr]):Try[Option[TextSpan[VMExpr]]] = Try {
-      val vmExpr:Option[TextSpan[VMExpr]] = cExpr.value match
-            case CExpr.Nil => Some(TextSpan(cExpr.pos,VMExpr.VMNil))
-            case CExpr.SLit(value) => Some(TextSpan(cExpr.pos,VMExpr.VMLit(value)))
-            case CExpr.SVector(lst) => Some(translateVector(cExpr.pos,lst).get)
-            case CExpr.SList(lst) => Some(translateList(cExpr.pos,lst).get)
-            case CExpr.SSymbol(ns, value) => Some(TextSpan(cExpr.pos,VMExpr.VMSymbol(Symbol(ns,value))))
-            case CExpr.SMap(lst) => Some(translateMap(cExpr.pos,lst).get)
-            case CExpr.SXMLElement(tag, attrList, child) => None
-            case CExpr.SKeyworld(value, isLocal) => None
-            case CExpr.SUnWrap(value) => None
-            case CExpr.SDispatch(value)  => None
+    def translate(cExpr:TextSpan[CExpr]):Try[TextSpan[VMExpr]] = Try {
+      val vmExpr:TextSpan[VMExpr] = cExpr.value match
+            case CExpr.Nil => TextSpan(cExpr.pos,VMExpr.VMNil)
+            case CExpr.SLit(value) => TextSpan(cExpr.pos,VMExpr.VMLit(value))
+            case CExpr.SVector(lst) => translateVector(cExpr.pos,lst).get
+            case CExpr.SList(lst) => translateList(cExpr.pos,lst).get
+            case CExpr.SSymbol(ns, value) =>TextSpan(cExpr.pos,VMExpr.VMSymbol(Symbol(ns,value)))
+            case CExpr.SMap(lst) => translateMap(cExpr.pos,lst).get
+            case CExpr.SKeyworld(value, isLocal) => TextSpan(cExpr.pos,VMExpr.VMKeyworld(value,isLocal))
+            case CExpr.SXMLElement(tag, attrList, child) => translateXMLElement(cExpr.pos,tag,attrList,child).get
+            case CExpr.SUnWrap(value) => TextSpan(cExpr.pos,VMExpr.VMUnWrap(translate(value).get))
+            case CExpr.SDispatch(value)  => translateDispatch(cExpr.pos,value).get
       vmExpr
     }
 
-    protected def translateVector(pos:SpanPos,lst:ArrayBuffer[TextSpan[CExpr]]):Try[TextSpan[VMExpr]] = Try {
-        var vecList:Vector[TextSpan[VMExpr]] = Vector.empty
-        for(cExpr <- lst) {
-          this.translate(cExpr).get.foreach {v =>
-            vecList = vecList.appended(v)
-          }
+    protected def translateDispatch(pos:SpanPos,cExpr:TextSpan[CExpr]):Try[TextSpan[VMExpr]] = Try {
+      cExpr.value match
+        case CExpr.SList(lst) => {
+          val maxArgCount = this.searchMaxSymbol(0,cExpr.value)
+          val argSyms = 1.to(maxArgCount).map(idx => {
+            if(idx == 1) Symbol(None,"%") else Symbol(None,s"%${idx}")
+          }).toVector
+          val bodyList = this.takeBodyList(pos,0,lst).get
+          TextSpan(pos,VMExpr.VMFunc(argSyms,bodyList))
         }
-        TextSpan(pos,VMExpr.VMArray(vecList))
+        case _ => throw InvalidDispatch(pos)
+    }
+
+    protected def searchMaxSymbol(lastCount:Int,expr:CExpr):Int = {
+      expr match
+        case CExpr.SSymbol(ns, value) => {
+          if(value.head == '%') {
+            if(value == "%") 1 else {
+              val tailString = value.tail
+              val count = tailString.toIntOption.getOrElse(0)
+              if(count > lastCount) count else lastCount
+            }
+          } else { 0 }
+        }
+        case CExpr.SList(lst) => {
+          if(lst.length > 0 && lst.head.value.isInstanceOf[CExpr.SSymbol]) {
+            val sym = lst.head.value.asInstanceOf[CExpr.SSymbol];
+            if(sym.value != "fn") { _searchMaxSymbolList(lastCount,lst) } else { 0 }
+          } else { 0 }
+        }
+        case CExpr.SVector(lst) => _searchMaxSymbolList(lastCount,lst)
+        case CExpr.SMap(lst) => _searchMaxSymbolList(lastCount,lst)
+        case CExpr.SXMLElement(_, attrList, child) => {
+          val maxAttr = attrList.map(attrV => searchMaxSymbol(lastCount,attrV._2.value)).max;
+          var retCount = if(maxAttr > lastCount) maxAttr else lastCount
+          for(expr <- child) {
+            val count = searchMaxSymbol(lastCount,expr.value)
+            if(count > retCount) retCount = count
+          }
+          retCount
+        }
+        case _ => 0
+    }
+
+    private def _searchMaxSymbolList(lastCount:Int,lst:ArrayBuffer[TextSpan[CExpr]]):Int = {
+      var retCount = lastCount
+      for(lstExpr <- lst) {
+        val count = searchMaxSymbol(lastCount,lstExpr.value)
+        if(count > retCount) retCount = count
+      }
+      retCount
+    }
+
+    protected def translateVector(pos:SpanPos,lst:ArrayBuffer[TextSpan[CExpr]]):Try[TextSpan[VMExpr]] = Try { 
+        TextSpan(pos,VMExpr.VMArray(lst.map(translate(_).get).toVector))
+    }
+
+    protected def translateXMLElement(pos:SpanPos,tag:String,attrList:ArrayBuffer[(String,TextSpan[CExpr])],
+                                      child:ArrayBuffer[TextSpan[CExpr]]):Try[TextSpan[VMExpr]] = Try {
+      var vmAttrList:Vector[(String,TextSpan[VMExpr])] = attrList.map((k,v) => (k,translate(v).get)).toVector
+      
+      TextSpan(pos,VMExpr.VMXml(tag,vmAttrList,child.map(v => translate(v).get ).toVector))
     }
 
     protected def translateMap(pos:SpanPos,lst:ArrayBuffer[TextSpan[CExpr]]):Try[TextSpan[VMExpr]] = Try {
-      var vecList:Vector[TextSpan[VMExpr]] = Vector.empty
-        for(cExpr <- lst) {
-          this.translate(cExpr).get.foreach {v =>
-            vecList = vecList.appended(v)
-          }
-        }
-        TextSpan(pos,VMExpr.VMMap(vecList))
+        TextSpan(pos,VMExpr.VMMap(lst.map(translate(_).get).toVector))
     }
 
     protected def translateList(pos:SpanPos,lst:ArrayBuffer[TextSpan[CExpr]]):Try[TextSpan[VMExpr]] = Try {
@@ -78,23 +126,21 @@ class Translator {
     }
 
     protected def translateInvoke(pos:SpanPos,lst:ArrayBuffer[TextSpan[CExpr]]):Try[TextSpan[VMExpr]] = Try {
-      val fnExpr = translate(lst.head).get.get
+      val fnExpr = translate(lst.head).get
       var argsExpr:Vector[TextSpan[VMExpr]] = Vector.empty
       for(idx <- 1.until(lst.length)) {
-        translate(lst(idx)).get.foreach {v =>
-          argsExpr = argsExpr.appended(v)
-        }
+         argsExpr :+ translate(lst(idx)).get
       }
       TextSpan(pos,VMExpr.VMCall(fnExpr,argsExpr))
     }
 
     protected def translateIf(pos:SpanPos,lst:ArrayBuffer[TextSpan[CExpr]]):Try[TextSpan[VMExpr]] = Try {
       if(lst.length < 3 || lst.length > 4) throw InvalidIf(pos)
-      val condExpr = translate(lst(1)).get.getOrElse(throw InvalidIf(pos))
-      val trueExpr = translate(lst(2)).get.getOrElse(throw InvalidIf(pos))
+      val condExpr = translate(lst(1)).get
+      val trueExpr = translate(lst(2)).get
       var alts:Vector[Alternative] = Vector(Alternative(AltPattern.Literal(LitValue.LBool(true)),trueExpr))
       if(lst.length > 3) {
-        val falseExpr = translate(lst(3)).get.getOrElse(throw InvalidIf(pos))
+        val falseExpr = translate(lst(3)).get
         alts = alts.appended(Alternative(AltPattern.Literal(LitValue.LBool(false)),falseExpr))
       } else {
         alts = alts.appended(Alternative(AltPattern.Literal(LitValue.LBool(false)),TextSpan(pos,VMExpr.VMNil)))
@@ -103,10 +149,10 @@ class Translator {
     }
 
     protected def translateDef(pos:SpanPos,lst:ArrayBuffer[TextSpan[CExpr]]):Try[TextSpan[VMExpr]] = Try {
-      val defExpr = translate(lst(1)).get.getOrElse(throw InvalidDef(pos))
+      val defExpr = translate(lst(1)).get
       defExpr.value match
         case VMExpr.VMSymbol(symbol) => {
-          val valueExpr = translate(lst(2)).get.getOrElse(throw InvalidDef(pos))
+          val valueExpr = translate(lst(2)).get
           TextSpan(pos,VMExpr.VMDef(symbol,valueExpr))
         }
         case _ => throw InvalidDef(pos)
@@ -118,8 +164,7 @@ class Translator {
       val argSyms:Vector[Symbol] = this.takeArrayArgSyms(pos,lst(1).value).get
       var bodyList:Vector[TextSpan[VMExpr]] = Vector.empty
       for(idx <- 2.until(lst.length)) {
-        val expr = translate(lst(idx)).get.getOrElse(throw InvalidFN(pos))
-        bodyList = bodyList.appended(expr)
+        bodyList :+ translate(lst(idx)).get
       }
       if(bodyList.isEmpty) {
         bodyList = bodyList.appended(TextSpan(pos,VMExpr.VMNil))
@@ -131,7 +176,7 @@ class Translator {
       cExpr match
         case CExpr.SVector(args) => {
           var argSyms:Vector[Symbol] = Vector.empty
-          val argsList = args.map(v => translate(v).get.getOrElse(throw InvalidList(pos)))
+          val argsList = args.map(v => translate(v).get)
           for(arg <- argsList) {
             arg.value match
               case VMExpr.VMSymbol(value) => argSyms = argSyms.appended(value)
@@ -149,7 +194,7 @@ class Translator {
 
       var bodyList:Vector[TextSpan[VMExpr]] = Vector.empty
       for(idx <- 3.until(lst.length)) {
-        val expr = translate(lst(idx)).get.getOrElse(throw InvalidFN(pos))
+        val expr = translate(lst(idx)).get
         bodyList = bodyList.appended(expr)
       }
       if(bodyList.isEmpty) {
@@ -172,7 +217,7 @@ class Translator {
     protected def takeBodyList(pos:SpanPos,offsetIdx:Int,lst:ArrayBuffer[TextSpan[CExpr]]):Try[Vector[TextSpan[VMExpr]]] = Try {
       var bodyList:Vector[TextSpan[VMExpr]] = Vector.empty
       for(idx <- offsetIdx.until(lst.length)) {
-        val expr = translate(lst(idx)).get.getOrElse(throw InvalidFN(pos))
+        val expr = translate(lst(idx)).get
         bodyList = bodyList.appended(expr)
       }
       if(bodyList.isEmpty) {
@@ -182,10 +227,7 @@ class Translator {
     }
 
     inline protected def translateCastTo[T <: VMExpr](cExpr:TextSpan[CExpr]):Try[Option[T]] = Try {
-      val vmExpr:Option[TextSpan[VMExpr]] = translate(cExpr).get
-      vmExpr match
-        case None => None
-        case Some(value) => vmExprCastTo[T](value.value)
+      vmExprCastTo[T](translate(cExpr).get.value)
     }
 }
 

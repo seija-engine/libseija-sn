@@ -15,3 +15,13 @@
   (recur (- n 1))
 )
 {:a 1 :b 2}
+<Item Index=123 />
+<List>
+  <DataItem Index=1 />
+  <DataItem Index=2 />
+  <DataItem Index=3 />
+</List>
+
+#(+ % 1) ;=>(fn [%] (+ % 1))
+
+#((+ 1 %) (fn [%2 %] (+ % %2)))

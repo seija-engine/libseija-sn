@@ -50,14 +50,14 @@ class Parser(sourceName:String,lexString: LexString) {
           val expr = this.parse()
           if(expr.isFailure) return expr
           val end = this.lexString.pos
-          Success(TextSpan(start,end,CExpr.SUnWrap(expr.get.value) ))
+          Success(TextSpan(start,end,CExpr.SUnWrap(expr.get) ))
         }
         case '#' => {
           val start = this.lexString.pos
           val expr = this.parse()
           if(expr.isFailure) return expr
           val end = this.lexString.pos
-          Success(TextSpan(start,end,CExpr.SDispatch(expr.get.value) ))
+          Success(TextSpan(start,end,CExpr.SDispatch(expr.get) ))
         }
         case '[' => this.parseVector()
         case '{' => this.parseMap()
@@ -179,7 +179,7 @@ class Parser(sourceName:String,lexString: LexString) {
     }
     val xmlTag = this.lexString.takeWhile(chr => CharUtils.isXMLSym(chr))
     val xmlTagName = xmlTag.getOrElse(throw InvalidXMLTag(this.lexString.pos,' '))
-    var attrList:ArrayBuffer[(String,CExpr)] = ArrayBuffer.empty
+    var attrList:ArrayBuffer[(String,TextSpan[CExpr])] = ArrayBuffer.empty
     var isSingleXml = false
     boundary(while(true) {
       this.skipWhitespace()
@@ -204,7 +204,7 @@ class Parser(sourceName:String,lexString: LexString) {
             this.lexString.next()
           } else { throw XMLAttrMustPair(this.lexString.pos,attrName) }
           val attrValue = this.parse().get
-          attrList.addOne((attrName,attrValue.value))
+          attrList.addOne((attrName,attrValue))
         } else {
           throw InvalidXMLAttrKey(this.lexString.pos,nextChar.get)
         }
@@ -215,7 +215,7 @@ class Parser(sourceName:String,lexString: LexString) {
       val end = this.lexString.pos
       TextSpan(start,end,CExpr.SXMLElement(xmlTagName.toString(),attrList,ArrayBuffer.empty))
     } else {
-      var childList:ArrayBuffer[CExpr] = ArrayBuffer.empty
+      var childList:ArrayBuffer[TextSpan[CExpr]] = ArrayBuffer.empty
       boundary(while(true) {
         this.skipWhitespace()
         val lk1 = this.lexString.lookahead(1)
@@ -229,7 +229,7 @@ class Parser(sourceName:String,lexString: LexString) {
           break()
         }
         val expr = this.parse().get
-        childList += expr.value
+        childList += expr
       })
       val end = this.lexString.pos
       TextSpan(start,end,CExpr.SXMLElement(xmlTagName.toString(),attrList,childList))
