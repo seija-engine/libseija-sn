@@ -1,17 +1,11 @@
-import core.IGameApp
-import ui.Atlas
-import ui.core.Thickness
-import ui.xml.XmlUIElement
+import core.{IGameApp, logError}
 import core.reflect.Assembly
-import ui.binding.INotifyPropertyChanged
-import core.Time
-import core.logError;
-import ui.controls.Control
-import ui.resources.UIResourceMgr
+import ui.Atlas
+import ui.binding.{INotifyPropertyChanged, ObservableList}
 import ui.command.FCommand
-import ui.binding.ObservableList
-import ruv.FFIRuv
-import ruv.RuvRuntime
+import ui.core.Thickness
+import ui.resources.UIResourceMgr
+import ui.xml.XmlUIElement
 
 class TestDemo extends IGameApp {
   var testViewModel:Option[TestViewModel] = None;

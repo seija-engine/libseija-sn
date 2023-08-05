@@ -14,3 +14,9 @@ case class InvalidFN(pos:SpanPos) extends TransError(pos)
 case class InvalidDefFN(pos:SpanPos) extends TransError(pos)
 case class InvalidLetFN(pos:SpanPos) extends TransError(pos)
 case class InvalidDispatch(pos:SpanPos) extends TransError(pos)
+
+
+sealed class CompileError(pos:SpanPos) extends Exception {
+    def Pos:SpanPos = this.pos
+}
+case class NotFoundSymbol(pos:SpanPos) extends CompileError(pos)

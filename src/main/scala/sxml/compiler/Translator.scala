@@ -7,15 +7,14 @@ import sxml.parser.TextSpan
 import scala.collection.mutable.ArrayBuffer
 import sxml.parser.SpanPos
 import sxml.vm.Alternative
-import scala.reflect.ClassTag
+import scala.collection.immutable.Vector
 
+case class TranslatorModule(val exprList:Vector[TextSpan[VMExpr]])
 
 class Translator {
-    def translateModule(parseModule:ParseModule):Unit = {
-        for(cExpr <- parseModule.exprList) {
-           val vmExpr = this.translate(cExpr).get
-           println(s"VMExpr:${vmExpr}")
-        }
+    def translateModule(parseModule:ParseModule):Try[TranslatorModule] = Try {
+      val lst = parseModule.exprList.map(translate(_).get)
+      TranslatorModule(lst.toVector)
     }
 
     def translate(cExpr:TextSpan[CExpr]):Try[TextSpan[VMExpr]] = Try {
@@ -129,7 +128,7 @@ class Translator {
       val fnExpr = translate(lst.head).get
       var argsExpr:Vector[TextSpan[VMExpr]] = Vector.empty
       for(idx <- 1.until(lst.length)) {
-         argsExpr :+ translate(lst(idx)).get
+        argsExpr = argsExpr :+ translate(lst(idx)).get
       }
       TextSpan(pos,VMExpr.VMCall(fnExpr,argsExpr))
     }
