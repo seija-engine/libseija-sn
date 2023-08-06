@@ -10,6 +10,7 @@ import sxml.vm.Alternative
 import scala.util.Success
 import scala.util.boundary
 import sxml.vm.AltPattern
+import scala.collection.mutable.HashMap
 
 case class FunctionEnv(val function:CompiledFunction) {
     val stack:ScopedMap[VMSymbol,Int] = ScopedMap()
@@ -50,9 +51,7 @@ case class FunctionEnv(val function:CompiledFunction) {
       this.stack.insert(s,index)
     }
 
-    def exitScope():Int = {
-      0
-    }
+    def exitScope():Int = { this.stack.exitScope() }
 }
 
 object FunctionEnv {
@@ -74,6 +73,8 @@ case class FunctionEnvs(envs:ArrayBuffer[FunctionEnv] = ArrayBuffer.empty) {
 
   def current:FunctionEnv = this.envs.last
 
+  def head:FunctionEnv = this.envs.head
+
 }
 
 enum FindVariable[G] {
@@ -82,6 +83,7 @@ enum FindVariable[G] {
 }
 
 class Compiler {
+  var curModuleKeyworld:ArrayBuffer[String] = ArrayBuffer.empty
   def compileModule(module: TranslatorModule):Try[CompiledModule] = Try {
     val envs = FunctionEnvs()
     envs.startFunction(0,VMSymbol(None,""))
@@ -101,13 +103,13 @@ class Compiler {
       case VMExpr.VMCall(fn, args) => this.compileCall(fn,args,envs).get
       case VMExpr.VMSymbol(value) => this.loadIdentifier(expr.pos,value,envs).get
       case VMExpr.VMMatch(value, alts) => this.compileMatch(value,alts,envs).get
-      case VMExpr.VMKeyworld(value, isLocal) =>
+      case VMExpr.VMKeyworld(value, isLocal) => this.emitKeyworld(value,envs.current)
+      case VMExpr.VMMap(value) => this.compileMap(expr.pos,value,envs)
       case VMExpr.VMFunc(args, bodyLst) =>
       case VMExpr.VMLet(lets, bodyLst, isLoop) =>
       case VMExpr.VMRecur(lst) =>
       case VMExpr.VMXml(tag, attrs, child) =>
       case VMExpr.VMUnWrap(value) =>
-      case VMExpr.VMMap(value) =>
   }
 
   protected def find(symbol:VMSymbol,envs:FunctionEnvs):Option[FindVariable[Int]] = {
@@ -123,6 +125,15 @@ class Compiler {
     findVar match
       case FindVariable.Stack(index) => envs.current.emit(Instruction.Push(index))
       case FindVariable.UpVar(value) => ???    
+  }
+
+  protected def compileMap(pos:SpanPos,list:Vector[TextSpan[VMExpr]],envs:FunctionEnvs):Try[Unit] = Try {
+     if(list.length % 2 != 0) throw ErrMapCount(pos)
+     for(idx <- 0.until(list.length,2)) {
+      this.compileExpr(list(idx),envs).get
+      this.compileExpr(list(idx + 1),envs).get
+     }
+     envs.current.emit(Instruction.ConstructMap(list.length / 2))
   }
 
   protected def compileMatch(value:TextSpan[VMExpr],alts:Vector[Alternative],envs:FunctionEnvs):Try[Unit] = Try {
@@ -167,7 +178,14 @@ class Compiler {
           instrs.update(startIndex,Instruction.CJump(instrs.length))
         }
       this.compileExpr(alt.expr,envs).get
-      envs.current.exitScope()
+      val exitCount = envs.current.exitScope()
+      envs.current.emit(Instruction.Slide(exitCount))
+      endJumps.addOne(envs.current.function.instructions.length)
+      envs.current.emit(Instruction.Jump(0))
+    }
+    for(index <- endJumps) {
+      val instr = envs.current.function.instructions;
+      instr.update(index,Instruction.Jump(instr.length))
     }
   }
 
@@ -220,5 +238,15 @@ class Compiler {
         envs.current.emit(op)
         true
       }
+  }
+
+
+  private def emitKeyworld(value:String,env:FunctionEnv):Unit = {
+    val keyIndex = this.curModuleKeyworld.indexOf(value)
+    if(keyIndex >= 0) {
+      env.emit(Instruction.PushKW(keyIndex))
+    }
+    this.curModuleKeyworld.addOne(value)
+    env.emit(Instruction.PushKW(this.curModuleKeyworld.length - 1))
   }
 }

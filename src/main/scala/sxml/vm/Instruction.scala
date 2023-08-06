@@ -6,11 +6,15 @@ enum Instruction {
     case PushChar(value:Char)
     case PushFloat(value:Double)
     case PushString(value:Long)
+    case PushKW(value:Int)
     case Push(value:Long)
     case Call(value:Int)
 
     case ConstructArray(count:Int)
+    case ConstructMap(count:Int)
     case CJump(index:Int)
+    case Jump(index:Int)
+    case Slide(count:Int)
     case Return
 
     case Add

@@ -20,3 +20,4 @@ sealed class CompileError(pos:SpanPos) extends Exception {
     def Pos:SpanPos = this.pos
 }
 case class NotFoundSymbol(pos:SpanPos) extends CompileError(pos)
+case class ErrMapCount(pos:SpanPos) extends CompileError(pos)

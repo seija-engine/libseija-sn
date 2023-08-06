@@ -10,14 +10,17 @@ class ScopedMap[K,V] {
 
   def numScopes():Int = this.scopes.count(_.isEmpty) + 1
 
-  def exitScope():Unit = {
+  def exitScope():Int = {
+    var popCount = 0
     var curPop = this.scopes.remove(this.scopes.length - 1)
     while(curPop.isDefined) {
+      popCount += 1
       this.innerMap.get(curPop.get).foreach {list =>
         list.remove(list.length - 1)
       }
       curPop = this.scopes.remove(this.scopes.length - 1)
     }
+    popCount
   }
 
   def insert(k:K,v:V):Unit = {
