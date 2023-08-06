@@ -49,6 +49,10 @@ case class FunctionEnv(val function:CompiledFunction) {
       val index = this.stackSize - 1
       this.stack.insert(s,index)
     }
+
+    def exitScope():Int = {
+      0
+    }
 }
 
 object FunctionEnv {
@@ -123,17 +127,47 @@ class Compiler {
 
   protected def compileMatch(value:TextSpan[VMExpr],alts:Vector[Alternative],envs:FunctionEnvs):Try[Unit] = Try {
     this.compileExpr(value,envs).get
+    val startJumps:ArrayBuffer[Int] = ArrayBuffer.empty
     for(alt <- alts) {
       alt.pattern match
         case AltPattern.Literal(value) => {
+          val lhsI = envs.current.stackSize - 1
+          envs.current.emit(Instruction.Push(lhsI))
           value match
-            case LitValue.LLong(value) => 
-            case LitValue.LFloat(value) =>
-            case LitValue.LString(value) =>
-            case LitValue.LBool(value) => println("!!!!!!!!!")
-            case LitValue.LChar(value) =>
-          
+            case LitValue.LLong(value) => {
+              envs.current.emit(Instruction.PushInt(value))
+              envs.current.emit(Instruction.EQ)
+            }
+            case LitValue.LFloat(value) => {
+              envs.current.emit(Instruction.PushFloat(value))
+              envs.current.emit(Instruction.EQ)
+            }
+            case LitValue.LBool(value) => {
+              envs.current.emit(Instruction.PushChar(if(value) '1' else '0'))
+              envs.current.emit(Instruction.CharEQ)
+            }
+            case LitValue.LChar(value) => {
+              envs.current.emit(Instruction.PushChar(value))
+              envs.current.emit(Instruction.CharEQ)
+            }
+            case LitValue.LString(value) => {
+              envs.current.emitString(value)
+              envs.current.emit(Instruction.StringEQ)
+            }
         }
+      startJumps.addOne(envs.current.function.instructions.length)
+      envs.current.emit(Instruction.CJump(0))
+    }
+    val endJumps:ArrayBuffer[Int] = ArrayBuffer.empty
+    for ((alt,startIndex) <- alts.zip(startJumps)) {
+      envs.current.stack.enterScope()
+      alt.pattern match
+        case AltPattern.Literal(value) => {
+          val instrs = envs.current.function.instructions;
+          instrs.update(startIndex,Instruction.CJump(instrs.length))
+        }
+      this.compileExpr(alt.expr,envs).get
+      envs.current.exitScope()
     }
   }
 
@@ -142,7 +176,7 @@ class Compiler {
         case LitValue.LLong(value) => env.emit(Instruction.PushInt(value))
         case LitValue.LFloat(value) => env.emit(Instruction.PushFloat(value))
         case LitValue.LChar(value) => env.emit(Instruction.PushChar(value))
-        case LitValue.LBool(value) => env.emit(Instruction.PushBool(value))
+        case LitValue.LBool(value) => env.emit(Instruction.PushChar(if(value) '1' else '0'))
         case LitValue.LString(value) => env.emitString(value)
   }
 
