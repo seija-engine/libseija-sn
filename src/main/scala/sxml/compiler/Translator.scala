@@ -16,7 +16,6 @@ class Translator {
       val lst = parseModule.exprList.map(translate(_).get)
       TranslatorModule(lst.toVector)
     }
-
     def translate(cExpr:TextSpan[CExpr]):Try[TextSpan[VMExpr]] = Try {
       val vmExpr:TextSpan[VMExpr] = cExpr.value match
             case CExpr.Nil => TextSpan(cExpr.pos,VMExpr.VMNil)
@@ -163,7 +162,7 @@ class Translator {
       val argSyms:Vector[Symbol] = this.takeArrayArgSyms(pos,lst(1).value).get
       var bodyList:Vector[TextSpan[VMExpr]] = Vector.empty
       for(idx <- 2.until(lst.length)) {
-        bodyList :+ translate(lst(idx)).get
+        bodyList = bodyList :+ translate(lst(idx)).get
       }
       if(bodyList.isEmpty) {
         bodyList = bodyList.appended(TextSpan(pos,VMExpr.VMNil))

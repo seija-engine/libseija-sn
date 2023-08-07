@@ -8,6 +8,7 @@ enum Instruction {
     case PushString(value:Long)
     case PushKW(value:Int)
     case Push(value:Long)
+    case PushUpVar(value:Int)
     case Call(value:Int)
 
     case ConstructArray(count:Int)
@@ -16,6 +17,9 @@ enum Instruction {
     case Jump(index:Int)
     case Slide(count:Int)
     case Return
+
+    case NewClosure(index:Int,upvars:Int)
+    case CloseClosure(count:Int)
 
     case Add
     case Subtract
@@ -36,8 +40,12 @@ enum Instruction {
             case PushString(value) => 1
             case Push(value) => 1
             case Call(value) => -value
+            case CJump(_) => -1
+            case NewClosure(index, upvars) => 1
+            case CloseClosure(count) => -1
+            case PushUpVar(value) => 1
             case ConstructArray(count) => 1 - count
-            case Return => 0
+            case Return | Jump(_) => 0
             case _ => -1
         
     }

@@ -1,2 +1,9 @@
-;(if (= 1 1) "Always" (+ 1 1))
-{:k 1 :k2 2}
+(loop [n 0]
+  (if (< n 100)
+    (recur (+ 1 n))
+  )
+)
+
+(defn test [n]
+  (recur n)  
+)

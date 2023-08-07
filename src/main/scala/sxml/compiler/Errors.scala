@@ -21,3 +21,4 @@ sealed class CompileError(pos:SpanPos) extends Exception {
 }
 case class NotFoundSymbol(pos:SpanPos) extends CompileError(pos)
 case class ErrMapCount(pos:SpanPos) extends CompileError(pos)
+case class InvalidLet(pos:SpanPos) extends CompileError(pos)

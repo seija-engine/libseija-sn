@@ -18,7 +18,7 @@ object Main {
     //println(transModule)
     val compiler = sxml.compiler.Compiler()
     val module = compiler.compileModule(transModule).get
-    println(module.function)
+    module.function.debugShow(0)
     //runSeija()
   }
 
