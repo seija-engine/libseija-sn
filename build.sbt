@@ -15,5 +15,4 @@ lazy val root = project
 
 nativeConfig ~= {
     _.withMode(Mode.debug)
-    .withGC(GC.commix)
 }

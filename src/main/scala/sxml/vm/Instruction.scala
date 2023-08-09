@@ -16,6 +16,8 @@ enum Instruction {
     case CJump(index:Int)
     case Jump(index:Int)
     case Slide(count:Int)
+    case Pop(count:Int)
+    case ReplaceTo(idx:Int)
     case Return
 
     case NewClosure(index:Int,upvars:Int)
@@ -44,6 +46,9 @@ enum Instruction {
             case NewClosure(index, upvars) => 1
             case CloseClosure(count) => -1
             case PushUpVar(value) => 1
+            case Pop(count) => -count
+            case Slide(count) => -count
+            case ReplaceTo(_) => -1
             case ConstructArray(count) => 1 - count
             case Return | Jump(_) => 0
             case _ => -1
