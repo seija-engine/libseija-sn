@@ -8,10 +8,10 @@ import sxml.parser.LitValue
 import sxml.parser.SpanPos
 import sxml.vm.Alternative
 import scala.util.Success
-import scala.util.boundary
 import sxml.vm.AltPattern
 import scala.collection.mutable.HashMap
 import sxml.vm.vmExprCastTo
+import scala.collection.mutable.Stack
 
 case class FunctionEnv(val function:CompiledFunction) {
     val stack:ScopedMap[VMSymbol,Int] = ScopedMap()
@@ -95,26 +95,29 @@ case class FunctionEnvs(envs:ArrayBuffer[FunctionEnv] = ArrayBuffer.empty) {
   def head:FunctionEnv = this.envs.head
 
 }
+
 enum FindVariable[G] {
   case Stack(index:Int)
   case UpVar(value:G)
 }
 
-case class JumpMark(val markInstr:Int,val startStackCount:Int)
+case class LoopScope(val backInstrIdx:Int,val stackSize:Int,val argsCount:Int)
 
 class Compiler {
   var curModuleKeyword:ArrayBuffer[String] = ArrayBuffer.empty
+  var loopScopeList:Stack[LoopScope] = Stack.empty
+
   def compileModule(module: TranslatorModule):Try[CompiledModule] = Try {
     val envs = FunctionEnvs()
     envs.startFunction(0,VMSymbol(None,""))
     for(expr <- module.exprList) {
-      compileExpr(expr,envs,None).get
+      compileExpr(expr,envs,false).get
     }
     val endFunction = envs.endFunction()
     CompiledModule(endFunction.freeVars.toArray,endFunction.function)
   }
 
-  def compileExpr(expr:TextSpan[VMExpr],envs:FunctionEnvs,jumpMark:Option[JumpMark]):Try[Unit] = Try {
+  def compileExpr(expr:TextSpan[VMExpr],envs:FunctionEnvs,isTail:Boolean):Try[Unit] = Try {
     expr.value match
       case VMExpr.VMNil => envs.current.emit(Instruction.PushNil)
       case VMExpr.VMLit(value) => this.compileLit(value,envs.current)
@@ -122,12 +125,12 @@ class Compiler {
       case VMExpr.VMDef(name, expr) => this.compileDef(name,expr,envs).get
       case VMExpr.VMCall(fn, args) => this.compileCall(fn,args,envs).get
       case VMExpr.VMSymbol(value) => this.loadIdentifier(expr.pos,value,envs).get
-      case VMExpr.VMMatch(value, alts) => this.compileMatch(value,alts,envs,jumpMark).get
+      case VMExpr.VMMatch(value, alts) => this.compileMatch(value,alts,envs).get
       case VMExpr.VMKeyworld(value, isLocal) => this.emitKeyworld(value,envs.current)
       case VMExpr.VMMap(value) => this.compileMap(expr.pos,value,envs).get
       case VMExpr.VMFunc(args, bodyLst) => this.compileFunc(expr.pos,args,bodyLst,envs).get
       case VMExpr.VMLet(lets, bodyLst, isLoop) => this.compileLet(expr.pos,lets,bodyLst,isLoop,envs).get
-      case VMExpr.VMRecur(lst) => this.compileRecur(expr.pos,lst,envs,jumpMark).get
+      case VMExpr.VMRecur(lst) => this.compileRecur(expr.pos,lst,envs).get
       case VMExpr.VMXml(tag, attrs, child) =>
       case VMExpr.VMUnWrap(value) =>
   }
@@ -158,13 +161,19 @@ class Compiler {
       case FindVariable.UpVar(value) => envs.current.emit(Instruction.PushUpVar(value))
   }
 
-  protected def compileRecur(pos:SpanPos,args:Vector[TextSpan[VMExpr]],envs:FunctionEnvs,jumpMark:Option[JumpMark]):Try[Unit] = Try {
-    if(jumpMark.isEmpty) throw InvalidRecur(pos)
+  protected def compileRecur(pos:SpanPos,args:Vector[TextSpan[VMExpr]],envs:FunctionEnvs):Try[Unit] = Try {
+    val loopScope = this.loopScopeList.headOption.getOrElse(throw InvalidRecur(pos))
+    if(args.length != loopScope.argsCount) throw InvalidRecur(pos)
+    val curStack = envs.current.stackSize
+    val popSize = curStack - loopScope.stackSize - loopScope.argsCount
+    println(s"${curStack} ${loopScope.stackSize} ${args.length}")
+    var curStackPos = loopScope.stackSize
     for(expr <- args) {
-      this.compileExpr(expr,envs,None).get
-      envs.current.emit(Instruction.ReplaceTo(0))
+      this.compileExpr(expr,envs,false).get
+      envs.current.emit(Instruction.ReplaceTo(curStackPos))
+      curStackPos += 1
     }
-    envs.current.emit(Instruction.Jump(jumpMark.get.markInstr))
+    envs.current.emit(Instruction.Pop(popSize))
   }
 
   protected def compileLet(pos:SpanPos,lets:Vector[TextSpan[VMExpr]],lst:Vector[TextSpan[VMExpr]],isLoop:Boolean,envs:FunctionEnvs):Try[Unit] = Try {
@@ -173,7 +182,7 @@ class Compiler {
       for(idx <- 0.until(lets.length,2)) {
         val symbol = vmExprCastTo[VMExpr.VMSymbol](lets(idx).value).getOrElse(throw InvalidLet(pos))
         val valueExpr = lets(idx + 1)
-        this.compileExpr(valueExpr,envs,None).get
+        this.compileExpr(valueExpr,envs,false).get
         envs.current.newStackVar(symbol.value)
       }
     }
@@ -183,7 +192,7 @@ class Compiler {
       val curStackSize = envs.current.stackSize
       pushLetVars()
       for(expr <- lst) {
-        this.compileExpr(expr,envs,None).get
+        this.compileExpr(expr,envs,false).get
       }
       envs.current.exitScope()
       val endStackSize = envs.current.stackSize
@@ -191,17 +200,27 @@ class Compiler {
       envs.current.emit(Instruction.Slide(popCount))
     } else { //loop
       val curStackSize = envs.current.stackSize
-      pushLetVars()
       val markInstr = envs.current.function.instructions.length
+      this.putLoopScope(markInstr,curStackSize,lets.length / 2)
+      pushLetVars()
       for(idx <- lst.indices) {
         val curExpr = lst(idx)
         if(idx == lst.length - 1) {
-          this.compileExpr(curExpr,envs,Some(JumpMark(markInstr,curStackSize))).get
+          this.compileExpr(curExpr,envs,true).get
         } else {
-          this.compileExpr(curExpr,envs,None).get
+          this.compileExpr(curExpr,envs,false).get
         }
       }
+      this.popLoopScope()
     }
+  }
+
+  private def putLoopScope(backInstrIdx:Int,stackSize:Int,argsCount:Int):Unit = {
+    this.loopScopeList.push(LoopScope(backInstrIdx,stackSize,argsCount))
+  }
+
+  private def popLoopScope():Option[LoopScope] = {
+    if(this.loopScopeList.isEmpty) None else Some(this.loopScopeList.pop())
   }
 
   protected def compileFunc(pos:SpanPos,args:Vector[VMSymbol],bodyLst:Vector[TextSpan[VMExpr]],envs:FunctionEnvs):Try[Unit] = Try {
@@ -216,7 +235,7 @@ class Compiler {
         envs.current.pushStackVar(arg)
     }
     for(expr <- bodyLst) {
-        this.compileExpr(expr,envs,None).get
+        this.compileExpr(expr,envs,false).get
     }
     envs.current.exitScope()
     val f = envs.endFunction()
@@ -240,14 +259,14 @@ class Compiler {
   protected def compileMap(pos:SpanPos,list:Vector[TextSpan[VMExpr]],envs:FunctionEnvs):Try[Unit] = Try {
      if(list.length % 2 != 0) throw ErrMapCount(pos)
      for(idx <- 0.until(list.length,2)) {
-      this.compileExpr(list(idx),envs,None).get
-      this.compileExpr(list(idx + 1),envs,None).get
+      this.compileExpr(list(idx),envs,false).get
+      this.compileExpr(list(idx + 1),envs,false).get
      }
      envs.current.emit(Instruction.ConstructMap(list.length / 2))
   }
 
-  protected def compileMatch(value:TextSpan[VMExpr],alts:Vector[Alternative],envs:FunctionEnvs,jumpMark: Option[JumpMark]):Try[Unit] = Try {
-    this.compileExpr(value,envs,None).get
+  protected def compileMatch(value:TextSpan[VMExpr],alts:Vector[Alternative],envs:FunctionEnvs):Try[Unit] = Try {
+    this.compileExpr(value,envs,false).get
     val startJumps:ArrayBuffer[Int] = ArrayBuffer.empty
     for(alt <- alts) {
       alt.pattern match
@@ -264,8 +283,7 @@ class Compiler {
               envs.current.emit(Instruction.EQ)
             }
             case LitValue.LBool(value) => {
-              envs.current.emit(Instruction.PushChar(if(value) '1' else '0'))
-              envs.current.emit(Instruction.CharEQ)
+              //envs.current.emit(Instruction.PushChar(if(value) '1' else '0'))
             }
             case LitValue.LChar(value) => {
               envs.current.emit(Instruction.PushChar(value))
@@ -281,15 +299,13 @@ class Compiler {
     }
     val endJumps:ArrayBuffer[Int] = ArrayBuffer.empty
     for ((alt,startIndex) <- alts.zip(startJumps)) {
-      envs.current.stack.enterScope()
       alt.pattern match
         case AltPattern.Literal(_) => {
           val instrs = envs.current.function.instructions
           instrs.update(startIndex,Instruction.CJump(instrs.length))
         }
-      this.compileExpr(alt.expr,envs,jumpMark).get
-      val exitCount = envs.current.exitScope()
-      envs.current.emit(Instruction.Slide(exitCount))
+      this.compileExpr(alt.expr,envs,false).get
+      envs.current.emit(Instruction.Slide(1))
       endJumps.addOne(envs.current.function.instructions.length)
       envs.current.emit(Instruction.Jump(0))
     }
@@ -297,6 +313,7 @@ class Compiler {
       val instr = envs.current.function.instructions;
       instr.update(index,Instruction.Jump(instr.length))
     }
+
   }
 
   protected def compileLit(value:LitValue,env:FunctionEnv):Unit = {
@@ -310,24 +327,24 @@ class Compiler {
 
   protected def compileArray(list:Vector[TextSpan[VMExpr]],envs:FunctionEnvs):Try[Unit] = Try {
     list.foreach { vmExpr =>
-      this.compileExpr(vmExpr,envs:FunctionEnvs,None)
+      this.compileExpr(vmExpr,envs:FunctionEnvs,false)
     }
     envs.current.emit(Instruction.ConstructArray(list.length))
   }
 
   protected def compileDef(name:VMSymbol,expr:TextSpan[VMExpr],envs:FunctionEnvs):Try[Unit] = Try {
-    this.compileExpr(expr,envs,None).get
+    this.compileExpr(expr,envs,false).get
     envs.current.newStackVar(name)
   }
 
-  protected def compileCall(name:TextSpan[VMExpr],args:Vector[TextSpan[VMExpr]],envs:FunctionEnvs):Try[Unit] = Try(boundary{
+  protected def compileCall(name:TextSpan[VMExpr],args:Vector[TextSpan[VMExpr]],envs:FunctionEnvs):Try[Unit] = Try(scala.util.boundary{
     val opSymbol = vmExprCastTo[VMExpr.VMSymbol](name.value)
     if(opSymbol.isDefined) {
-      if(this.tryCompilePrimitive(opSymbol.get.value,args,envs).get) boundary.break()
+      if(this.tryCompilePrimitive(opSymbol.get.value,args,envs).get)  scala.util.boundary.break()
     }
-    this.compileExpr(name,envs,None).get
+    this.compileExpr(name,envs,false).get
     for(arg <- args) {
-      this.compileExpr(arg,envs,None)
+      this.compileExpr(arg,envs,false)
     }
     envs.current.emitCall(args.length)
   })
@@ -345,8 +362,8 @@ class Compiler {
     binOp match
       case None => false
       case Some(op) => {
-        this.compileExpr(args(0),envs,None)
-        this.compileExpr(args(1),envs,None)
+        this.compileExpr(args(0),envs,false)
+        this.compileExpr(args(1),envs,false)
         envs.current.emit(op)
         true
       }
