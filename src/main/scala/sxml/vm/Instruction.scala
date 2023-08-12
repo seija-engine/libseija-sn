@@ -13,12 +13,14 @@ enum Instruction {
 
     case ConstructArray(count:Int)
     case ConstructMap(count:Int)
+    case ConstructXML(attrCount:Int,childCount:Int)
     case CJump(index:Int)
     case Jump(index:Int)
     case Slide(count:Int)
     case Pop(count:Int)
     case ReplaceTo(idx:Int)
     case Return
+    case UnWrap
 
     case NewClosure(index:Int,upvars:Int)
     case CloseClosure(count:Int)
@@ -49,8 +51,10 @@ enum Instruction {
             case Pop(count) => -count
             case Slide(count) => -count
             case ReplaceTo(_) => -1
+            case UnWrap => -1
             case ConstructArray(count) => 1 - count
             case Return | Jump(_) => 0
+            case ConstructXML(attrCount, childCount) => -(attrCount * 2 + childCount)
             case _ => -1
         
     }

@@ -21,6 +21,7 @@ case class FunctionEnv(val function:CompiledFunction) {
 
     def emit(instruction:Instruction):Unit = {
       val adjustment = instruction.adjust()
+      //println(s"adj:${instruction} ${this.stackSize}+=${adjustment} ")
       if(adjustment > 0) {
         this.increaseStack(adjustment)
       } else {
@@ -53,7 +54,7 @@ case class FunctionEnv(val function:CompiledFunction) {
     
     def newStackVar(s:VMSymbol):Unit = {
       val index = this.stackSize - 1
-      //println(s"new stackVar:${s} = ${index}")
+      println(s"new stackVar:${s} = ${index}")
       this.stack.insert(s,index)
     }
 
@@ -101,7 +102,12 @@ enum FindVariable[G] {
   case UpVar(value:G)
 }
 
-case class LoopScope(val backInstrIdx:Int,val stackSize:Int,val argsCount:Int)
+case class LoopScope(
+  val backInstrIdx:Int,
+  val stackSize:Int,
+  val argsCount:Int,
+  var isRecur:Boolean = false
+)
 
 class Compiler {
   var curModuleKeyword:ArrayBuffer[String] = ArrayBuffer.empty
@@ -125,14 +131,14 @@ class Compiler {
       case VMExpr.VMDef(name, expr) => this.compileDef(name,expr,envs).get
       case VMExpr.VMCall(fn, args) => this.compileCall(fn,args,envs).get
       case VMExpr.VMSymbol(value) => this.loadIdentifier(expr.pos,value,envs).get
-      case VMExpr.VMMatch(value, alts) => this.compileMatch(value,alts,envs).get
+      case VMExpr.VMMatch(value, alts) => this.compileMatch(value,alts,envs,isTail).get
       case VMExpr.VMKeyworld(value, isLocal) => this.emitKeyworld(value,envs.current)
       case VMExpr.VMMap(value) => this.compileMap(expr.pos,value,envs).get
       case VMExpr.VMFunc(args, bodyLst) => this.compileFunc(expr.pos,args,bodyLst,envs).get
       case VMExpr.VMLet(lets, bodyLst, isLoop) => this.compileLet(expr.pos,lets,bodyLst,isLoop,envs).get
-      case VMExpr.VMRecur(lst) => this.compileRecur(expr.pos,lst,envs).get
-      case VMExpr.VMXml(tag, attrs, child) =>
-      case VMExpr.VMUnWrap(value) =>
+      case VMExpr.VMRecur(lst) => this.compileRecur(expr.pos,lst,envs,isTail).get
+      case VMExpr.VMUnWrap(value) => envs.current.emit(Instruction.UnWrap)
+      case VMExpr.VMXml(tag, attrs, child) => this.compileXML(expr.pos,tag,attrs,child,envs,isTail)
   }
 
   protected def find(symbol:VMSymbol,envs:FunctionEnvs):Option[FindVariable[Int]] = {
@@ -161,19 +167,35 @@ class Compiler {
       case FindVariable.UpVar(value) => envs.current.emit(Instruction.PushUpVar(value))
   }
 
-  protected def compileRecur(pos:SpanPos,args:Vector[TextSpan[VMExpr]],envs:FunctionEnvs):Try[Unit] = Try {
+  protected def compileXML(pos:SpanPos,tag:String,
+                           attrs:Vector[(String,TextSpan[VMExpr])],
+                           childs:Vector[TextSpan[VMExpr]], envs:FunctionEnvs,isTail:Boolean):Try[Unit] = Try {
+     envs.current.emitString(tag)
+     for((attrK,attrV) <- attrs) {
+      envs.current.emitString(attrK)
+      this.compileExpr(attrV,envs,isTail).get
+     }
+     for(child <- childs) {
+      this.compileExpr(child,envs,isTail).get
+     }
+     envs.current.emit(Instruction.ConstructXML(attrs.length,childs.length))
+  }
+
+  protected def compileRecur(pos:SpanPos,args:Vector[TextSpan[VMExpr]],envs:FunctionEnvs,isTail:Boolean):Try[Unit] = Try {
     val loopScope = this.loopScopeList.headOption.getOrElse(throw InvalidRecur(pos))
-    if(args.length != loopScope.argsCount) throw InvalidRecur(pos)
-    val curStack = envs.current.stackSize
-    val popSize = curStack - loopScope.stackSize - loopScope.argsCount
-    println(s"${curStack} ${loopScope.stackSize} ${args.length}")
+    if(args.length != loopScope.argsCount || !isTail) throw InvalidRecur(pos)
     var curStackPos = loopScope.stackSize
     for(expr <- args) {
       this.compileExpr(expr,envs,false).get
       envs.current.emit(Instruction.ReplaceTo(curStackPos))
       curStackPos += 1
     }
+    val curStack = envs.current.stackSize
+    val popSize = curStack - loopScope.stackSize - args.length
     envs.current.emit(Instruction.Pop(popSize))
+    envs.current.emit(Instruction.Jump(loopScope.backInstrIdx))
+    loopScope.isRecur = true
+    envs.current.emit(Instruction.PushNil)
   }
 
   protected def compileLet(pos:SpanPos,lets:Vector[TextSpan[VMExpr]],lst:Vector[TextSpan[VMExpr]],isLoop:Boolean,envs:FunctionEnvs):Try[Unit] = Try {
@@ -200,9 +222,9 @@ class Compiler {
       envs.current.emit(Instruction.Slide(popCount))
     } else { //loop
       val curStackSize = envs.current.stackSize
+      pushLetVars()
       val markInstr = envs.current.function.instructions.length
       this.putLoopScope(markInstr,curStackSize,lets.length / 2)
-      pushLetVars()
       for(idx <- lst.indices) {
         val curExpr = lst(idx)
         if(idx == lst.length - 1) {
@@ -211,6 +233,10 @@ class Compiler {
           this.compileExpr(curExpr,envs,false).get
         }
       }
+      val endStackSize = envs.current.stackSize
+      val popCount = endStackSize - curStackSize - 1
+      envs.current.emit(Instruction.Slide(popCount))
+      envs.current.exitScope()
       this.popLoopScope()
     }
   }
@@ -265,7 +291,7 @@ class Compiler {
      envs.current.emit(Instruction.ConstructMap(list.length / 2))
   }
 
-  protected def compileMatch(value:TextSpan[VMExpr],alts:Vector[Alternative],envs:FunctionEnvs):Try[Unit] = Try {
+  protected def compileMatch(value:TextSpan[VMExpr],alts:Vector[Alternative],envs:FunctionEnvs,isTail:Boolean):Try[Unit] = Try {
     this.compileExpr(value,envs,false).get
     val startJumps:ArrayBuffer[Int] = ArrayBuffer.empty
     for(alt <- alts) {
@@ -283,7 +309,8 @@ class Compiler {
               envs.current.emit(Instruction.EQ)
             }
             case LitValue.LBool(value) => {
-              //envs.current.emit(Instruction.PushChar(if(value) '1' else '0'))
+              envs.current.emit(Instruction.PushChar(if(value) '1' else '0'))
+              envs.current.emit(Instruction.CharEQ)
             }
             case LitValue.LChar(value) => {
               envs.current.emit(Instruction.PushChar(value))
@@ -304,16 +331,20 @@ class Compiler {
           val instrs = envs.current.function.instructions
           instrs.update(startIndex,Instruction.CJump(instrs.length))
         }
-      this.compileExpr(alt.expr,envs,false).get
-      envs.current.emit(Instruction.Slide(1))
-      endJumps.addOne(envs.current.function.instructions.length)
-      envs.current.emit(Instruction.Jump(0))
+      this.compileExpr(alt.expr,envs,isTail).get
+      if(isTail && loopScopeList.length > 0 && loopScopeList.last.isRecur) {
+        loopScopeList.last.isRecur = false;
+      } else {
+        envs.current.emit(Instruction.Slide(1))
+        endJumps.addOne(envs.current.function.instructions.length)
+        envs.current.emit(Instruction.Jump(0))
+      }
     }
     for(index <- endJumps) {
       val instr = envs.current.function.instructions;
       instr.update(index,Instruction.Jump(instr.length))
     }
-
+   
   }
 
   protected def compileLit(value:LitValue,env:FunctionEnv):Unit = {
