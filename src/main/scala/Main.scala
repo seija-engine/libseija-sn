@@ -10,8 +10,8 @@ import scala.collection.mutable
 object Main {
   def main(args: Array[String]): Unit = {
     println(s"run main")
-    val fs = scala.io.Source.fromFile("example/assets/test4.clj")
-    val parser = sxml.parser.Parser.fromSource("test4.clj",fs)
+    val fs = scala.io.Source.fromFile("example/assets/test5.clj")
+    val parser = sxml.parser.Parser.fromSource("test5.clj",fs)
     val astModule = parser.parseModule().get
     val trans = sxml.compiler.Translator()
     val transModule = trans.translateModule(astModule).get
@@ -19,6 +19,8 @@ object Main {
     val compiler = sxml.compiler.Compiler()
     val module = compiler.compileModule(transModule).get
     module.function.debugShow(0)
+    val vm = sxml.vm.SXmlVM()
+    vm.runModule(module)
     //runSeija()
   }
 

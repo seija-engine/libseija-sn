@@ -5,9 +5,9 @@ enum Instruction {
     case PushInt(value:Long)
     case PushChar(value:Char)
     case PushFloat(value:Double)
-    case PushString(value:Long)
+    case PushString(value:Int)
     case PushKW(value:Int)
-    case Push(value:Long)
+    case Push(value:Int)
     case PushUpVar(value:Int)
     case Call(value:Int)
 
@@ -32,8 +32,6 @@ enum Instruction {
     case LT
     case GT
     case EQ
-    case CharEQ
-    case StringEQ
 
     def adjust():Int = {
         this match

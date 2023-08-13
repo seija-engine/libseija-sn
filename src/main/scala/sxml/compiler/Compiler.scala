@@ -310,15 +310,15 @@ class Compiler {
             }
             case LitValue.LBool(value) => {
               envs.current.emit(Instruction.PushChar(if(value) '1' else '0'))
-              envs.current.emit(Instruction.CharEQ)
+              envs.current.emit(Instruction.EQ)
             }
             case LitValue.LChar(value) => {
               envs.current.emit(Instruction.PushChar(value))
-              envs.current.emit(Instruction.CharEQ)
+              envs.current.emit(Instruction.EQ)
             }
             case LitValue.LString(value) => {
               envs.current.emitString(value)
-              envs.current.emit(Instruction.StringEQ)
+              envs.current.emit(Instruction.EQ)
             }
         }
       startJumps.addOne(envs.current.function.instructions.length)
