@@ -8,7 +8,11 @@ class VMContext(vm:SXmlVM) {
 
     
     def execute():Try[Unit] = Try {
-        val lastCallStack = this.stack.frames.last
-        lastCallStack.execute_()
+        var curCallStack:Option[VMCallStack] = this.stack.frames.lastOption
+        while(curCallStack.isDefined) {
+           curCallStack = curCallStack.get.execute_().get
+        }
+        println("**********END**********")
+        println(this.stack.values.mkString("\r\n"))
     }
 }

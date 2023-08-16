@@ -14,7 +14,7 @@ class SXmlVM {
     def callThunk(closure:ClosureData):Unit = {
         val closureState = ClosureState(closure,0)
         this.context.stack.enterCallStack(0,closureState)
-        this.context.execute()
+        this.context.execute().get
         this.context.stack.exitCallStack()
     }
 

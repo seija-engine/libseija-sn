@@ -35,66 +35,65 @@ class VMCallStack(offsetValue:Int,stackRef:VMStack,stateValue:ClosureState) {
    val state:ClosureState = stateValue
    var curIndex:Int = 0
 
-   def execute_():Try[Unit] = Try {
-      println("execute_")
+   def execute_():Try[Option[VMCallStack]] = Try {
       this.curIndex = this.state.instructionIndex
       var isRun = true
+      var nextStack:Option[VMCallStack] = None;
       while(isRun) {
          val instr = this.instruction()
          val index = this.curIndex
          this.step()
          println(s"do:-${instr}-")
          instr match
-            case Instruction.PushNil => { this.stack.values.addOne(VMValue.NIL()) }
-            case Instruction.PushInt(value) => { this.stack.values.addOne(VMValue.VMLong(value)) }
-            case Instruction.PushChar(value) => {  this.stack.values.addOne(VMValue.VMChar(value)) }
-            case Instruction.PushFloat(value) => { this.stack.values.addOne(VMValue.VMFloat(value)) }
+            case Instruction.PushNil => { this.push(VMValue.NIL()) }
+            case Instruction.PushInt(value) => { this.push(VMValue.VMLong(value)) }
+            case Instruction.PushChar(value) => {  this.push(VMValue.VMChar(value)) }
+            case Instruction.PushFloat(value) => { this.push(VMValue.VMFloat(value)) }
             case Instruction.PushString(value) => {
                val str = this.state.closure.function.strings(value)
-               this.stack.values.addOne(VMValue.VMString(str))
+               this.push(VMValue.VMString(str))
             }
             case Instruction.Push(idx) => {
-               val value = this.stack.values(idx)
-               this.stack.values.addOne(value)
+               val value = this.get(idx)
+               this.push(value)
             }
             case Instruction.ConstructArray(count) => {
-               val takeList = this.stack.values.slice(this.stack.values.length - count,this.stack.values.length).toVector
-               this.stack.values.remove(this.stack.values.length - count,count)
-               this.stack.values.addOne(VMValue.VMArray(takeList))
+               val takeList = this.takeTail(count)
+               this.push(VMValue.VMArray(takeList.toVector))
             }
             case Instruction.ConstructMap(count) => {
                val rmCount = count * 2
-               val takeList = this.stack.values.slice(this.stack.values.length - rmCount,this.stack.values.length).toArray
-               this.stack.values.remove(this.stack.values.length - rmCount,rmCount)
+               val takeList = this.takeTail(rmCount)
                val pushMap:HashMap[VMValue,VMValue] = HashMap.from(0.until(takeList.length,2)
                                                              .map(idx => (takeList(idx),takeList(idx+1))))
-               this.stack.values.addOne(VMValue.VMMap(pushMap))
-               
+               this.push(VMValue.VMMap(pushMap))
             }
             case Instruction.NewClosure(cidx, upvars) => {
                val func = this.state.closure.function.innerFunctions(cidx)
                val lst:ArrayBuffer[VMValue] = ArrayBuffer.from(0.until(upvars).map(_ =>VMValue.NIL()))
-               this.stack.values.addOne(VMValue.VMClosure(ClosureData(func, lst))) 
+               this.push(VMValue.VMClosure(ClosureData(func, lst))) 
             }
             case Instruction.CloseClosure(count) => {
-               val i = this.stack.values.length - count - 1;
-               val closure = this.stack.values(i).unwrap[VMValue.VMClosure]().get.data
-               val start = this.stack.values.length - closure.upvars.length;
+               val i = this.len - count - 1;
+               val closure = this.get(i).unwrap[VMValue.VMClosure]().get.data
+               val start = this.len - closure.upvars.length;
                for(idx <- 0.until(closure.upvars.length)) {
-                 closure.upvars.update(idx,this.stack.values(start + idx))
+                 closure.upvars.update(idx,this.get(start + idx))
                }
-               
                val pop = closure.upvars.length + 1;
-               this.stack.values.remove(this.stack.values.length - pop,pop)
+               this.popMany(pop)
             }
             case Instruction.PushUpVar(idx) => {
                val upVar = this.state.closure.upvars(idx)
-               this.stack.values.addOne(upVar)
+               this.push(upVar)
             }
-            case Instruction.Call(value) => {
-
+            case Instruction.Call(argsCount) => {
+               this.state.instructionIndex = this.curIndex;
+               val functionIndex = this.stack.values.length - 1 - argsCount;
+               val fnValue = this.stack.values(functionIndex).unwrap[VMValue.VMClosure]().get;
+               nextStack = Some(this.enterClosure(fnValue.data))
+               isRun = false;
             }
-            
             case Instruction.ConstructXML(attrCount, childCount) => {
 
             }
@@ -120,8 +119,8 @@ class VMCallStack(offsetValue:Int,stackRef:VMStack,stateValue:ClosureState) {
                
             }
             case Instruction.EQ => {
-               val rhs = this.stack.values.remove(this.stack.values.length - 1)
-               val lhs = this.stack.values.remove(this.stack.values.length - 1)
+               val rhs = this.pop()
+               val lhs = this.pop()
                this.pushBoolean(rhs.equals(lhs))
                
             }
@@ -136,17 +135,47 @@ class VMCallStack(offsetValue:Int,stackRef:VMStack,stateValue:ClosureState) {
          println(this.stack.values.mkString("\r\n"))
          println(s"====END:${index}====")
       }
+      if(nextStack.isEmpty) {
+         val slideLen = this.len
+         this.slide(slideLen)
+      }
+      nextStack
    }
 
-  
-   
+   def get(index:Int):VMValue =  this.stack.values(this.offset + index)
+
+   def push(value:VMValue):Unit = this.stack.values.addOne(value)
+
+   def pop():VMValue = this.stack.values.remove(this.stack.values.length - 1)
+
+   def popMany(count:Int) = this.stack.values.remove(this.stack.values.length - count,count)
+
+   def len:Int = this.stack.values.length - this.offset
+
+   def slide(count:Int):Unit = {
+     val lastIndex = this.stack.values.length - 1;
+     val i = lastIndex - count;
+     this.stack.values.update(i,this.stack.values(lastIndex))
+     this.popMany(count)
+   }
+    
+   def takeTail(count:Int):ArrayBuffer[VMValue] = {
+      val retList = this.stack.values.slice(this.stack.values.length - count,this.stack.values.length)
+      this.stack.values.remove(this.stack.values.length - count,count)
+      retList
+   }
+
+   def enterClosure(closure:ClosureData):VMCallStack = {
+      this.stack.enterCallStack(this.stack.values.length - closure.function.args,ClosureState(closure,0))
+   }
+
    def pushBoolean(b:Boolean):Unit = {
       this.stack.values.addOne(VMValue.VMChar( if(b) '1' else '0'))
    }
    
    inline def binNumberOp(instr:Instruction):Unit = {
-      val rhs = this.stack.values.remove(this.stack.values.length - 1)
-      val lhs = this.stack.values.remove(this.stack.values.length - 1)
+      val rhs = this.pop()
+      val lhs = this.pop()
       val toFloat = lhs.isFloat() || rhs.isFloat()
       if(toFloat) {
          val lv:Double = lhs.castFloat().get
