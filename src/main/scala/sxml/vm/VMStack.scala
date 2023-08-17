@@ -18,8 +18,9 @@ class VMStack {
       callStack
    }
 
-   def exitCallStack():Unit = {
+   def exitCallStack():Option[VMCallStack] = {
       this.frames.remove(this.frames.length - 1)
+      this.frames.lastOption
    }
 }
 
@@ -94,29 +95,34 @@ class VMCallStack(offsetValue:Int,stackRef:VMStack,stateValue:ClosureState) {
                nextStack = Some(this.enterClosure(fnValue.data))
                isRun = false;
             }
-            case Instruction.ConstructXML(attrCount, childCount) => {
-
-            }
             case Instruction.CJump(index) => {
-
+               val curValue = this.pop();
+               val isJump = curValue.unwrap[VMValue.VMChar]().map(_.value == '1').getOrElse(false)
+               if(isJump) {
+                  this.curIndex = index;
+               }
             }
             case Instruction.Jump(index) => {
-
+               this.curIndex = index;
             }
             case Instruction.Slide(count) => {
-
+               this.slide(count)
             }
             case Instruction.Pop(count) => {
-
+               if(count > 0) { this.popMany(count) }
             }
             case Instruction.ReplaceTo(idx) => {
-
+               
+               this.stack.values.update(this.offset + idx,this.pop())
             }
             case Instruction.UnWrap => {
 
             }
             case Instruction.PushKW(value) => {
                
+            }
+            case Instruction.ConstructXML(attrCount, childCount) => {
+
             }
             case Instruction.EQ => {
                val rhs = this.pop()
@@ -136,8 +142,10 @@ class VMCallStack(offsetValue:Int,stackRef:VMStack,stateValue:ClosureState) {
          println(s"====END:${index}====")
       }
       if(nextStack.isEmpty) {
+         
          val slideLen = this.len
          this.slide(slideLen)
+         nextStack = this.exitScope()
       }
       nextStack
    }
@@ -167,6 +175,10 @@ class VMCallStack(offsetValue:Int,stackRef:VMStack,stateValue:ClosureState) {
 
    def enterClosure(closure:ClosureData):VMCallStack = {
       this.stack.enterCallStack(this.stack.values.length - closure.function.args,ClosureState(closure,0))
+   }
+
+   def exitScope():Option[VMCallStack] = {
+      this.stack.exitCallStack()
    }
 
    def pushBoolean(b:Boolean):Unit = {
