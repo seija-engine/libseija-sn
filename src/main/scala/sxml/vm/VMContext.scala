@@ -12,7 +12,5 @@ class VMContext(vm:SXmlVM) {
         while(curCallStack.isDefined) {
            curCallStack = curCallStack.get.execute_().get
         }
-        println("**********END**********")
-        println(this.stack.values.mkString("\r\n"))
     }
 }

@@ -1,14 +1,15 @@
 package sxml.vm
-import scala.collection.mutable.{ArrayBuffer,HashMap as MHashMap}
+import scala.collection.mutable.{Stack,HashMap as MHashMap}
 import sxml.vm.VMValue
 import scala.util.Try
 import scala.math.Numeric.DoubleIsFractional
 import scala.math.Ordering.LongOrdering
 import scala.collection.immutable.HashMap
+import scala.collection.mutable.ArrayBuffer
 
 class VMStack {
-   val values:ArrayBuffer[VMValue] = ArrayBuffer.empty
-   val frames:ArrayBuffer[VMCallStack] = ArrayBuffer.empty
+   val values:Stack[VMValue] = Stack.empty
+   val frames:Stack[VMCallStack] = Stack.empty
 
    def apply(index:Int):VMValue = this.values(index)
 
@@ -37,6 +38,7 @@ class VMCallStack(offsetValue:Int,stackRef:VMStack,stateValue:ClosureState) {
    var curIndex:Int = 0
 
    def execute_():Try[Option[VMCallStack]] = Try {
+      println("start execute_")
       this.curIndex = this.state.instructionIndex
       var isRun = true
       var nextStack:Option[VMCallStack] = None;
@@ -44,7 +46,6 @@ class VMCallStack(offsetValue:Int,stackRef:VMStack,stateValue:ClosureState) {
          val instr = this.instruction()
          val index = this.curIndex
          this.step()
-         println(s"do:-${instr}-")
          instr match
             case Instruction.PushNil => { this.push(VMValue.NIL()) }
             case Instruction.PushInt(value) => { this.push(VMValue.VMLong(value)) }
@@ -148,16 +149,16 @@ class VMCallStack(offsetValue:Int,stackRef:VMStack,stateValue:ClosureState) {
             case Instruction.Return => {
                isRun = false
             }
-         
-         println(this.stack.values.mkString("\r\n"))
-         println(s"====END:${index}====")
+            
       }
+      println("end execute_")
       if(nextStack.isEmpty) {
          
          val slideLen = this.len
          this.slide(slideLen)
          nextStack = this.exitScope()
       }
+      
       nextStack
    }
 
@@ -176,14 +177,12 @@ class VMCallStack(offsetValue:Int,stackRef:VMStack,stateValue:ClosureState) {
 
    def slide(count:Int):Unit = {
      val lastIndex = this.stack.values.length - 1;
-     println(s"slide lastIndex:${lastIndex}")
      val i = lastIndex - count;
-     println(s"slide i:${i}  ${count}")
      this.stack.values.update(i,this.stack.values(lastIndex))
      this.popMany(count)
    }
     
-   def takeTail(count:Int):ArrayBuffer[VMValue] = {
+   def takeTail(count:Int):Stack[VMValue] = {
       val retList = this.stack.values.slice(this.stack.values.length - count,this.stack.values.length)
       this.stack.values.remove(this.stack.values.length - count,count)
       retList
@@ -255,7 +254,7 @@ class VMCallStack(offsetValue:Int,stackRef:VMStack,stateValue:ClosureState) {
 
    def constructXml(attrCount:Int,childCount:Int):Unit = {
      val childList = this.stack.values.reverse.take(childCount)
-     var realChildList:ArrayBuffer[VMValue] = ArrayBuffer.empty
+     var realChildList:Stack[VMValue] = Stack.empty
      for(item <- childList) {
        item match
          case VMValue.VMUnWrap(value) => {

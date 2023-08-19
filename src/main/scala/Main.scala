@@ -6,6 +6,8 @@ import transform.TransformModule
 import ui.UIModule
 import window.WindowModule
 import scala.collection.mutable
+import scala.collection.mutable.ArrayBuffer
+import sxml.vm.VMValue
 
 object Main {
   def main(args: Array[String]): Unit = {
@@ -21,8 +23,9 @@ object Main {
     module.function.debugShow(0)
     val vm = sxml.vm.SXmlVM()
     val retValue = vm.runModule(module).get
-    println(s"eval:${retValue}")
+    //println(s"eval:${retValue}")
     //runSeija()
+    
   }
 
   def runSeija() = {

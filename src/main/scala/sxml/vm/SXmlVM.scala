@@ -22,7 +22,7 @@ class SXmlVM {
     }
 
     protected def moduleToClosureData(module:CompiledModule):ClosureData = {
-        println(module.moduleGlobals.foreach(println))
+        
         ClosureData(module.function,ArrayBuffer())
     }
 }

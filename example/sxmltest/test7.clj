@@ -1,8 +1,6 @@
 (defn testloop [n m]
   (if (>= n 0)
-    (do 
-      (recur (- n 1) (+ m n))
-    )
+    (recur (- n 1) (+ m n))
     m
   )
 )
@@ -12,3 +10,5 @@
     n
   )
 )
+
+(testloop 1000000 0)

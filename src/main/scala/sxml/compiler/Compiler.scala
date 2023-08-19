@@ -21,7 +21,6 @@ case class FunctionEnv(val function:CompiledFunction) {
 
     def emit(instruction:Instruction):Unit = {
       val adjustment = instruction.adjust()
-      //println(s"adj:${instruction} ${this.stackSize}+=${adjustment} ")
       if(adjustment > 0) {
         this.increaseStack(adjustment)
       } else {
@@ -54,7 +53,6 @@ case class FunctionEnv(val function:CompiledFunction) {
     
     def newStackVar(s:VMSymbol):Unit = {
       val index = this.stackSize - 1
-      println(s"new stackVar:${s} = ${index}")
       this.stack.insert(s,index)
     }
 
