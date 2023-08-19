@@ -1,5 +1,5 @@
 package sxml.vm
-import scala.collection.mutable.ArrayBuffer
+import scala.collection.mutable.{ArrayBuffer,HashMap as MHashMap}
 import sxml.vm.VMValue
 import scala.util.Try
 import scala.math.Numeric.DoubleIsFractional
@@ -53,6 +53,10 @@ class VMCallStack(offsetValue:Int,stackRef:VMStack,stateValue:ClosureState) {
             case Instruction.PushString(value) => {
                val str = this.state.closure.function.strings(value)
                this.push(VMValue.VMString(str))
+            }
+            case Instruction.PushKW(value) => {
+               val str = this.state.closure.function.strings(value)
+               this.push(VMValue.VMKeyword(str))  
             }
             case Instruction.Push(idx) => {
                val value = this.get(idx)
@@ -115,14 +119,12 @@ class VMCallStack(offsetValue:Int,stackRef:VMStack,stateValue:ClosureState) {
                
                this.stack.values.update(this.offset + idx,this.pop())
             }
-            case Instruction.UnWrap => {
-
-            }
-            case Instruction.PushKW(value) => {
-               
-            }
             case Instruction.ConstructXML(attrCount, childCount) => {
-
+               this.constructXml(attrCount,childCount);
+            }
+            case Instruction.UnWrap => {
+               val vmArray = this.pop().unwrap[VMValue.VMArray]().get;
+               this.push(VMValue.VMUnWrap(vmArray.value))
             }
             case Instruction.EQ => {
                val rhs = this.pop()
@@ -156,13 +158,18 @@ class VMCallStack(offsetValue:Int,stackRef:VMStack,stateValue:ClosureState) {
 
    def pop():VMValue = this.stack.values.remove(this.stack.values.length - 1)
 
-   def popMany(count:Int) = this.stack.values.remove(this.stack.values.length - count,count)
+   def popMany(count:Int):Unit = {
+      if(count <= 0) return
+      this.stack.values.remove(this.stack.values.length - count,count)
+   }
 
    def len:Int = this.stack.values.length - this.offset
 
    def slide(count:Int):Unit = {
      val lastIndex = this.stack.values.length - 1;
+     println(s"slide lastIndex:${lastIndex}")
      val i = lastIndex - count;
+     println(s"slide i:${i}  ${count}")
      this.stack.values.update(i,this.stack.values(lastIndex))
      this.popMany(count)
    }
@@ -235,6 +242,31 @@ class VMCallStack(offsetValue:Int,stackRef:VMStack,stateValue:ClosureState) {
 
    def jump(index:Int):Unit = {
       this.curIndex = index
+   }
+
+   def constructXml(attrCount:Int,childCount:Int):Unit = {
+     val childList = this.stack.values.reverse.take(childCount)
+     var realChildList:ArrayBuffer[VMValue] = ArrayBuffer.empty
+     for(item <- childList) {
+       item match
+         case VMValue.VMUnWrap(value) => {
+            realChildList.addAll(value)
+         }
+         case _ => realChildList.addOne(item)
+     }
+     this.popMany(childCount)
+     val tailIndex = this.stack.values.length - 1;
+     var attrs:MHashMap[String,VMValue] = MHashMap.empty
+     for(idx <- 0.until(attrCount)) {
+         val v = this.stack.values(tailIndex - idx); 
+         val k = this.stack.values(tailIndex - idx - 1);
+         val strKey = k.unwrap[VMValue.VMString]().get.value;
+         attrs.addOne((strKey,v))
+     }
+     this.popMany(attrCount * 2)
+     val tagName = this.pop().unwrap[VMValue.VMString]().get.value
+     val xmlValue = VMValue.VMXml(XmlNode(tagName,HashMap.from(attrs),realChildList.toVector))
+     this.push(xmlValue)
    }
 }
 

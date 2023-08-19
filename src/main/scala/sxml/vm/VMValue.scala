@@ -4,14 +4,17 @@ import scala.collection.mutable.ArrayBuffer
 import scala.collection.immutable.HashMap
 
 enum VMValue {
-    case  NIL() extends VMValue
-    case  VMChar(value:Char) extends VMValue
-    case  VMLong(value:Long) extends VMValue
-    case  VMFloat(value:Double) extends VMValue 
-    case  VMString(value:String) extends VMValue
-    case  VMArray(value:Vector[VMValue]) extends VMValue
-    case  VMMap(value:HashMap[VMValue,VMValue]) extends VMValue
-    case  VMClosure(data:ClosureData) extends VMValue
+    case  NIL()
+    case  VMChar(value:Char)
+    case  VMLong(value:Long)
+    case  VMFloat(value:Double)
+    case  VMString(value:String)
+    case  VMKeyword(value:String)
+    case  VMArray(value:Vector[VMValue])
+    case  VMMap(value:HashMap[VMValue,VMValue])
+    case  VMClosure(data:ClosureData)
+    case  VMXml(value:XmlNode)
+    case  VMUnWrap(value:Vector[VMValue])
 
     def isFloat():Boolean = {
         this match
@@ -48,6 +51,7 @@ enum VMValue {
             case VMLong(value) =>  otherValue.unwrap[VMValue.VMLong]().map(v => v.value == value).getOrElse(false)
             case VMFloat(value) => otherValue.unwrap[VMValue.VMFloat]().map(v => v.value == value).getOrElse(false)
             case VMString(value) => otherValue.unwrap[VMValue.VMString]().map(v => v.value == value).getOrElse(false)
+            case VMKeyword(value) => otherValue.unwrap[VMValue.VMKeyword]().map(v => v.value == value).getOrElse(false)
             case VMArray(thisList) =>  {
                val otherList = otherValue.unwrap[VMValue.VMArray]()
                if(otherList.isEmpty) return false
@@ -61,3 +65,7 @@ enum VMValue {
 }
 
 case class ClosureData(val function:CompiledFunction,upvars:ArrayBuffer[VMValue])
+
+case class XmlNode(val Name:String,
+                   val attrs:HashMap[String,VMValue],
+                   val child:Vector[VMValue]);

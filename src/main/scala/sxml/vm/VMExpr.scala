@@ -8,7 +8,7 @@ enum VMExpr {
     case VMArray(value:Vector[TextSpan[VMExpr]])
     case VMMap(value:Vector[TextSpan[VMExpr]])
     case VMSymbol(value:Symbol)
-    case VMKeyworld(value:String,isLocal:Boolean)
+    case VMKeyword(value:String,isLocal:Boolean)
     case VMCall(fn:TextSpan[VMExpr],args:Vector[TextSpan[VMExpr]])
     case VMMatch(value:TextSpan[VMExpr],alts:Vector[Alternative])
     case VMDef(name:Symbol,expr:TextSpan[VMExpr])

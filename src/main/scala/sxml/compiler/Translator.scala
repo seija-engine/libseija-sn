@@ -24,7 +24,7 @@ class Translator {
             case CExpr.SList(lst) => translateList(cExpr.pos,lst).get
             case CExpr.SSymbol(ns, value) =>TextSpan(cExpr.pos,VMExpr.VMSymbol(Symbol(ns,value)))
             case CExpr.SMap(lst) => translateMap(cExpr.pos,lst).get
-            case CExpr.SKeyworld(value, isLocal) => TextSpan(cExpr.pos,VMExpr.VMKeyworld(value,isLocal))
+            case CExpr.SKeyworld(value, isLocal) => TextSpan(cExpr.pos,VMExpr.VMKeyword(value,isLocal))
             case CExpr.SXMLElement(tag, attrList, child) => translateXMLElement(cExpr.pos,tag,attrList,child).get
             case CExpr.SUnWrap(value) => TextSpan(cExpr.pos,VMExpr.VMUnWrap(translate(value).get))
             case CExpr.SDispatch(value)  => translateDispatch(cExpr.pos,value).get

@@ -110,7 +110,6 @@ case class LoopScope(
 )
 
 class Compiler {
-  var curModuleKeyword:ArrayBuffer[String] = ArrayBuffer.empty
   var loopScopeList:Stack[LoopScope] = Stack.empty
 
   def compileModule(module: TranslatorModule):Try[CompiledModule] = Try {
@@ -120,7 +119,8 @@ class Compiler {
       compileExpr(expr,envs,false).get
     }
     val endFunction = envs.endFunction()
-    CompiledModule(endFunction.freeVars.toArray,endFunction.function)
+    CompiledModule(endFunction.freeVars.toArray,
+                   endFunction.function)
   }
 
   def compileExpr(expr:TextSpan[VMExpr],envs:FunctionEnvs,isTail:Boolean):Try[Unit] = Try {
@@ -132,12 +132,15 @@ class Compiler {
       case VMExpr.VMCall(fn, args) => this.compileCall(fn,args,envs).get
       case VMExpr.VMSymbol(value) => this.loadIdentifier(expr.pos,value,envs).get
       case VMExpr.VMMatch(value, alts) => this.compileMatch(value,alts,envs,isTail).get
-      case VMExpr.VMKeyworld(value, isLocal) => this.emitKeyworld(value,envs.current)
+      case VMExpr.VMKeyword(value, isLocal) => this.emitKeyworld(value,envs.current)
       case VMExpr.VMMap(value) => this.compileMap(expr.pos,value,envs).get
       case VMExpr.VMFunc(args, bodyLst) => this.compileFunc(expr.pos,args,bodyLst,envs).get
       case VMExpr.VMLet(lets, bodyLst, isLoop) => this.compileLet(expr.pos,lets,bodyLst,isLoop,envs).get
       case VMExpr.VMRecur(lst) => this.compileRecur(expr.pos,lst,envs,isTail).get
-      case VMExpr.VMUnWrap(value) => envs.current.emit(Instruction.UnWrap)
+      case VMExpr.VMUnWrap(value) => {
+        this.compileExpr(value,envs,isTail)
+        envs.current.emit(Instruction.UnWrap)
+      }
       case VMExpr.VMXml(tag, attrs, child) => this.compileXML(expr.pos,tag,attrs,child,envs,isTail)
   }
 
@@ -401,11 +404,7 @@ class Compiler {
   }
 
   private def emitKeyworld(value:String,env:FunctionEnv):Unit = {
-    val keyIndex = this.curModuleKeyword.indexOf(value)
-    if(keyIndex >= 0) {
-      env.emit(Instruction.PushKW(keyIndex))
-    }
-    this.curModuleKeyword.addOne(value)
-    env.emit(Instruction.PushKW(this.curModuleKeyword.length - 1))
+    val index = env.addStringConst(value)
+    env.emit(Instruction.PushKW(index))
   }
 }
