@@ -87,6 +87,9 @@ case class FunctionEnvs(envs:ArrayBuffer[FunctionEnv] = ArrayBuffer.empty) {
 
   def endFunction():FunctionEnv = {
     val last = this.envs.remove(this.envs.length - 1)
+    if(last.function.instructions.isEmpty) {
+      last.function.instructions.addOne(Instruction.PushNil)
+    }
     last.function.instructions.addOne(Instruction.Return)
     last
   }
@@ -106,11 +109,12 @@ case class LoopScope(
   val backInstrIdx:Int,
   val stackSize:Int,
   val argsCount:Int,
-  var isRecur:Boolean = false
+  var isRecur:Boolean = false,
+  val isFN:Boolean = false
 )
 
 class Compiler {
-  var loopScopeList:Stack[LoopScope] = Stack.empty
+  var loopScopeList:ArrayBuffer[LoopScope] = ArrayBuffer.empty
 
   def compileModule(module: TranslatorModule):Try[CompiledModule] = Try {
     val envs = FunctionEnvs()
@@ -185,20 +189,28 @@ class Compiler {
   }
 
   protected def compileRecur(pos:SpanPos,args:Vector[TextSpan[VMExpr]],envs:FunctionEnvs,isTail:Boolean):Try[Unit] = Try {
-    val loopScope = this.loopScopeList.headOption.getOrElse(throw InvalidRecur(pos))
+    val loopScope = this.loopScopeList.last
     if(args.length != loopScope.argsCount || !isTail) throw InvalidRecur(pos)
     var curStackPos = loopScope.stackSize
     for(expr <- args) {
       this.compileExpr(expr,envs,false).get
-      envs.current.emit(Instruction.ReplaceTo(curStackPos))
-      curStackPos += 1
     }
-    val curStack = envs.current.stackSize
-    val popSize = curStack - loopScope.stackSize - args.length
-    envs.current.emit(Instruction.Pop(popSize))
-    envs.current.emit(Instruction.Jump(loopScope.backInstrIdx))
-    loopScope.isRecur = true
-    envs.current.emit(Instruction.PushNil)
+    envs.current.emit(Instruction.ReplaceTo(curStackPos,args.length))
+    if(loopScope.isFN) {
+      val popSize = loopScope.stackSize - args.length
+      envs.current.emit(Instruction.Pop(popSize))
+      envs.current.emit(Instruction.Jump(0))
+      loopScope.isRecur = true
+      envs.current.emit(Instruction.PushNil)
+    } else {
+      val curStack = envs.current.stackSize
+      val popSize = curStack - loopScope.stackSize - args.length
+      envs.current.emit(Instruction.Pop(popSize))
+      envs.current.emit(Instruction.Jump(loopScope.backInstrIdx))
+      loopScope.isRecur = true
+      envs.current.emit(Instruction.PushNil)
+    }
+    
   }
 
   protected def compileLet(pos:SpanPos,lets:Vector[TextSpan[VMExpr]],lst:Vector[TextSpan[VMExpr]],isLoop:Boolean,envs:FunctionEnvs):Try[Unit] = Try {
@@ -216,8 +228,10 @@ class Compiler {
     if(!isLoop) {
       val curStackSize = envs.current.stackSize
       pushLetVars()
+      var idx = 0;
       for(expr <- lst) {
-        this.compileExpr(expr,envs,false).get
+        this.compileExpr(expr,envs,idx == lst.length - 1).get
+        idx += 1
       }
       envs.current.exitScope()
       val endStackSize = envs.current.stackSize
@@ -227,7 +241,7 @@ class Compiler {
       val curStackSize = envs.current.stackSize
       pushLetVars()
       val markInstr = envs.current.function.instructions.length
-      this.putLoopScope(markInstr,curStackSize,lets.length / 2)
+      this.putLoopScope(markInstr,curStackSize,lets.length / 2,false)
       for(idx <- lst.indices) {
         val curExpr = lst(idx)
         if(idx == lst.length - 1) {
@@ -244,29 +258,40 @@ class Compiler {
     }
   }
 
-  private def putLoopScope(backInstrIdx:Int,stackSize:Int,argsCount:Int):Unit = {
-    this.loopScopeList.push(LoopScope(backInstrIdx,stackSize,argsCount))
+  private def putLoopScope(backInstrIdx:Int,stackSize:Int,argsCount:Int,isFN:Boolean):Unit = {
+    this.loopScopeList.addOne(LoopScope(backInstrIdx,stackSize,argsCount))
   }
 
   private def popLoopScope():Option[LoopScope] = {
-    if(this.loopScopeList.isEmpty) None else Some(this.loopScopeList.pop())
+    if(this.loopScopeList.isEmpty) None else {
+      val last = this.loopScopeList.remove(this.loopScopeList.length - 1)
+      Some(last)
+    } 
   }
 
   protected def compileFunc(pos:SpanPos,args:Vector[VMSymbol],bodyLst:Vector[TextSpan[VMExpr]],envs:FunctionEnvs):Try[Unit] = Try {
     val stackStart = envs.current.stackSize
+    
     envs.current.emit(Instruction.NewClosure(0,0))
     val offset = envs.current.function.instructions.length - 1
     envs.current.emit(Instruction.Push(stackStart))
+    
+    val markInstr = envs.current.function.instructions.length
+    this.putLoopScope(0,stackStart,args.length,true)
 
     envs.startFunction(args.length,VMSymbol(None,""))
     envs.current.stack.enterScope()
     for(arg <- args) {
         envs.current.pushStackVar(arg)
     }
+
+    var index = 0;
     for(expr <- bodyLst) {
-        this.compileExpr(expr,envs,false).get
+        this.compileExpr(expr,envs,index == bodyLst.length - 1).get
+        index += 1
     }
     envs.current.exitScope()
+    this.popLoopScope()
     val f = envs.endFunction()
     for(freeVar <- f.freeVars) {
       this.find(freeVar,envs).get match
@@ -282,7 +307,6 @@ class Compiler {
     envs.current.emit(Instruction.CloseClosure(f.freeVars.length))
     envs.current.stackSize -= f.freeVars.length
     envs.current.function.innerFunctions.addOne(f.function)
-    
   }
 
   protected def compileMap(pos:SpanPos,list:Vector[TextSpan[VMExpr]],envs:FunctionEnvs):Try[Unit] = Try {
@@ -384,6 +408,7 @@ class Compiler {
   })
 
   private def tryCompilePrimitive(symbol:VMSymbol,args:Vector[TextSpan[VMExpr]],envs:FunctionEnvs):Try[Boolean] = Try {
+    var binTail:Option[Instruction] = None;
     val binOp = symbol.name match
       case "+" => Some(Instruction.Add)
       case "-" => Some(Instruction.Subtract)
@@ -392,15 +417,33 @@ class Compiler {
       case "=" => Some(Instruction.EQ)
       case "<" => Some(Instruction.LT)
       case ">" => Some(Instruction.GT)
-      case _   => None
-    binOp match
-      case None => false
-      case Some(op) => {
-        this.compileExpr(args(0),envs,false)
-        this.compileExpr(args(1),envs,false)
-        envs.current.emit(op)
-        true
+      case ">=" => {
+        binTail = Some(Instruction.Not)
+        Some(Instruction.LT)
       }
+      case "<=" => {
+        binTail = Some(Instruction.Not)
+        Some(Instruction.GT)
+      }
+      case _   => None
+    val op = symbol.name match
+      case "!" => Some(Instruction.Not)
+      case _ => None
+    if(binOp.isDefined) {
+      this.compileExpr(args(0),envs,false)
+      this.compileExpr(args(1),envs,false)
+      envs.current.emit(binOp.get)
+      if(binTail.isDefined) {
+        envs.current.emit(binTail.get)
+      }
+      true
+    } else if(op.isDefined) {
+      this.compileExpr(args(0),envs,false)
+      envs.current.emit(op.get)
+      true
+    } else {
+      false
+    }
   }
 
   private def emitKeyworld(value:String,env:FunctionEnv):Unit = {

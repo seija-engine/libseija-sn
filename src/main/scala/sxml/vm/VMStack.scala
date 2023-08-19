@@ -115,9 +115,14 @@ class VMCallStack(offsetValue:Int,stackRef:VMStack,stateValue:ClosureState) {
             case Instruction.Pop(count) => {
                if(count > 0) { this.popMany(count) }
             }
-            case Instruction.ReplaceTo(idx) => {
+            case Instruction.ReplaceTo(idx,count) => {
+               var curCount = count - 1;
+               while(curCount >= 0) {
+                  val popValue = this.pop()
+                  this.stack.values.update(this.offset + idx + curCount,popValue)
+                  curCount = curCount - 1
+               }
                
-               this.stack.values.update(this.offset + idx,this.pop())
             }
             case Instruction.ConstructXML(attrCount, childCount) => {
                this.constructXml(attrCount,childCount);
@@ -135,6 +140,10 @@ class VMCallStack(offsetValue:Int,stackRef:VMStack,stateValue:ClosureState) {
             case Instruction.Add | Instruction.Subtract | Instruction.Multiply |
                  Instruction.Divide | Instruction.LT | Instruction.GT => {
                   this.binNumberOp(instr)
+            }
+            case Instruction.Not => {
+               val bValue = this.pop().unwrap[VMValue.VMChar]().map(_.value == '1').getOrElse(false)
+               this.pushBoolean(!bValue)
             }
             case Instruction.Return => {
                isRun = false

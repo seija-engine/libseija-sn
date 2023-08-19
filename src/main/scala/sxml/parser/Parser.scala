@@ -24,17 +24,22 @@ class Parser(sourceName:String,lexString: LexString) {
   }
 
   def parseALL():Try[ArrayBuffer[TextSpan[CExpr]]] = Try {
-    var curExpr:TextSpan[CExpr] = this.parse().get
-    val exprList:ArrayBuffer[TextSpan[CExpr]] = ArrayBuffer.empty
-    boundary(while(true) {
-      exprList += curExpr
-      this.skipWhitespace()
-      if(this.lexString.lookahead(1).isEmpty) {
-        break()
-      }
-      curExpr = this.parse().get
-    })
-    exprList
+    this.lexString.skipWhitespace()
+    if(this.lexString.isEmpty) {
+      ArrayBuffer.empty
+    } else {
+      var curExpr:TextSpan[CExpr] = this.parse().get
+      val exprList:ArrayBuffer[TextSpan[CExpr]] = ArrayBuffer.empty
+      boundary(while(true) {
+        exprList += curExpr
+        this.skipWhitespace()
+        if(this.lexString.lookahead(1).isEmpty) {
+          break()
+        }
+        curExpr = this.parse().get
+      })
+      exprList
+    }
   }
 
   private def parse():Try[TextSpan[CExpr]] = {

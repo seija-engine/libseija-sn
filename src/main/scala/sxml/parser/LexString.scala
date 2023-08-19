@@ -99,5 +99,5 @@ class LexString(source:Source,maxCache:Int = 4) {
 
   def pos:LexPos = LexPos(this.curLine,this.curCol)
 
-
+  def isEmpty = !this.source.hasNext
 }

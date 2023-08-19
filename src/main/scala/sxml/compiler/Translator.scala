@@ -117,6 +117,7 @@ class Translator {
         case "fn" => Some(translateFn(pos,lst).get)
         case "defn" => Some(translateDeFn(pos,lst).get)
         case "let" => Some(translateLet(pos,lst,false).get)
+        case "do" => Some(translateDo(pos,lst).get)
         case "loop" => Some(translateLet(pos,lst,true).get)
         case "recur" => Some(translateRecur(pos,lst).get)
         case "match" => None
@@ -210,6 +211,11 @@ class Translator {
       val lets = translateCastTo[VMExpr.VMArray](lst(1)).get.getOrElse(throw InvalidLetFN(pos))
       val bodyList = this.takeBodyList(pos,2,lst).get
       TextSpan(pos,VMExpr.VMLet(lets.value,bodyList,isLoop))
+    }
+
+    protected def translateDo(pos:SpanPos,lst:ArrayBuffer[TextSpan[CExpr]]):Try[TextSpan[VMExpr]] = Try {
+      val bodyList = this.takeBodyList(pos,1,lst).get
+      TextSpan(pos,VMExpr.VMLet(Vector.empty,bodyList,false))
     }
 
     protected def takeBodyList(pos:SpanPos,offsetIdx:Int,lst:ArrayBuffer[TextSpan[CExpr]]):Try[Vector[TextSpan[VMExpr]]] = Try {

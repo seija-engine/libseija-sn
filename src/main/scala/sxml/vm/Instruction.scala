@@ -18,7 +18,7 @@ enum Instruction {
     case Jump(index:Int)
     case Slide(count:Int)
     case Pop(count:Int)
-    case ReplaceTo(idx:Int)
+    case ReplaceTo(idx:Int,count:Int)
     case Return
     case UnWrap
 
@@ -32,6 +32,7 @@ enum Instruction {
     case LT
     case GT
     case EQ
+    case Not
 
     def adjust():Int = {
         this match
@@ -48,10 +49,10 @@ enum Instruction {
             case PushUpVar(value) => 1
             case Pop(count) => -count
             case Slide(count) => -count
-            case ReplaceTo(_) => -1
+            case ReplaceTo(_,count) => -count
             case UnWrap => -1
             case ConstructArray(count) => 1 - count
-            case Return | Jump(_) => 0
+            case Return | Jump(_) | Not => 0
             case ConstructXML(attrCount, childCount) => -(attrCount * 2 + childCount)
             case _ => -1
         
