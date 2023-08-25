@@ -121,7 +121,8 @@ class Compiler {
       compileExpr(expr,envs,false).get
     }
     val endFunction = envs.endFunction()
-    CompiledModule(endFunction.freeVars.toArray,
+    CompiledModule(Array(),
+                   endFunction.freeVars.toArray,
                    endFunction.function)
   }
 
@@ -144,6 +145,7 @@ class Compiler {
         envs.current.emit(Instruction.UnWrap)
       }
       case VMExpr.VMXml(tag, attrs, child) => this.compileXML(expr.pos,tag,attrs,child,envs,isTail)
+      case _ => {  }
   }
 
   protected def find(symbol:VMSymbol,envs:FunctionEnvs):Option[FindVariable[Int]] = {

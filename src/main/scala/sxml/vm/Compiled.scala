@@ -1,6 +1,7 @@
 package sxml.vm
 import scala.collection.mutable.ArrayBuffer
 case class CompiledModule(
+    val exports:Array[Symbol],
     val moduleGlobals:Array[Symbol],
     val function: CompiledFunction
 );

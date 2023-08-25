@@ -9,7 +9,9 @@ import sxml.parser.SpanPos
 import sxml.vm.Alternative
 import scala.collection.immutable.Vector
 
-case class TranslatorModule(val exprList:Vector[TextSpan[VMExpr]])
+case class TranslatorModule(
+  val exprList:Vector[TextSpan[VMExpr]]
+)
 
 class Translator {
     def translateModule(parseModule:ParseModule):Try[TranslatorModule] = Try {
@@ -121,7 +123,12 @@ class Translator {
         case "loop" => Some(translateLet(pos,lst,true).get)
         case "recur" => Some(translateRecur(pos,lst).get)
         case "match" => None
+        case "export" => Some(translateExport(pos,lst).get)
         case _ => None
+    }
+
+    protected def translateExport(pos:SpanPos,lst:ArrayBuffer[TextSpan[CExpr]]):Try[TextSpan[VMExpr]] = Try {
+      TextSpan(pos,VMExpr.VMExport)
     }
 
     protected def translateInvoke(pos:SpanPos,lst:ArrayBuffer[TextSpan[CExpr]]):Try[TextSpan[VMExpr]] = Try {

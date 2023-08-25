@@ -38,7 +38,6 @@ class VMCallStack(offsetValue:Int,stackRef:VMStack,stateValue:ClosureState) {
    var curIndex:Int = 0
 
    def execute_():Try[Option[VMCallStack]] = Try {
-      println("start execute_")
       this.curIndex = this.state.instructionIndex
       var isRun = true
       var nextStack:Option[VMCallStack] = None;
@@ -151,7 +150,6 @@ class VMCallStack(offsetValue:Int,stackRef:VMStack,stateValue:ClosureState) {
             }
             
       }
-      println("end execute_")
       if(nextStack.isEmpty) {
          
          val slideLen = this.len

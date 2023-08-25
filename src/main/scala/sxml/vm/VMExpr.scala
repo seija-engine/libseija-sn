@@ -17,6 +17,7 @@ enum VMExpr {
     case VMRecur(lst:Vector[TextSpan[VMExpr]])
     case VMXml(tag:String,attrs:Vector[(String,TextSpan[VMExpr])],child:Vector[TextSpan[VMExpr]])
     case VMUnWrap(value:TextSpan[VMExpr])
+    case VMExport
 }
 
 inline def vmExprCastTo[T <: VMExpr](vmExpr:VMExpr):Option[T] = if(vmExpr.isInstanceOf[T]) Some(vmExpr.asInstanceOf[T]) else None

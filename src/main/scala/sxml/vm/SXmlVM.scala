@@ -6,7 +6,7 @@ import scala.collection.mutable.ArrayBuffer
 class SXmlVM {
     val context = VMContext(this)
 
-    def runModule(module:CompiledModule):Try[VMValue] = Try {
+    def callModule(module:CompiledModule):Try[VMValue] = Try {
         val closureData = this.moduleToClosureData(module)
         this.callThunk(closureData).get
     }
@@ -17,7 +17,7 @@ class SXmlVM {
         this.context.stack.enterCallStack(1,closureState)
         this.context.execute().get
         val lastValue = this.context.stack.values.last
-        this.context.stack.values.remove(this.context.stack.values.length - 1)
+        this.context.stack.values.pop();
         lastValue
     }
 
