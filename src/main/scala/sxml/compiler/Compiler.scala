@@ -7,7 +7,6 @@ import scala.collection.mutable.ArrayBuffer
 import sxml.parser.LitValue
 import sxml.parser.SpanPos
 import sxml.vm.Alternative
-import scala.util.Success
 import sxml.vm.AltPattern
 import scala.collection.mutable.HashMap
 import sxml.vm.vmExprCastTo
@@ -115,15 +114,13 @@ class Compiler {
   var loopScopeList:ArrayBuffer[LoopScope] = ArrayBuffer.empty
 
   def compileModule(module: TranslatorModule):Try[CompiledModule] = Try {
-    
-
     val envs = FunctionEnvs()
     envs.startFunction(0,VMSymbol(None,""))
     for(expr <- module.exprList) {
       compileExpr(expr,envs,false).get
     }
     val endFunction = envs.endFunction()
-    CompiledModule(Array(),
+    CompiledModule(module.imports.toArray,
                    endFunction.freeVars.toArray,
                    endFunction.function)
   }

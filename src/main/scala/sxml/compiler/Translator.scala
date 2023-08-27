@@ -119,7 +119,11 @@ class Translator {
       lst.head.value match
         case CExpr.SSymbol(ns, value) => {
           val buildIn = this.tryBuildInFunc(value,pos,lst).get
-          if(buildIn.isDefined) buildIn.get else {  translateInvoke(pos,lst).get }
+          if(buildIn.isDefined) {
+            buildIn.get
+          } else { 
+            translateInvoke(pos,lst).get 
+          }
         }
         case CExpr.SList(_) => {  translateInvoke(pos,lst).get }
         case _ => throw InvalidList(pos)

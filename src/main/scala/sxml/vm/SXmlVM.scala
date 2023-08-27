@@ -2,10 +2,30 @@ package sxml.vm
 
 import scala.util.Try
 import scala.collection.mutable.ArrayBuffer
+import scala.io.Source
 
 class SXmlVM {
+    val env:VMEnv = VMEnv()
     val context = VMContext(this)
     val importer = Importer(this)
+
+    def callFile(fsPath:String):Try[VMValue] = {
+        this.callCodeSource(fsPath,Source.fromFile(fsPath))
+    }
+
+    def callString(codeString:String,modName:String = ""):Try[VMValue] = {
+        this.callCodeSource(modName,Source.fromString(codeString))
+    }
+
+    def callCodeSource(codeName:String,source:Source):Try[VMValue] = Try {
+        val parser = sxml.parser.Parser.fromSource(codeName,source)
+        val astModule = parser.parseModule().get
+        val trans = sxml.compiler.Translator()
+        val transModule = trans.translateModule(astModule).get
+        val compiler = sxml.compiler.Compiler()
+        val module = compiler.compileModule(transModule).get
+        this.callModule(module).get
+    }
 
     def callModule(module:CompiledModule):Try[VMValue] = Try {
         val closureData = this.moduleToClosureData(module)
@@ -23,7 +43,6 @@ class SXmlVM {
     }
 
     protected def moduleToClosureData(module:CompiledModule):ClosureData = {
-        
         ClosureData(module.function,ArrayBuffer())
     }
 }

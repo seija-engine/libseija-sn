@@ -12,17 +12,8 @@ import sxml.vm.VMValue
 object Main {
   def main(args: Array[String]): Unit = {
     println(s"run main")
-    val fs = scala.io.Source.fromFile("example/sxmltest/testImport.clj")
-    val parser = sxml.parser.Parser.fromSource("testImport.clj",fs)
-    val astModule = parser.parseModule().get
-    val trans = sxml.compiler.Translator()
-    val transModule = trans.translateModule(astModule).get
-    println(transModule)
-    val compiler = sxml.compiler.Compiler()
-    val module = compiler.compileModule(transModule).get
-    module.function.debugShow(0)
     val vm = sxml.vm.SXmlVM()
-    val retValue = vm.callModule(module).get
+    val retValue = vm.callFile("example/sxmltest/testImport.clj").get
     println(s"eval:${retValue}")
     //runSeija()
     
