@@ -115,6 +115,8 @@ class Compiler {
   var loopScopeList:ArrayBuffer[LoopScope] = ArrayBuffer.empty
 
   def compileModule(module: TranslatorModule):Try[CompiledModule] = Try {
+    
+
     val envs = FunctionEnvs()
     envs.startFunction(0,VMSymbol(None,""))
     for(expr <- module.exprList) {

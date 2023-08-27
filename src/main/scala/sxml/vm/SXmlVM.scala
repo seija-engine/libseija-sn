@@ -5,6 +5,7 @@ import scala.collection.mutable.ArrayBuffer
 
 class SXmlVM {
     val context = VMContext(this)
+    val importer = Importer(this)
 
     def callModule(module:CompiledModule):Try[VMValue] = Try {
         val closureData = this.moduleToClosureData(module)

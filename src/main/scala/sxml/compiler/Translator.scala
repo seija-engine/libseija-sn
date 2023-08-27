@@ -8,16 +8,29 @@ import scala.collection.mutable.ArrayBuffer
 import sxml.parser.SpanPos
 import sxml.vm.Alternative
 import scala.collection.immutable.Vector
+import sxml.vm.ImportInfo
 
 case class TranslatorModule(
+  val exportSymbols:ArrayBuffer[String],
+  val imports:ArrayBuffer[ImportInfo],
   val exprList:Vector[TextSpan[VMExpr]]
 )
 
 class Translator {
+    val exportSymbols:ArrayBuffer[String] = ArrayBuffer.empty
+    val importInfos:ArrayBuffer[ImportInfo] = ArrayBuffer.empty
+
     def translateModule(parseModule:ParseModule):Try[TranslatorModule] = Try {
+      this.exportSymbols.clear()
+      this.importInfos.clear();
       val lst = parseModule.exprList.map(translate(_).get)
-      TranslatorModule(lst.toVector)
+      TranslatorModule(
+        this.exportSymbols.clone(),
+        this.importInfos.clone(),
+        lst.toVector
+      )
     }
+    
     def translate(cExpr:TextSpan[CExpr]):Try[TextSpan[VMExpr]] = Try {
       val vmExpr:TextSpan[VMExpr] = cExpr.value match
             case CExpr.Nil => TextSpan(cExpr.pos,VMExpr.VMNil)
@@ -124,10 +137,29 @@ class Translator {
         case "recur" => Some(translateRecur(pos,lst).get)
         case "match" => None
         case "export" => Some(translateExport(pos,lst).get)
+        case "import" => Some(translateImport(pos,lst).get)
         case _ => None
     }
 
+    protected def translateImport(pos:SpanPos,lst:ArrayBuffer[TextSpan[CExpr]]):Try[TextSpan[VMExpr]] = Try {
+      for(expr <- lst.tail) {
+        expr.value match
+          case CExpr.SSymbol(_, name) => {
+            this.importInfos.addOne(ImportInfo(name))
+          }
+          case _ => {}
+      }
+      TextSpan(pos,VMExpr.VMImport)
+    }
+
     protected def translateExport(pos:SpanPos,lst:ArrayBuffer[TextSpan[CExpr]]):Try[TextSpan[VMExpr]] = Try {
+      for(expr <- lst.tail) {
+        expr.value match
+          case CExpr.SSymbol(_, name) => {
+            this.exportSymbols.addOne(name)
+          }
+          case _ => {}
+      }
       TextSpan(pos,VMExpr.VMExport)
     }
 
