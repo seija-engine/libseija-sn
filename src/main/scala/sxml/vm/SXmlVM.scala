@@ -7,7 +7,10 @@ import scala.io.Source
 class SXmlVM {
     val env:VMEnv = VMEnv()
     val context = VMContext(this)
-    val importer = Importer(this)
+
+    def addSearchPath(path:String):Unit = {
+        this.env.importer.addSearchPath(path)
+    }
 
     def callFile(fsPath:String):Try[VMValue] = {
         this.callCodeSource(fsPath,Source.fromFile(fsPath))
@@ -28,9 +31,15 @@ class SXmlVM {
     }
 
     def callModule(module:CompiledModule):Try[VMValue] = Try {
+        for(importItem <- module.imports) {
+            if(this.env.getModule(importItem.libName).isEmpty) {
+                this.env.importer.importByName(importItem.libName,this).get
+            }
+        }
         val closureData = this.moduleToClosureData(module)
         this.callThunk(closureData).get
     }
+
 
     def callThunk(closure:ClosureData):Try[VMValue] = Try {
         val closureState = ClosureState(closure,0)
@@ -45,4 +54,7 @@ class SXmlVM {
     protected def moduleToClosureData(module:CompiledModule):ClosureData = {
         ClosureData(module.function,ArrayBuffer())
     }
+
+    
+    
 }

@@ -121,7 +121,7 @@ class Compiler {
     }
     val endFunction = envs.endFunction()
     CompiledModule(module.imports.toArray,
-                   endFunction.freeVars.toArray,
+                   module.exportSymbols.toArray,
                    endFunction.function)
   }
 

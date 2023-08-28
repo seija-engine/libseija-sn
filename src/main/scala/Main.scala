@@ -8,11 +8,14 @@ import window.WindowModule
 import scala.collection.mutable
 import scala.collection.mutable.ArrayBuffer
 import sxml.vm.VMValue
+import scala.io.Source
 
 object Main {
   def main(args: Array[String]): Unit = {
     println(s"run main")
+   
     val vm = sxml.vm.SXmlVM()
+    vm.addSearchPath("example/sxmltest/")
     val retValue = vm.callFile("example/sxmltest/testImport.clj").get
     println(s"eval:${retValue}")
     //runSeija()

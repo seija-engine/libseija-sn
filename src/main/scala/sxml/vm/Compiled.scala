@@ -7,7 +7,7 @@ case class ImportInfo(
 
 case class CompiledModule(
     val imports:Array[ImportInfo],
-    val exports:Array[Symbol],
+    val exports:Array[String],
     //val moduleGlobals:Array[Symbol],
     val function: CompiledFunction
 );
