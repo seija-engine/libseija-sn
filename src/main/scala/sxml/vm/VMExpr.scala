@@ -23,7 +23,12 @@ enum VMExpr {
 
 inline def vmExprCastTo[T <: VMExpr](vmExpr:VMExpr):Option[T] = if(vmExpr.isInstanceOf[T]) Some(vmExpr.asInstanceOf[T]) else None
 
-case class Symbol(ns:Option[String],name:String)
+case class Symbol(ns:Option[String],name:String) {
+  override def toString(): String = ns match {
+    case None => name
+    case Some(value) => s"${value}/${name}"
+  }
+}
 
 enum AltPattern {
    case Literal(value:LitValue)

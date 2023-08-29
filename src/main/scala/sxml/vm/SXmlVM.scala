@@ -12,12 +12,12 @@ class SXmlVM {
         this.env.importer.addSearchPath(path)
     }
 
-    def callFile(fsPath:String):Try[VMValue] = {
-        this.callCodeSource(fsPath,Source.fromFile(fsPath))
+    def callFile(fsPath:String):Try[VMValue] = Try  {
+        this.callCodeSource(fsPath,Source.fromFile(fsPath)).get
     }
 
-    def callString(codeString:String,modName:String = ""):Try[VMValue] = {
-        this.callCodeSource(modName,Source.fromString(codeString))
+    def callString(codeString:String,modName:String = ""):Try[VMValue] = Try {
+        this.callCodeSource(modName,Source.fromString(codeString)).get
     }
 
     def callCodeSource(codeName:String,source:Source):Try[VMValue] = Try {
@@ -27,6 +27,7 @@ class SXmlVM {
         val transModule = trans.translateModule(astModule).get
         val compiler = sxml.compiler.Compiler()
         val module = compiler.compileModule(transModule).get
+        module.function.debugShow(0)
         this.callModule(module).get
     }
 
@@ -36,6 +37,7 @@ class SXmlVM {
                 this.env.importer.importByName(importItem.libName,this).get
             }
         }
+        
         val closureData = this.moduleToClosureData(module)
         this.callThunk(closureData).get
     }

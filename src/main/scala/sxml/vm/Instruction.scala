@@ -25,6 +25,9 @@ enum Instruction {
     case NewClosure(index:Int,upvars:Int)
     case CloseClosure(count:Int)
 
+    case AddGlobal(index:Int,lib:String,name:String)
+    case LoadGlobal(lib:String,name:String)
+
     case Add
     case Subtract
     case Multiply
@@ -41,10 +44,12 @@ enum Instruction {
             case PushChar(value) => 1
             case PushFloat(value) => 1
             case PushString(value) => 1
+            case LoadGlobal(lib, name) => 1
+            case AddGlobal(_,_, _) => 0
             case Push(value) => 1
             case Call(value) => -value
             case CJump(_) => -1
-            case NewClosure(index, upvars) => 1
+            case NewClosure(_, _) => 1
             case CloseClosure(count) => -1
             case PushUpVar(value) => 1
             case Pop(count) => -count

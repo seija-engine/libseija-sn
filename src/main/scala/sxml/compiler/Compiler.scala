@@ -1,23 +1,23 @@
 package sxml.compiler
 import scala.util.Try
-import sxml.vm.{CompiledModule, VMExpr,Symbol as VMSymbol}
+import sxml.vm.{AltPattern, Alternative, CompiledFunction, CompiledModule, ImportInfo, Instruction, VMExpr, vmExprCastTo, Symbol as VMSymbol}
 import sxml.parser.{CExpr, TextSpan}
-import sxml.vm.{CompiledFunction,Instruction}
+
 import scala.collection.mutable.ArrayBuffer
 import sxml.parser.LitValue
 import sxml.parser.SpanPos
-import sxml.vm.Alternative
-import sxml.vm.AltPattern
+import sxml.vm.VMExpr.VMMap
+
 import scala.collection.mutable.HashMap
-import sxml.vm.vmExprCastTo
+import scala.collection.mutable
 import scala.collection.mutable.Stack
+import scala.collection.mutable.HashSet
 
 case class FunctionEnv(val function:CompiledFunction) {
     val stack:ScopedMap[VMSymbol,Int] = ScopedMap()
     val freeVars:ArrayBuffer[VMSymbol] = ArrayBuffer.empty
     var stackSize:Int = 0
     var maxStackSize:Int = 0
-
     def emit(instruction:Instruction):Unit = {
       val adjustment = instruction.adjust()
       if(adjustment > 0) {
@@ -50,9 +50,10 @@ case class FunctionEnv(val function:CompiledFunction) {
       this.emit(Instruction.Call(args))
     }
     
-    def newStackVar(s:VMSymbol):Unit = {
+    def newStackVar(s:VMSymbol):Int = {
       val index = this.stackSize - 1
       this.stack.insert(s,index)
+      index
     }
 
     def pushStackVar(s:VMSymbol):Unit = {
@@ -99,6 +100,7 @@ case class FunctionEnvs(envs:ArrayBuffer[FunctionEnv] = ArrayBuffer.empty) {
 
 enum FindVariable[G] {
   case Stack(index:Int)
+  case Global(index:Int)
   case UpVar(value:G)
 }
 
@@ -112,17 +114,73 @@ case class LoopScope(
 
 class Compiler {
   var loopScopeList:ArrayBuffer[LoopScope] = ArrayBuffer.empty
+  val curModuleExportSet:mutable.HashSet[String] = mutable.HashSet.empty
+  var curModName:String = "";
+  val globalVars:HashMap[String,Int] = HashMap.empty
 
   def compileModule(module: TranslatorModule):Try[CompiledModule] = Try {
     val envs = FunctionEnvs()
     envs.startFunction(0,VMSymbol(None,""))
+    this.handleModule(module,envs);
+    
     for(expr <- module.exprList) {
       compileExpr(expr,envs,false).get
     }
+    println(s"end compileModule:${module.name}")
     val endFunction = envs.endFunction()
     CompiledModule(module.imports.toArray,
                    module.exportSymbols.toArray,
                    endFunction.function)
+  }
+
+  def handleModule(module: TranslatorModule,envs:FunctionEnvs):Unit = {
+    curModName = module.name;
+    this.curModuleExportSet.clear();
+    for(exportName <- module.exportSymbols) {
+      this.curModuleExportSet += exportName;
+    }
+    
+    val libSet:HashSet[String] = HashSet.from(module.imports.map(_.libName))
+    var index = 0;
+    for(expr <- module.exprList) {
+      this.visitSymbols(expr.value,(symbol) => {
+          if(symbol.ns.isDefined && libSet.contains(symbol.ns.get)) {
+            this.globalVars.put(s"${symbol.ns.get}/${symbol.name}",index);
+            envs.current.emit(Instruction.LoadGlobal(symbol.ns.get,symbol.name))
+            index += 1
+          }
+      })
+    }
+  }
+  
+  def visitSymbols(expr:VMExpr,symbolFn:(VMSymbol)=>Unit):Unit = {
+    expr match
+      case VMExpr.VMSymbol(value) => { symbolFn(value) }
+      case VMExpr.VMArray(value) => { value.foreach(v => this.visitSymbols(v.value,symbolFn)) }
+      case VMExpr.VMDef(_,expr) => this.visitSymbols(expr.value,symbolFn)
+      case VMExpr.VMCall(fExpr,args) => {
+        this.visitSymbols(fExpr.value,symbolFn)
+        args.foreach(v => this.visitSymbols(v.value,symbolFn))
+      }
+      case VMExpr.VMMatch(value,alts) => {
+        this.visitSymbols(value.value,symbolFn)
+        for(alt <- alts) {
+          this.visitSymbols(alt.expr.value,symbolFn)
+        }
+      }
+      case VMExpr.VMMap(value) => { value.foreach(v => this.visitSymbols(v.value,symbolFn)) }
+      case VMExpr.VMFunc(_,bodyList) => { bodyList.foreach(v => this.visitSymbols(v.value,symbolFn)) }
+      case VMExpr.VMLet(lets, bodyLst, isLoop) => {
+        lets.foreach(v => this.visitSymbols(v.value,symbolFn))
+        bodyLst.foreach(v => this.visitSymbols(v.value,symbolFn))
+      }
+      case VMExpr.VMRecur(lst) => { lst.foreach(v => this.visitSymbols(v.value,symbolFn)) }
+      case VMExpr.VMUnWrap(value) => this.visitSymbols(value.value,symbolFn)
+      case VMExpr.VMXml(_,attrs,child) => {
+        attrs.foreach(kv => this.visitSymbols(kv._2.value,symbolFn))
+        child.foreach(v => this.visitSymbols(v.value,symbolFn))
+      }
+      case _ =>
   }
 
   def compileExpr(expr:TextSpan[VMExpr],envs:FunctionEnvs,isTail:Boolean):Try[Unit] = Try {
@@ -132,7 +190,7 @@ class Compiler {
       case VMExpr.VMArray(value) => this.compileArray(value,envs).get
       case VMExpr.VMDef(name, expr) => this.compileDef(name,expr,envs).get
       case VMExpr.VMCall(fn, args) => this.compileCall(fn,args,envs).get
-      case VMExpr.VMSymbol(value) => this.loadIdentifier(expr.pos,value,envs).get
+      case VMExpr.VMSymbol(value) => this.loadIdentifier(expr.pos, value, envs).get
       case VMExpr.VMMatch(value, alts) => this.compileMatch(value,alts,envs,isTail).get
       case VMExpr.VMKeyword(value, isLocal) => this.emitKeyworld(value,envs.current)
       case VMExpr.VMMap(value) => this.compileMap(expr.pos,value,envs).get
@@ -140,11 +198,12 @@ class Compiler {
       case VMExpr.VMLet(lets, bodyLst, isLoop) => this.compileLet(expr.pos,lets,bodyLst,isLoop,envs).get
       case VMExpr.VMRecur(lst) => this.compileRecur(expr.pos,lst,envs,isTail).get
       case VMExpr.VMUnWrap(value) => {
-        this.compileExpr(value,envs,isTail)
+        this.compileExpr(value,envs,isTail).get
         envs.current.emit(Instruction.UnWrap)
       }
       case VMExpr.VMXml(tag, attrs, child) => this.compileXML(expr.pos,tag,attrs,child,envs,isTail)
       case _ => {  }
+
   }
 
   protected def find(symbol:VMSymbol,envs:FunctionEnvs):Option[FindVariable[Int]] = {
@@ -163,7 +222,8 @@ class Compiler {
         return Some(FindVariable.UpVar(index))
       }
     }
-    None
+
+    this.globalVars.get(symbol.toString()).map(v => FindVariable.Global(v))
   }
 
   protected def loadIdentifier(pos:SpanPos,symbol:VMSymbol,envs:FunctionEnvs):Try[Unit] = Try {
@@ -171,6 +231,7 @@ class Compiler {
     findVar match
       case FindVariable.Stack(index) => envs.current.emit(Instruction.Push(index))
       case FindVariable.UpVar(value) => envs.current.emit(Instruction.PushUpVar(value))
+      case FindVariable.Global(index) => envs.current.emit(Instruction.Push(index))
   }
 
   protected def compileXML(pos:SpanPos,tag:String,
@@ -358,7 +419,7 @@ class Compiler {
           instrs.update(startIndex,Instruction.CJump(instrs.length))
         }
       this.compileExpr(alt.expr,envs,isTail).get
-      if(isTail && loopScopeList.length > 0 && loopScopeList.last.isRecur) {
+      if(isTail && loopScopeList.nonEmpty && loopScopeList.last.isRecur) {
         loopScopeList.last.isRecur = false;
       } else {
         envs.current.emit(Instruction.Slide(1))
@@ -384,14 +445,15 @@ class Compiler {
 
   protected def compileArray(list:Vector[TextSpan[VMExpr]],envs:FunctionEnvs):Try[Unit] = Try {
     list.foreach { vmExpr =>
-      this.compileExpr(vmExpr,envs:FunctionEnvs,false)
+      this.compileExpr(vmExpr,envs:FunctionEnvs,false).get
     }
     envs.current.emit(Instruction.ConstructArray(list.length))
   }
 
   protected def compileDef(name:VMSymbol,expr:TextSpan[VMExpr],envs:FunctionEnvs):Try[Unit] = Try {
     this.compileExpr(expr,envs,false).get
-    envs.current.newStackVar(name)
+    val index = envs.current.newStackVar(name)
+    envs.current.emit(Instruction.AddGlobal(index,curModName,name.name))
   }
 
   protected def compileCall(name:TextSpan[VMExpr],args:Vector[TextSpan[VMExpr]],envs:FunctionEnvs):Try[Unit] = Try(scala.util.boundary{
@@ -401,7 +463,7 @@ class Compiler {
     }
     this.compileExpr(name,envs,false).get
     for(arg <- args) {
-      this.compileExpr(arg,envs,false)
+      this.compileExpr(arg,envs,false).get
     }
     envs.current.emitCall(args.length)
   })
@@ -429,15 +491,15 @@ class Compiler {
       case "!" => Some(Instruction.Not)
       case _ => None
     if(binOp.isDefined) {
-      this.compileExpr(args(0),envs,false)
-      this.compileExpr(args(1),envs,false)
+      this.compileExpr(args(0),envs,false).get
+      this.compileExpr(args(1),envs,false).get
       envs.current.emit(binOp.get)
       if(binTail.isDefined) {
         envs.current.emit(binTail.get)
       }
       true
     } else if(op.isDefined) {
-      this.compileExpr(args(0),envs,false)
+      this.compileExpr(args(0),envs,false).get
       envs.current.emit(op.get)
       true
     } else {

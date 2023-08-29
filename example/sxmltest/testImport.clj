@@ -1,3 +1,4 @@
 (import lib)
 
-(+ 1 1)
+(def pi+1 (+ lib/pi 1))
+(lib/inc pi+1)

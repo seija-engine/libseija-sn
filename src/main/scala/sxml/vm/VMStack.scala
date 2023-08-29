@@ -37,7 +37,7 @@ class VMCallStack(offsetValue:Int,stackRef:VMStack,stateValue:ClosureState) {
    val state:ClosureState = stateValue
    var curIndex:Int = 0
 
-   def execute_():Try[Option[VMCallStack]] = Try {
+   def execute_(vm:SXmlVM):Try[Option[VMCallStack]] = Try {
       this.curIndex = this.state.instructionIndex
       var isRun = true
       var nextStack:Option[VMCallStack] = None;
@@ -61,6 +61,9 @@ class VMCallStack(offsetValue:Int,stackRef:VMStack,stateValue:ClosureState) {
             case Instruction.Push(idx) => {
                val value = this.get(idx)
                this.push(value)
+            }
+            case Instruction.LoadGlobal(lib,name) => {
+               this.push(vm.env.getModuleVar(lib,name))
             }
             case Instruction.ConstructArray(count) => {
                val takeList = this.takeTail(count)
@@ -148,6 +151,10 @@ class VMCallStack(offsetValue:Int,stackRef:VMStack,stateValue:ClosureState) {
             case Instruction.Return => {
                isRun = false
             }
+            case Instruction.AddGlobal(index, lib, name) => {
+               vm.env.addModuleVar(lib,name,this.get(index))
+            }
+            
             
       }
       if(nextStack.isEmpty) {

@@ -11,6 +11,7 @@ import scala.collection.immutable.Vector
 import sxml.vm.ImportInfo
 
 case class TranslatorModule(
+  val name:String,
   val exportSymbols:ArrayBuffer[String],
   val imports:ArrayBuffer[ImportInfo],
   val exprList:Vector[TextSpan[VMExpr]]
@@ -25,6 +26,7 @@ class Translator {
       this.importInfos.clear();
       val lst = parseModule.exprList.map(translate(_).get)
       TranslatorModule(
+        parseModule.name,
         this.exportSymbols.clone(),
         this.importInfos.clone(),
         lst.toVector

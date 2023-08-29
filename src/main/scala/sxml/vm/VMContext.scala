@@ -10,7 +10,7 @@ class VMContext(vm:SXmlVM) {
     def execute():Try[Unit] = Try {
         var curCallStack:Option[VMCallStack] = this.stack.frames.lastOption
         while(curCallStack.isDefined) {
-           curCallStack = curCallStack.get.execute_().get
+           curCallStack = curCallStack.get.execute_(vm).get
         }
     }
 }
