@@ -3,6 +3,8 @@ package sxml.vm
 import scala.util.Try
 import scala.collection.mutable.ArrayBuffer
 import scala.io.Source
+import scala.collection.mutable.HashMap
+import sxml.vm.stdlib.IOModule
 
 class SXmlVM {
     val env:VMEnv = VMEnv()
@@ -10,6 +12,10 @@ class SXmlVM {
 
     def addSearchPath(path:String):Unit = {
         this.env.importer.addSearchPath(path)
+    }
+
+    def addBuildinModule():Unit = {
+        this.env.addExternModule(IOModule.externModule())
     }
 
     def callFile(fsPath:String):Try[VMValue] = Try  {
@@ -27,7 +33,7 @@ class SXmlVM {
         val transModule = trans.translateModule(astModule).get
         val compiler = sxml.compiler.Compiler()
         val module = compiler.compileModule(transModule).get
-        module.function.debugShow(0)
+        //module.function.debugShow(0)
         this.callModule(module).get
     }
 
@@ -41,7 +47,6 @@ class SXmlVM {
         val closureData = this.moduleToClosureData(module)
         this.callThunk(closureData).get
     }
-
 
     def callThunk(closure:ClosureData):Try[VMValue] = Try {
         val closureState = ClosureState(closure,0)

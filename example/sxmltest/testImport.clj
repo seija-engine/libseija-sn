@@ -1,6 +1,7 @@
 (import lib)
-(import math)
+(import io)
 
-(def pi+1 (+ lib/pi 1))
+(def ppp lib/pi)
 
-(math/x2 (lib/inc pi+1))
+(io/println ppp)
+

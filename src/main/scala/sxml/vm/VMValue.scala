@@ -1,5 +1,5 @@
 package sxml.vm
-
+import scala.quoted.*
 import scala.collection.mutable.ArrayBuffer
 import scala.collection.immutable.HashMap
 
@@ -13,6 +13,7 @@ enum VMValue {
     case  VMArray(value:Vector[VMValue])
     case  VMMap(value:HashMap[VMValue,VMValue])
     case  VMClosure(data:ClosureData)
+    case  VMExternFunc(data:ExternFuncData)
     case  VMXml(value:XmlNode)
     case  VMUnWrap(value:Vector[VMValue])
 
@@ -62,10 +63,71 @@ enum VMValue {
             }
             case _ => false
     }
+
+    override def toString(): String = {
+        this match
+            case NIL() => "nil"
+            case VMChar(value) => value.toString()
+            case VMLong(value) => value.toString()
+            case VMFloat(value) =>  value.toString()
+            case VMString(value) => value
+            case VMKeyword(value) => value
+            case VMArray(value) => "<array>"
+            case VMMap(value) => "<map>"
+            case VMClosure(data) => "<closure>"
+            case VMExternFunc(data) => "<func>"
+            case VMXml(value) => "<xml>"
+            case VMUnWrap(value) => "<unwrap>"
+        
+    }
 }
+
+type VMFuncType = (ctx:VMCallStack) => Unit;
 
 case class ClosureData(val function:CompiledFunction,upvars:ArrayBuffer[VMValue])
 
 case class XmlNode(val Name:String,
                    val attrs:HashMap[String,VMValue],
                    val child:Vector[VMValue]);
+
+case class ExternFuncData(val name:String,func:VMFuncType) {
+    def call(stack:VMCallStack):Unit = { func(stack) }
+}
+
+inline def wrapExternFunc[T](inline f:T):ExternFuncData =  ${wrapExternFuncImpl('f) }
+
+def wrapExternFuncImpl[T](expr:Expr[T])(using Type[T])(using Quotes):Expr[ExternFuncData] = {
+    import quotes.reflect.*;
+    val repr = TypeRepr.of[T]
+    var argsCount = 0;
+    var fnName = "";
+    var fnNameTerm:Option[Term] = None;
+    expr.asTerm match
+        case Inlined(a,b,Inlined(_,_,Block(lst,t))) => {
+            lst(0) match
+                case DefDef(_,_,_,Some(Apply(id@Ident(name),args))) => {
+                    fnName = name;
+                    fnNameTerm = Some(id);
+                    argsCount = args.length
+                }
+                case _ =>   
+        }
+        case _ => 
+    
+    val wrapFunc = '{
+      def _wrap(stack:VMCallStack):Unit = {
+        val ret = ${
+            val popExpr = '{stack.pop()};
+            val lst = 0.until(argsCount).map(_ => popExpr.asTerm ).toList;
+            Apply(fnNameTerm.get,lst).asExpr
+        }
+        stack.pop();
+        stack.push(ret.asInstanceOf[VMValue])
+      }
+      _wrap
+    };
+    
+    val retExpr = '{ExternFuncData(${Expr(fnName)},${wrapFunc})}
+    report.info(retExpr.show) 
+    retExpr
+}

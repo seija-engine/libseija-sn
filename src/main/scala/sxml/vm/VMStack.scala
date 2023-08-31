@@ -15,7 +15,7 @@ class VMStack {
 
    def enterCallStack(offset:Int,state:ClosureState):VMCallStack = {
       val callStack = VMCallStack(offset,this,state)
-      this.frames.addOne(callStack)
+      this.frames += callStack
       callStack
    }
 
@@ -96,11 +96,21 @@ class VMCallStack(offsetValue:Int,stackRef:VMStack,stateValue:ClosureState) {
                this.push(upVar)
             }
             case Instruction.Call(argsCount) => {
-               this.state.instructionIndex = this.curIndex;
+               
                val functionIndex = this.stack.values.length - 1 - argsCount;
-               val fnValue = this.stack.values(functionIndex).unwrap[VMValue.VMClosure]().get;
-               nextStack = Some(this.enterClosure(fnValue.data))
-               isRun = false;
+               val fnValue = this.stack.values(functionIndex);
+               fnValue match
+                  case VMValue.VMClosure(data) => {
+                     this.state.instructionIndex = this.curIndex;
+                     nextStack = Some(this.enterClosure(data))
+                     isRun = false;
+                  }
+                  case VMValue.VMExternFunc(data) => {
+                     data.call(this)
+                  }
+                  case _ =>
+               
+               
             }
             case Instruction.CJump(index) => {
                val curValue = this.pop();

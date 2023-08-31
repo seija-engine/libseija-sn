@@ -15,6 +15,7 @@ object Main {
     println(s"run main")
    
     val vm = sxml.vm.SXmlVM()
+    vm.addBuildinModule();
     vm.addSearchPath("example/sxmltest/")
     val retValue = vm.callFile("example/sxmltest/testImport.clj").get
     println(s"eval:${retValue}")

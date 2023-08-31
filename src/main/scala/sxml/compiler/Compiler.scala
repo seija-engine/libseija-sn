@@ -126,7 +126,6 @@ class Compiler {
     for(expr <- module.exprList) {
       compileExpr(expr,envs,false).get
     }
-    println(s"end compileModule:${module.name}")
     val endFunction = envs.endFunction()
     CompiledModule(module.imports.toArray,
                    module.exportSymbols.toArray,
