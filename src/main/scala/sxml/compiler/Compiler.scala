@@ -12,6 +12,7 @@ import scala.collection.mutable.HashMap
 import scala.collection.mutable
 import scala.collection.mutable.Stack
 import scala.collection.mutable.HashSet
+import sxml.vm.VMEnv
 
 case class FunctionEnv(val function:CompiledFunction) {
     val stack:ScopedMap[VMSymbol,Int] = ScopedMap()
@@ -112,7 +113,7 @@ case class LoopScope(
   val isFN:Boolean = false
 )
 
-class Compiler {
+case class Compiler(vmEnv:VMEnv) {
   var loopScopeList:ArrayBuffer[LoopScope] = ArrayBuffer.empty
   val curModuleExportSet:mutable.HashSet[String] = mutable.HashSet.empty
   var curModName:String = "";
@@ -143,6 +144,13 @@ class Compiler {
     var index = 0;
     for(expr <- module.exprList) {
       this.visitSymbols(expr.value,(symbol) => {
+          if(symbol.ns.isEmpty) {
+            this.vmEnv.getPreludeLibName(symbol.name).foreach {modName =>
+              this.globalVars.put(symbol.name,index)
+              envs.current.emit(Instruction.LoadGlobal(modName,symbol.name))
+              index += 1
+            }
+          }
           if(symbol.ns.isDefined && libSet.contains(symbol.ns.get)) {
             this.globalVars.put(s"${symbol.ns.get}/${symbol.name}",index);
             envs.current.emit(Instruction.LoadGlobal(symbol.ns.get,symbol.name))

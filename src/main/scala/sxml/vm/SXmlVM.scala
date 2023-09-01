@@ -31,7 +31,7 @@ class SXmlVM {
         val astModule = parser.parseModule().get
         val trans = sxml.compiler.Translator()
         val transModule = trans.translateModule(astModule).get
-        val compiler = sxml.compiler.Compiler()
+        val compiler = sxml.compiler.Compiler(this.env)
         val module = compiler.compileModule(transModule).get
         //module.function.debugShow(0)
         this.callModule(module).get

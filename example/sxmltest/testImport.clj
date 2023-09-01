@@ -3,5 +3,6 @@
 
 (def ppp lib/pi)
 
-(io/println ppp)
+(println ppp)
 
+"EndString"

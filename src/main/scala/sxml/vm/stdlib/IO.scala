@@ -14,7 +14,7 @@ object IOModule {
 
     def externModule():ExternModule = {
         val ioModule = ExternModule("io",mutable.HashMap());
-        ioModule.addFunc(println)  
+        ioModule.addFunc(println,true)  
         ioModule
     }
 }

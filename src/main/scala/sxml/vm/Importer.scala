@@ -24,7 +24,7 @@ class Importer {
         val astModule = parser.parseModule().get
         val trans = sxml.compiler.Translator()
         val transModule = trans.translateModule(astModule).get
-        val compiler = sxml.compiler.Compiler()
+        val compiler = sxml.compiler.Compiler(vm.env)
         val module = compiler.compileModule(transModule).get
         //module.function.debugShow(0)
         vm.callModule(module).get

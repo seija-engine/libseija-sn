@@ -8,10 +8,12 @@ case class ModuleInfo(val vars:HashMap[String,VMValue] = HashMap.empty)
 
 class VMEnv {
   private val moduleDict:HashMap[String,ModuleInfo] = HashMap.empty
-  private val preludeDict:HashMap[String,VMValue]  = HashMap.empty
+  private val preludeDict:HashMap[String,String]  = HashMap.empty
   val importer = Importer()
 
   def getModule(modName:String):Option[ModuleInfo] = this.moduleDict.get(modName)
+
+  def getPreludeLibName(name:String):Option[String] = this.preludeDict.get(name)
 
   def addModuleVar(modName:String,varName:String,value:VMValue):Unit = {
     val curModuleInfo = this.moduleDict.getOrElseUpdate(modName,ModuleInfo())
@@ -24,8 +26,10 @@ class VMEnv {
 
   def addExternModule(externModule:ExternModule):Boolean = {
     if(this.moduleDict.contains(externModule.modName)) return false;
+    for(preludeName <-externModule.preludeList) {
+      this.preludeDict.put(preludeName,externModule.modName)
+    }
     this.moduleDict.put(externModule.modName,ModuleInfo(externModule.varDict));
-    
     true
   }
 }
