@@ -128,6 +128,6 @@ def wrapExternFuncImpl[T](expr:Expr[T])(using Type[T])(using Quotes):Expr[Extern
     };
     
     val retExpr = '{ExternFuncData(${Expr(fnName)},${wrapFunc})}
-    report.info(retExpr.show) 
+    //report.info(retExpr.show) 
     retExpr
 }
