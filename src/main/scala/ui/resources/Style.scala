@@ -1,42 +1,47 @@
 package ui.resources
-import core.reflect.*;
-import ui.ContentProperty;
-import scala.collection.mutable.ArrayBuffer
-import scala.collection.mutable.Growable
+import core.reflect.TypeInfo
+import scala.util.Try
+import sxml.vm.VMValue
+import scala.collection.immutable.HashMap
 import ui.xml.XmlNSResolver
-import core.logError;
+import core.reflect.Assembly
 
-trait IApplyStyleType {
-   def applyType(info:Option[TypeInfo]):Unit;
+case class Style(
+    val forTypeInfo:TypeInfo,
+    val setterList:Array[Setter],
+    val key:String = ""
+) extends BaseUIResource {
+    override def getKey:String = this.key
 }
 
-@ContentProperty("setterList")
-class Style extends BaseUIResource derives ReflectType {
-    var key:String = "";
-    var forType:String = "";
-    var isGetTypeFail:Boolean = false;
-    var forTypeInfo:Option[TypeInfo] = None;
-    var setterList:SetterGroup = SetterGroup(this)
-    def getKey = this.key;
-    def getForTypeInfo():Option[TypeInfo] = {
-        if(isGetTypeFail) return None;
-        if(forTypeInfo.isDefined) { return forTypeInfo; }
-        val retType = XmlNSResolver.default.resolver(forType).flatMap(Assembly.get);
-        if(retType.isEmpty) { this.isGetTypeFail = true; }
-        this.forTypeInfo = retType;
-        retType
+
+case class Setter(
+    val key:String,
+    val value:Any,
+    val target:String
+)
+
+
+
+object Style {
+  def loadFromValue(attr:VMValue,dict:VMValue):Try[Style] = Try {
+    var forType:Option[String] = None
+    attr match
+           case VMValue.VMString(value) => forType = Some(value) 
+           case VMValue.VMMap(value) =>  {
+              val attrDict = attr.toScalaValue().asInstanceOf[HashMap[String,Any]]
+              forType = attrDict.get("type").map(_.asInstanceOf[String])
+           }
+           case _ => 
+    if(forType.isEmpty) throw new Exception("style need type")
+    
+    val typInfo = XmlNSResolver.default.resolver(forType.get).flatMap(Assembly.get)
+    if(typInfo.isEmpty) throw new Exception(s"not found type ${forType.get}")
+    
+    val setDict = dict.toScalaValue().asInstanceOf[HashMap[String,Any]]
+    for(kv <- setDict) {
+        println(kv)
     }
-}
-
-
-case class SetterGroup(style:Style) extends Growable[Setter] {
-   var setterList:ArrayBuffer[Setter] = ArrayBuffer.empty;
-   override def addOne(setter: Setter): this.type = {
-     val styleTypeInfo = style.getForTypeInfo();
-     setter.applyType(styleTypeInfo);
-     this.setterList.addOne(setter);
-     this
-   }
-
-   override def clear(): Unit = { this.setterList.clear(); }
+    Style(typInfo.get,Array())
+  }
 }

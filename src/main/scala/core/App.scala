@@ -47,7 +47,7 @@ object App {
     try {
       this.gameApp.OnStart();
     } catch case e:Throwable => {
-        println(s"GameApp OnStart Error: ${e}");
+        e.printStackTrace()
     }
   }
 

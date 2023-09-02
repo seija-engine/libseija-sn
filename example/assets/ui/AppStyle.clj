@@ -1,5 +1,5 @@
 [
-  (style {:type "Control" :is true} 
+  (style "Control"
     {
       :width "120"
       :height "50"
@@ -9,6 +9,8 @@
                     <Text text="FUCK" />
                  </Panel>
                 </ControlTemplate>
+
+      :sprite #(target % "BG" "default.button")
     }
   )
 ]

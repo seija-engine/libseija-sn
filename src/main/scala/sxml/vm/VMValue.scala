@@ -24,6 +24,11 @@ enum VMValue {
             case _ => false
     }
 
+    def iskeyword:Boolean = this match
+        case VMKeyword(_) => true
+        case _ => false
+    
+
     def castFloat():Option[Double] = {
         this match
             case VMLong(value) => Some(value.toDouble)

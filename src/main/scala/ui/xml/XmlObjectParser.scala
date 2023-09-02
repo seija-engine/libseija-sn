@@ -10,7 +10,7 @@ import ui.controls.UIElement
 import ui.binding.BindingItem
 import scala.util.Success
 import scala.collection.mutable.ArrayBuffer
-import ui.resources.Style
+import ui.resources.OldStyle
 import ui.resources.UIResourceMgr
 
 trait IXmlObject {

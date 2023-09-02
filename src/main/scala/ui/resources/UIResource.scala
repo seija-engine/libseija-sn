@@ -14,12 +14,12 @@ import ui.controls.ControlTemplate
 @ContentProperty("resList")
 class UIResource extends Growable[BaseUIResource] with IXmlObject derives ReflectType {
     var resList:ArrayBuffer[BaseUIResource] = ArrayBuffer[BaseUIResource]()
-    protected var styleDict:HashMap[String,Style] = HashMap.empty
+    protected var styleDict:HashMap[String,OldStyle] = HashMap.empty
     protected var dataTemplateDict:HashMap[String,DataTemplate] = HashMap.empty
     protected var controlTemplateDict:HashMap[String,ControlTemplate] = HashMap.empty
     protected var allResDict:HashMap[String,BaseUIResource] = HashMap.empty
 
-    def findStyle(key:String):Option[Style] = {
+    def findStyle(key:String):Option[OldStyle] = {
         this.styleDict.get(key)
     }
 
@@ -40,7 +40,7 @@ class UIResource extends Growable[BaseUIResource] with IXmlObject derives Reflec
     override def addOne(elem: BaseUIResource): this.type = {
         this.resList.addOne(elem)
         elem match {
-            case style:Style => {
+            case style:OldStyle => {
                if(style.getKey == "") {
                  val autoKey = style.forTypeInfo.map(_.name).getOrElse("");
                  this.styleDict.put(autoKey,style);
@@ -72,5 +72,5 @@ object UIResource {
 }
 
 trait BaseUIResource {
-   def getKey:String;
+   def getKey:String
 }

@@ -1,7 +1,7 @@
 package ui.visualState
 import core.reflect.*;
 import scala.collection.mutable.ArrayBuffer
-import ui.resources.Setter
+import ui.resources.OldSetter
 import scala.collection.mutable.Growable;
 import ui.ContentProperty;
 import ui.ElementNameScope
@@ -20,9 +20,9 @@ class VisualState derives ReflectType {
     }
 }
 
-class SettersGroup extends Growable[Setter] derives ReflectType {
-    var setters:ArrayBuffer[Setter] = ArrayBuffer[Setter]()
-    def addOne(setter: Setter): this.type = {
+class SettersGroup extends Growable[OldSetter] derives ReflectType {
+    var setters:ArrayBuffer[OldSetter] = ArrayBuffer[OldSetter]()
+    def addOne(setter: OldSetter): this.type = {
         setters += setter;
         this
     }

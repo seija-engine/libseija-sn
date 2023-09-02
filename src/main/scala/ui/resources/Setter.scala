@@ -5,8 +5,9 @@ import core.logError;
 import ui.IAwake
 import ui.ElementNameScope
 
+
 @ContentProperty("value")
-class Setter extends IApplyStyleType derives ReflectType {
+class OldSetter extends IApplyStyleType derives ReflectType {
   var key: String = "";
   var value: Any = null;
   var target:String = null;
