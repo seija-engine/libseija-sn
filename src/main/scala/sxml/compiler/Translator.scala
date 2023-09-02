@@ -55,8 +55,8 @@ class Translator {
           val argSyms = 1.to(maxArgCount).map(idx => {
             if(idx == 1) Symbol(None,"%") else Symbol(None,s"%${idx}")
           }).toVector
-          val bodyList = this.takeBodyList(pos,0,lst).get
-          TextSpan(pos,VMExpr.VMFunc(argSyms,bodyList))
+          val bodyExpr = this.translate(cExpr).get
+          TextSpan(pos,VMExpr.VMFunc(argSyms,Vector(bodyExpr)))
         }
         case _ => throw InvalidDispatch(pos)
     }
@@ -128,6 +128,7 @@ class Translator {
           }
         }
         case CExpr.SList(_) => {  translateInvoke(pos,lst).get }
+        case CExpr.SDispatch(value) => { translateInvoke(pos,lst).get }
         case _ => throw InvalidList(pos)
     }
 

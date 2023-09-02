@@ -23,7 +23,7 @@ object UISXmlEnv {
   def uiExternModule():ExternModule = {
     val uiModule = ExternModule("ui",mutable.HashMap.empty)
     uiModule.addFunc(style,true) 
-    uiModule.addFunc(target,true)
+    uiModule.addFunc(setter,true)
     uiModule
   }
 
@@ -38,7 +38,7 @@ object UISXmlEnv {
       } 
   }
 
-  private def target(fst:VMValue,t:VMValue,v:VMValue):VMValue = {
+  private def setter(fst:VMValue,t:VMValue,v:VMValue):VMValue = {
     VMValue.NIL()
   }
 }

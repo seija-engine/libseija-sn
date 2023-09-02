@@ -44,6 +44,7 @@ enum Instruction {
             case PushChar(value) => 1
             case PushFloat(value) => 1
             case PushString(value) => 1
+            case PushKW(_) => 1
             case LoadGlobal(lib, name) => 1
             case AddGlobal(_,_, _) => 0
             case Push(value) => 1

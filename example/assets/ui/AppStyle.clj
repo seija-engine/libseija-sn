@@ -10,7 +10,7 @@
                  </Panel>
                 </ControlTemplate>
 
-      :sprite #(target % "BG" "default.button")
+      :sprite #(setter % "BG" "default.button")
     }
   )
 ]

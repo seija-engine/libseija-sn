@@ -22,6 +22,6 @@ object UIResourceMgr {
 
   def loadScriptResource(path: String): Unit = {
     val evalValue = UISXmlEnv.evalFile(path).get
-    println(s"evalValue:${evalValue}")
+    //println(s"evalValue:${evalValue}")
   }
 }

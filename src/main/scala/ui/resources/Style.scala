@@ -40,7 +40,7 @@ object Style {
     
     val setDict = dict.toScalaValue().asInstanceOf[HashMap[String,Any]]
     for(kv <- setDict) {
-        println(kv)
+        //println(kv)
     }
     Style(typInfo.get,Array())
   }

@@ -19,6 +19,7 @@ case class FunctionEnv(val function:CompiledFunction) {
     val freeVars:ArrayBuffer[VMSymbol] = ArrayBuffer.empty
     var stackSize:Int = 0
     var maxStackSize:Int = 0
+
     def emit(instruction:Instruction):Unit = {
       val adjustment = instruction.adjust()
       if(adjustment > 0) {
@@ -101,7 +102,6 @@ case class FunctionEnvs(envs:ArrayBuffer[FunctionEnv] = ArrayBuffer.empty) {
 
 enum FindVariable[G] {
   case Stack(index:Int)
-  case Global(index:Int)
   case UpVar(value:G)
 }
 
@@ -117,7 +117,6 @@ case class Compiler(vmEnv:VMEnv) {
   var loopScopeList:ArrayBuffer[LoopScope] = ArrayBuffer.empty
   val curModuleExportSet:mutable.HashSet[String] = mutable.HashSet.empty
   var curModName:String = "";
-  val globalVars:HashMap[String,Int] = HashMap.empty
 
   def compileModule(module: TranslatorModule):Try[CompiledModule] = Try {
     val envs = FunctionEnvs()
@@ -146,14 +145,14 @@ case class Compiler(vmEnv:VMEnv) {
       this.visitSymbols(expr.value,(symbol) => {
           if(symbol.ns.isEmpty) {
             this.vmEnv.getPreludeLibName(symbol.name).foreach {modName =>
-              this.globalVars.put(symbol.name,index)
               envs.current.emit(Instruction.LoadGlobal(modName,symbol.name))
+              envs.current.newStackVar(symbol)
               index += 1
             }
           }
           if(symbol.ns.isDefined && libSet.contains(symbol.ns.get)) {
-            this.globalVars.put(s"${symbol.ns.get}/${symbol.name}",index);
             envs.current.emit(Instruction.LoadGlobal(symbol.ns.get,symbol.name))
+            envs.current.newStackVar(symbol)
             index += 1
           }
       })
@@ -230,15 +229,16 @@ case class Compiler(vmEnv:VMEnv) {
       }
     }
 
-    this.globalVars.get(symbol.toString()).map(v => FindVariable.Global(v))
+    None
   }
 
   protected def loadIdentifier(pos:SpanPos,symbol:VMSymbol,envs:FunctionEnvs):Try[Unit] = Try {
+   
     val findVar = this.find(symbol,envs).getOrElse(throw NotFoundSymbol(pos))
+    
     findVar match
       case FindVariable.Stack(index) => envs.current.emit(Instruction.Push(index))
       case FindVariable.UpVar(value) => envs.current.emit(Instruction.PushUpVar(value))
-      case FindVariable.Global(index) => envs.current.emit(Instruction.Push(index))
   }
 
   protected def compileXML(pos:SpanPos,tag:String,
