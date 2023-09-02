@@ -36,7 +36,8 @@ class TestDemo extends IGameApp {
   override def OnStart(): Unit = {
     Assembly.add[TestViewModel]();
     this.loadAsset()
-    UIResourceMgr.loadResource("example/assets/ui/AppStyle.xml");
+    UIResourceMgr.loadResource("example/assets/ui/AppStyle.xml")
+    UIResourceMgr.loadScriptResource("example/assets/ui/AppStyle.clj")
     val viewModel = new TestViewModel();
     this.testViewModel = Some(viewModel);
     XmlUIElement.fromFile("example/assets/ui/xmltest/testMenu.xml").logError().foreach {loadElement =>

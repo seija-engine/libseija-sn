@@ -183,6 +183,8 @@ class VMCallStack(offsetValue:Int,stackRef:VMStack,stateValue:ClosureState) {
 
    def pop():VMValue = this.stack.values.remove(this.stack.values.length - 1)
 
+   def last(idx:Int):VMValue = this.stack.values(this.stack.values.length - 1 - idx)
+
    def popMany(count:Int):Unit = {
       if(count <= 0) return
       this.stack.values.remove(this.stack.values.length - count,count)

@@ -515,7 +515,7 @@ case class Compiler(vmEnv:VMEnv) {
   }
 
   private def emitKeyworld(value:String,env:FunctionEnv):Unit = {
-    val index = env.addStringConst(value)
+    val index = env.addStringConst(value.tail)
     env.emit(Instruction.PushKW(index))
   }
 }
