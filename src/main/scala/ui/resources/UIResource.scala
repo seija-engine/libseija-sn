@@ -12,14 +12,14 @@ import ui.xml.IXmlObject
 import ui.controls.ControlTemplate
 
 @ContentProperty("resList")
-class UIResource extends Growable[BaseUIResource] with IXmlObject derives ReflectType {
+class UIResource extends Growable[BaseUIResource] derives ReflectType {
     var resList:ArrayBuffer[BaseUIResource] = ArrayBuffer[BaseUIResource]()
-    protected var styleDict:HashMap[String,OldStyle] = HashMap.empty
+    protected var styleDict:HashMap[String,Style] = HashMap.empty
     protected var dataTemplateDict:HashMap[String,DataTemplate] = HashMap.empty
     protected var controlTemplateDict:HashMap[String,ControlTemplate] = HashMap.empty
     protected var allResDict:HashMap[String,BaseUIResource] = HashMap.empty
 
-    def findStyle(key:String):Option[OldStyle] = {
+    def findStyle(key:String):Option[Style] = {
         this.styleDict.get(key)
     }
 
@@ -33,10 +33,23 @@ class UIResource extends Growable[BaseUIResource] with IXmlObject derives Reflec
 
     override def clear(): Unit = this.resList.clear();
 
-    override def OnAddContent(value: Any): Unit = {
-        UIResourceMgr.appResource.addOne(value.asInstanceOf[BaseUIResource]);
+    override def addOne(elem: BaseUIResource): this.type = {
+        this.resList += elem
+        elem match
+            case style:Style => {
+                if(style.getKey == "") {
+                    val autoKey = style.forTypeInfo.name
+                    this.styleDict.put(autoKey,style)
+                    this.allResDict.put(autoKey,style)
+                } else {
+                    this.styleDict.put(style.getKey,style)
+                    this.allResDict.put(style.getKey,style)
+                }
+            }
+            case _ =>
+        this
     }
-
+    /*
     override def addOne(elem: BaseUIResource): this.type = {
         this.resList.addOne(elem)
         elem match {
@@ -64,7 +77,7 @@ class UIResource extends Growable[BaseUIResource] with IXmlObject derives Reflec
             }
         }
         this
-    }
+    }*/
 }
 
 object UIResource {

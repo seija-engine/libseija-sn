@@ -31,12 +31,13 @@ import ui.xml.IXmlObject
 
 import scala.collection.mutable
 import transform.FFISeijaTransform
+import ui.resources.Style
 
 
 class UIElement extends INotifyPropertyChanged
   with Cloneable with IXmlObject with IRouteEventElement derives ReflectType {
     protected var entity:Option[Entity] = None
-    protected var style:Option[OldStyle] = None
+    protected var style:Option[Style] = None
     protected var _dataContext:Any = null;
     protected var isEntered:Boolean = false;
     var templateParent:Option[UIElement] = None;
@@ -81,7 +82,7 @@ class UIElement extends INotifyPropertyChanged
     def active = this._active
     def active_=(value:Boolean):Unit = { this._active = value; callPropertyChanged("active",this)  }
 
-    def setStyle(style:Option[OldStyle]):Unit = {
+    def setStyle(style:Option[Style]):Unit = {
         this.style = style;
     }
     def dataContext = this._dataContext;
@@ -258,9 +259,9 @@ class UIElement extends INotifyPropertyChanged
 
     def applyStyle() = {
       val style = this.findStyle();
-      if(style.isDefined && style.get.forTypeInfo.isDefined) {
-        val typInfo = style.get.forTypeInfo.get;
-        for(setter <- style.get.setterList.setterList) {
+      if(style.isDefined) {
+        val typInfo = style.get.forTypeInfo;
+        for(setter <- style.get.setterList) {
             typInfo.getFieldTry(setter.key).logError().foreach {f => 
                 f.set(this,setter.value);    
             }
@@ -268,7 +269,7 @@ class UIElement extends INotifyPropertyChanged
       }
     }
 
-    def findStyle():Option[OldStyle] = {
+    def findStyle():Option[Style] = {
         if(this.style.isDefined) {
            return this.style;
         }
@@ -280,7 +281,7 @@ class UIElement extends INotifyPropertyChanged
         UIResourceMgr.appResource.findStyle(styleKey)
     }
 
-    def findResourceStyle(key:String):Option[OldStyle] = {
+    def findResourceStyle(key:String):Option[Style] = {
         val style = this.resources.findStyle(key);
         if(style.isDefined) {
            return style;

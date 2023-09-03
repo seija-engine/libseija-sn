@@ -2,13 +2,16 @@ package ui.resources
 import core.reflect.TypeInfo
 import scala.util.Try
 import sxml.vm.VMValue
+import scala.collection.mutable.ArrayBuffer
 import scala.collection.immutable.HashMap
 import ui.xml.XmlNSResolver
 import core.reflect.Assembly
-
+import core.reflect.DynTypeConv
+import core.logError;
+import ui.xml.SXmlObjectParser
 case class Style(
     val forTypeInfo:TypeInfo,
-    val setterList:Array[Setter],
+    val setterList:ArrayBuffer[Setter],
     val key:String = ""
 ) extends BaseUIResource {
     override def getKey:String = this.key
@@ -18,7 +21,7 @@ case class Style(
 case class Setter(
     val key:String,
     val value:Any,
-    val target:String
+    val target:Any
 )
 
 
@@ -39,9 +42,26 @@ object Style {
     if(typInfo.isEmpty) throw new Exception(s"not found type ${forType.get}")
     
     val setDict = dict.toScalaValue().asInstanceOf[HashMap[String,Any]]
-    for(kv <- setDict) {
-        //println(kv)
+    val setterList:ArrayBuffer[Setter] = ArrayBuffer()
+    for((setName,setValue) <- setDict) {
+      if(setValue.isInstanceOf[sxml.vm.XmlNode]) {
+        val retValue = SXmlObjectParser(XmlNSResolver.default).parse(setValue.asInstanceOf[sxml.vm.XmlNode])
+        retValue.logError()
+        if(retValue.isSuccess) {
+          setterList += Setter(setName,retValue.get,null)
+        }
+      } else {
+        val field = typInfo.get.getField(setName)
+                             .getOrElse(throw new Exception(s"not found field ${setName} in ${typInfo.get.name}"))
+        val fromTypName = Assembly.getTypeName(setValue)
+        val tryConvValue = DynTypeConv.convertStrTypeTry(fromTypName,field.typName,setValue)
+        tryConvValue.logError()
+        if(tryConvValue.isSuccess) {
+          val realValue = tryConvValue.get
+          setterList += Setter(setName,realValue,null)
+        }
+      }
     }
-    Style(typInfo.get,Array())
+    Style(typInfo.get,setterList)
   }
 }

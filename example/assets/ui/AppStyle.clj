@@ -9,8 +9,6 @@
                     <Text text="FUCK" />
                  </Panel>
                 </ControlTemplate>
-
-      :sprite #(setter % "BG" "default.button")
     }
   )
 ]
