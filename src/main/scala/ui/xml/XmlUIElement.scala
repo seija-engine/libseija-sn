@@ -13,15 +13,16 @@ import ui.ContentProperty
 import scala.util.Failure
 import scala.collection.mutable.ListBuffer
 import scala.collection.mutable.Buffer
+import sxml.vm.{VMValue, XmlNode}
 
 object XmlUIElement {
     def fromFile(filePath:String):Try[UIElement] = {
-      val xmlElement = XmlElement.fromFile(filePath).get;
+      val xmlElement = UISXmlEnv.evalFile(filePath).get.unwrap[VMValue.VMXml]().get.value
       fromXmlElement(xmlElement)
     }
 
-    def fromXmlElement(xmlElem:XmlElement):Try[UIElement] = {
-      val parser = XmlObjectParser(XmlNSResolver.default);
+    def fromXmlElement(xmlElem:XmlNode):Try[UIElement] = {
+      val parser = SXmlObjectParser(XmlNSResolver.default);
       val curObject = parser.parse(xmlElem);
       val tryUIElement = curObject.map(_.asInstanceOf[UIElement])
       tryUIElement.map(_.Awake());

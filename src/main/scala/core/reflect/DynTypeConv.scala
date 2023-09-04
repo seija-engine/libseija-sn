@@ -72,7 +72,7 @@ object DynTypeConv {
         }
 
         if(toType == "java.lang.String" && curFromType != "java.lang.String") {
-          return Some(Success(fromValue.toString()))
+          return Some(Success(fromValue.toString))
         }
 
 

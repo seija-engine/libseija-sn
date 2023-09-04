@@ -18,7 +18,7 @@ object Assembly {
   inline def add[T]()(using t: ReflectType[T]) = { this.addTypeInfo(t.info); }
 
   def addTypeInfo(info:TypeInfo) = {
-    println(s"add type info: ${info.name}")
+    //println(s"add type info: ${info.name}")
     this.typeShortMap.put(info.shortName, info);
     this.typeMap.put(info.name, info);
   }
@@ -32,9 +32,9 @@ object Assembly {
   }
 
   def getTypeName(value:Any):String = {
-    var curTypeName = value.getClass().getName();
+    var curTypeName = value.getClass.getName
     if(curTypeName == "scala.Some") {
-      val innerType = value.asInstanceOf[Option[Any]].get.getClass().getName();
+      val innerType = value.asInstanceOf[Option[Any]].get.getClass.getName;
       return s"scala.Option[${innerType}]";
     }
     curTypeName

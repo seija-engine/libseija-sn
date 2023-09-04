@@ -13,9 +13,6 @@ import scala.collection.mutable.ArrayBuffer
 import ui.resources.OldStyle
 import ui.resources.UIResourceMgr
 
-trait IXmlObject {
-    def OnAddContent(value:Any):Unit;
-}
 
 class XmlObjectParser(val nsResolver: XmlNSResolver = XmlNSResolver.default) {
 
@@ -49,6 +46,7 @@ class XmlObjectParser(val nsResolver: XmlNSResolver = XmlNSResolver.default) {
           Some(fObject.asInstanceOf[Growable[Any]])
         } else { None }
       }
+
       if(contentField.isDefined) {
         val curElement = if(curObject.isInstanceOf[IXmlObject]) { Some(curObject.asInstanceOf[IXmlObject]) } else { None }
         if(contentCount == 0 && xml.innerText.isDefined) {

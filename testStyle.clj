@@ -66,3 +66,14 @@
   <Single index=@tmplId />
 )
 </Root>
+
+
+XmlNode(Panel,HashMap(),
+    Vector(
+        XmlNode(StackPanel,HashMap(height -> 120, orientation -> Hor, spacing -> 10, width -> 300),
+            Vector(
+                XmlNode(ButtonBase,HashMap(command -> {Binding Data numCommand}, commandParams -> -),Vector(-1)), 
+                XmlNode(Text,HashMap(text -> {Binding Data count}, width -> 50),Vector()), 
+                XmlNode(ButtonBase,HashMap(command -> {Binding Data numCommand}, commandParams -> +),Vector(+1)))
+        ), 
+    XmlNode(Image,HashMap(color -> #e8e8e7, sprite -> default.white),Vector())))

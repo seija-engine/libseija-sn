@@ -44,22 +44,17 @@ object Style {
     val setDict = dict.toScalaValue().asInstanceOf[HashMap[String,Any]]
     val setterList:ArrayBuffer[Setter] = ArrayBuffer()
     for((setName,setValue) <- setDict) {
+      var realValue = setValue
       if(setValue.isInstanceOf[sxml.vm.XmlNode]) {
-        val retValue = SXmlObjectParser(XmlNSResolver.default).parse(setValue.asInstanceOf[sxml.vm.XmlNode])
-        retValue.logError()
-        if(retValue.isSuccess) {
-          setterList += Setter(setName,retValue.get,null)
-        }
-      } else {
-        val field = typInfo.get.getField(setName)
+        realValue = SXmlObjectParser(XmlNSResolver.default).parse(setValue.asInstanceOf[sxml.vm.XmlNode]).get
+      }
+      val field = typInfo.get.getField(setName)
                              .getOrElse(throw new Exception(s"not found field ${setName} in ${typInfo.get.name}"))
-        val fromTypName = Assembly.getTypeName(setValue)
-        val tryConvValue = DynTypeConv.convertStrTypeTry(fromTypName,field.typName,setValue)
-        tryConvValue.logError()
-        if(tryConvValue.isSuccess) {
-          val realValue = tryConvValue.get
-          setterList += Setter(setName,realValue,null)
-        }
+      val fromTypName = Assembly.getTypeName(realValue)
+      val tryConvValue = DynTypeConv.convertStrTypeTry(fromTypName,field.typName,realValue)
+      tryConvValue.logError()
+      if(tryConvValue.isSuccess) {
+        setterList += Setter(setName,tryConvValue.get,null)
       }
     }
     Style(typInfo.get,setterList)

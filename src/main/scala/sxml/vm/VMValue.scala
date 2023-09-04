@@ -44,7 +44,7 @@ enum VMValue {
     }
 
     inline def unwrap[T]():Option[T] = {
-        this.match
+        this match
             case v:T => Some(v)
             case _ => None
     }
@@ -75,7 +75,7 @@ enum VMValue {
     override def equals(other: Any): Boolean = {
         if(!other.isInstanceOf[VMValue]) return false
         val otherValue = other.asInstanceOf[VMValue]
-        this.match
+        this match
             case NIL() => otherValue.unwrap[VMValue.NIL]().isDefined
             case VMChar(value) =>  otherValue.unwrap[VMValue.VMChar]().map(v => v.value == value).getOrElse(false)
             case VMLong(value) =>  otherValue.unwrap[VMValue.VMLong]().map(v => v.value == value).getOrElse(false)
@@ -113,7 +113,7 @@ enum VMValue {
     }
 }
 
-type VMFuncType = (ctx:VMCallStack) => Unit;
+type VMFuncType = scala.Function1[VMCallStack,Unit]
 
 case class ClosureData(val function:CompiledFunction,upvars:ArrayBuffer[VMValue])
 

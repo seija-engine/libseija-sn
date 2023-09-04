@@ -1,13 +1,13 @@
 [
-  (style "Control"
+  (style "ButtonBase"
     {
       :width "120"
-      :height "50"
+      :height "35"
       :template <ControlTemplate>
-                 <Panel>
-                    <Image sprite="default.white" color="#eeeeee" />
-                    <Text text="FUCK" />
-                 </Panel>
+                  <Panel>
+                    <Image Name="BtnBG" imageType="Slice" sprite="default.button" />
+                    <ContentPresenter />
+                  </Panel>
                 </ControlTemplate>
     }
   )

@@ -280,17 +280,18 @@ class VMCallStack(offsetValue:Int,stackRef:VMStack,stateValue:ClosureState) {
          case _ => realChildList.addOne(item)
      }
      this.popMany(childCount)
-     val tailIndex = this.stack.values.length - 1;
+     val tailIndex = this.stack.values.length - 1
      var attrs:MHashMap[String,VMValue] = MHashMap.empty
      for(idx <- 0.until(attrCount)) {
-         val v = this.stack.values(tailIndex - idx); 
-         val k = this.stack.values(tailIndex - idx - 1);
-         val strKey = k.unwrap[VMValue.VMString]().get.value;
+         val offset = idx * 2
+         val v = this.stack.values(tailIndex - offset);
+         val k = this.stack.values(tailIndex - offset - 1)
+         val strKey = k.unwrap[VMValue.VMString]().get.value
          attrs.addOne((strKey,v))
      }
      this.popMany(attrCount * 2)
      val tagName = this.pop().unwrap[VMValue.VMString]().get.value
-     val xmlValue = VMValue.VMXml(XmlNode(tagName,HashMap.from(attrs),realChildList.toVector))
+     val xmlValue = VMValue.VMXml(XmlNode(tagName,HashMap.from(attrs),realChildList.reverse.toVector))
      this.push(xmlValue)
    }
 }
