@@ -86,6 +86,7 @@ enum VMValue {
             case VMArray(thisList) =>  {
                val otherList = otherValue.unwrap[VMValue.VMArray]()
                if(otherList.isEmpty) return false
+               if(thisList.length != otherList.get.value.length) { return false }
                for((av,bv) <- thisList.zip(otherList.get.value)) {
                 if(!av.equals(bv)) return false
                }
