@@ -427,7 +427,7 @@ case class Compiler(vmEnv:VMEnv) {
           envs.current.emit(Instruction.EQ)
         }
         case AltPattern.Ident(ident) => {
-          ???
+          envs.current.emit(Instruction.PushChar('1'))
         }
 
       startJumps.addOne(envs.current.function.instructions.length)
@@ -445,7 +445,8 @@ case class Compiler(vmEnv:VMEnv) {
           instrs.update(startIndex,Instruction.CJump(instrs.length))
         }
         case AltPattern.Ident(symbol) => {
-          ???
+          val instrs = envs.current.function.instructions
+          instrs.update(startIndex,Instruction.CJump(instrs.length))
         }
       this.compileExpr(alt.expr,envs,isTail).get
       if(isTail && loopScopeList.nonEmpty && loopScopeList.last.isRecur) {
