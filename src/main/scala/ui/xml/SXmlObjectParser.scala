@@ -18,7 +18,6 @@ trait IXmlObject {
 
 class SXmlObjectParser(val nsResolver: XmlNSResolver = XmlNSResolver.default) {
   def parse(xml: XmlNode): Try[Any] = Try {
-    println(xml)
     xml.Name match
       case "string" | "String" => xml.child(0).toScalaValue()
       case _                   => this._parse(xml).get
@@ -63,7 +62,6 @@ class SXmlObjectParser(val nsResolver: XmlNSResolver = XmlNSResolver.default) {
       case _ => value
     contentList match
       case Some(ctxList) => {
-        println(s"add chilren:${childObject}")
         ctxList += childObject
         curElement.foreach(_.OnAddContent(childObject))
       }

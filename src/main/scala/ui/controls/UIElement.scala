@@ -210,7 +210,7 @@ class UIElement extends INotifyPropertyChanged
     }
 
     def addBindItem(bindItem:BindingItem) = {
-        println(s"addBindItem: $bindItem")
+        //println(s"addBindItem: $bindItem")
         this.bindItemList.addOne(bindItem);
     }
     def applyBindItems():Unit = {

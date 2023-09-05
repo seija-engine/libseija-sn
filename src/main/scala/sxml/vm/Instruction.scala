@@ -60,6 +60,7 @@ enum Instruction {
             case ConstructArray(count) => 1 - count
             case Return | Jump(_) | Not => 0
             case ConstructXML(attrCount, childCount) => -(attrCount * 2 + childCount)
+            case ConstructMap(count) => 1 - (count * 2)
             case _ => -1
         
     }

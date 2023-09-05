@@ -22,7 +22,7 @@ case class CompiledFunction(
   def debugShow(depth:Int):Unit = {
     val white = " ".repeat(depth)
     if(this.strings.length > 0) {
-        println(s"${white}strings:${this.strings.mkString}")
+        println(s"${white}strings:${this.strings.mkString(",")}")
     }
     println(s"${white}instr:")
     this.instructions.foreach {instr =>

@@ -142,11 +142,13 @@ class Translator {
         case "do" => Some(translateDo(pos,lst).get)
         case "loop" => Some(translateLet(pos,lst,true).get)
         case "recur" => Some(translateRecur(pos,lst).get)
-        case "match" => None
+        case "match" => Some(this.translateMatch(pos,lst).get)
         case "export" => Some(translateExport(pos,lst).get)
         case "import" => Some(translateImport(pos,lst).get)
         case _ => None
     }
+
+    
 
     protected def translateImport(pos:SpanPos,lst:ArrayBuffer[TextSpan[CExpr]]):Try[TextSpan[VMExpr]] = Try {
       for(expr <- lst.tail) {
@@ -189,6 +191,23 @@ class Translator {
         alts = alts.appended(Alternative(AltPattern.Literal(LitValue.LBool(false)),falseExpr))
       } else {
         alts = alts.appended(Alternative(AltPattern.Literal(LitValue.LBool(false)),TextSpan(pos,VMExpr.VMNil)))
+      }
+      TextSpan(pos,VMExpr.VMMatch(condExpr,alts))
+    }
+
+    protected def translateMatch(pos:SpanPos,lst:ArrayBuffer[TextSpan[CExpr]]):Try[TextSpan[VMExpr]] = Try {
+      if(lst.length < 4 || (lst.length - 2) % 2 != 0) throw InvalidMatch(pos)
+      val condExpr = this.translate(lst(1)).get
+      var alts:Vector[Alternative]  = Vector()
+      for(idx <- 2.until(lst.length,2)) {
+        val key = this.translate(lst(idx)).get
+        val pattern:AltPattern = key.value match
+          case VMExpr.VMLit(lit) => { AltPattern.Literal(lit) }
+          case VMExpr.VMArray(value) => { AltPattern.Array(value) }
+          case VMExpr.VMSymbol(sym) => { AltPattern.Ident(sym)  }
+          case _ => throw InvalidMatchKeyType(pos)
+        val value:TextSpan[VMExpr] = this.translate(lst(idx + 1)).get
+        alts = alts.appended(Alternative(pattern,value))
       }
       TextSpan(pos,VMExpr.VMMatch(condExpr,alts))
     }

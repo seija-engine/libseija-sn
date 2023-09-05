@@ -38,7 +38,7 @@ object DynTypeConv {
     inline def register[A,B](using into: Into[A,B]): Unit = { 
         val aName = Assembly.nameOf[A];
         val bName = Assembly.nameOf[B];
-        println(s"register ${aName} to ${bName}")
+        //println(s"register ${aName} to ${bName}")
         val key = (aName,bName);
         if(!this.convMap.contains(key)) {
             this.convMap.put(key,into);
@@ -46,7 +46,7 @@ object DynTypeConv {
     }
 
     def registerString(fromType:String,toType:String,into:Into[_,_]) = {
-        println(s"register ${fromType} to ${toType}")
+        //println(s"register ${fromType} to ${toType}")
         val key = (fromType,toType);
         if(!this.convMap.contains(key)) {
             this.convMap.put(key,into);

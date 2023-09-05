@@ -108,11 +108,18 @@ class VMCallStack(offsetValue:Int,stackRef:VMStack,stateValue:ClosureState) {
                   case VMValue.VMExternFunc(data) => {
                      data.call(this)
                   }
+                  case VMValue.VMMap(mapValue) => {
+                     val key = this.pop()
+                     this.pop()
+                     val retValue = mapValue(key)
+                     this.push(retValue)
+                  }
                   case _ =>
                
                
             }
             case Instruction.CJump(index) => {
+               
                val curValue = this.pop();
                val isJump = curValue.unwrap[VMValue.VMChar]().map(_.value == '1').getOrElse(false)
                if(isJump) {
@@ -201,7 +208,7 @@ class VMCallStack(offsetValue:Int,stackRef:VMStack,stateValue:ClosureState) {
     
    def takeTail(count:Int):Stack[VMValue] = {
       val retList = this.stack.values.slice(this.stack.values.length - count,this.stack.values.length)
-      this.stack.values.remove(this.stack.values.length - count,count)
+      this.popMany(count)
       retList
    }
 

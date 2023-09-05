@@ -1,3 +1,12 @@
+(match ["3" "4"]
+  ["1" "2"] (println "1,2")
+  ["3" "4"] (do
+          (println "3,4")
+          (println "哈哈哈")
+        )
+  _ (println "empty")
+)
+
 [
   (style "ButtonBase"
     {

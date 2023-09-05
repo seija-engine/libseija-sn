@@ -32,6 +32,8 @@ case class Symbol(ns:Option[String],name:String) {
 
 enum AltPattern {
    case Literal(value:LitValue)
+   case Array(lst:Vector[TextSpan[VMExpr]])
+   case Ident(symbol:Symbol)
 }
 
 case class Alternative(

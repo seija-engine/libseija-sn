@@ -97,7 +97,7 @@ enum VMValue {
     override def toString(): String = {
         this match
             case NIL() => "nil"
-            case VMChar(value) => value.toString()
+            case VMChar(value) => this.toScalaValue().toString()
             case VMLong(value) => value.toString()
             case VMFloat(value) =>  value.toString()
             case VMString(value) => value

@@ -140,22 +140,27 @@ case class Compiler(vmEnv:VMEnv) {
     }
     
     val libSet:HashSet[String] = HashSet.from(module.imports.map(_.libName))
-    var index = 0;
+    //var index = 0;
+    val globalSet:HashSet[(String,String)] = HashSet.empty
     for(expr <- module.exprList) {
       this.visitSymbols(expr.value,(symbol) => {
           if(symbol.ns.isEmpty) {
             this.vmEnv.getPreludeLibName(symbol.name).foreach {modName =>
-              envs.current.emit(Instruction.LoadGlobal(modName,symbol.name))
-              envs.current.newStackVar(symbol)
-              index += 1
+              globalSet.add((modName,symbol.name))
+              
             }
           }
           if(symbol.ns.isDefined && libSet.contains(symbol.ns.get)) {
-            envs.current.emit(Instruction.LoadGlobal(symbol.ns.get,symbol.name))
-            envs.current.newStackVar(symbol)
-            index += 1
+            globalSet.add((symbol.ns.get,symbol.name))
           }
       })
+    }
+    globalSet.toArray.sorted.foreach { kv =>
+       envs.current.emit(Instruction.LoadGlobal(kv._1,kv._2))
+       if(this.vmEnv.getPreludeLibName(kv._2).isDefined) {
+         envs.current.newStackVar(VMSymbol(None,kv._2))
+       } else { envs.current.newStackVar(VMSymbol(Some(kv._1),kv._2)) }
+       
     }
   }
   
@@ -415,6 +420,16 @@ case class Compiler(vmEnv:VMEnv) {
               envs.current.emit(Instruction.EQ)
             }
         }
+        case AltPattern.Array(lst) => { 
+          val lhsI = envs.current.stackSize - 1
+          envs.current.emit(Instruction.Push(lhsI))
+          this.compileArray(lst,envs)
+          envs.current.emit(Instruction.EQ)
+        }
+        case AltPattern.Ident(ident) => {
+          ???
+        }
+
       startJumps.addOne(envs.current.function.instructions.length)
       envs.current.emit(Instruction.CJump(0))
     }
@@ -424,6 +439,13 @@ case class Compiler(vmEnv:VMEnv) {
         case AltPattern.Literal(_) => {
           val instrs = envs.current.function.instructions
           instrs.update(startIndex,Instruction.CJump(instrs.length))
+        }
+        case AltPattern.Array(_) => {
+          val instrs = envs.current.function.instructions
+          instrs.update(startIndex,Instruction.CJump(instrs.length))
+        }
+        case AltPattern.Ident(symbol) => {
+          ???
         }
       this.compileExpr(alt.expr,envs,isTail).get
       if(isTail && loopScopeList.nonEmpty && loopScopeList.last.isRecur) {
