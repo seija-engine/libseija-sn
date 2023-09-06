@@ -212,7 +212,7 @@ case class Compiler(vmEnv:VMEnv) {
         this.compileExpr(value,envs,isTail).get
         envs.current.emit(Instruction.UnWrap)
       }
-      case VMExpr.VMXml(tag, attrs, child) => this.compileXML(expr.pos,tag,attrs,child,envs,isTail)
+      case VMExpr.VMXml(tag, attrs, child) => this.compileXML(expr.pos,tag,attrs,child,envs,isTail).get
       case _ => {  }
 
   }

@@ -6,7 +6,6 @@ import ui.ContentProperty
 import ui.binding.BindingItem
 import ui.controls.UIElement
 import ui.resources.UIResourceMgr
-
 import scala.collection.mutable
 import scala.collection.mutable.Growable
 import scala.util.Try
@@ -39,12 +38,13 @@ class SXmlObjectParser(val nsResolver: XmlNSResolver = XmlNSResolver.default) {
         Some(fObject.asInstanceOf[mutable.Growable[Any]])
       } else { None }
     }
+    
     //添加子元素
     for(childElem <- xml.child) {
       childElem match
         case VMValue.VMXml(value) => {
           if(value.Name.indexOf('.') > 0) {
-            this.setXMLProp(curTypeInfo,curObject,value)
+            this.setXMLProp(curTypeInfo,curObject,value).logError()
           } else {
             contentField.foreach {v => this._addObjectContent(v,contentList,value,curObject) }
           }
@@ -66,11 +66,12 @@ class SXmlObjectParser(val nsResolver: XmlNSResolver = XmlNSResolver.default) {
         curElement.foreach(_.OnAddContent(childObject))
       }
       case None => {
-        val convValue = DynTypeConv.convertStrTypeTry(childObject.getClass.getName,contentField.typName,childObject)
-        if (convValue.logError().isSuccess) {
-          contentField.set(curObject, convValue.get);
-          curElement.foreach(_.OnAddContent(convValue.get));
-        }
+        
+        //val convValue = DynTypeConv.convertStrTypeTry(childObject.getClass.getName,contentField.typName,childObject)
+        //if (convValue.logError().isSuccess) {
+        contentField.set(curObject, childObject);
+        curElement.foreach(_.OnAddContent(childObject));
+        //}
       }
   }
 
@@ -99,7 +100,35 @@ class SXmlObjectParser(val nsResolver: XmlNSResolver = XmlNSResolver.default) {
   }
 
   def setXMLProp(typInfo: TypeInfo,curObject:Any,xmlNode:XmlNode):Try[Unit] = Try {
+    val fieldName = xmlNode.Name.split('.')(1)
+    val fieldInfo = typInfo.getFieldTry(fieldName).get
+    val fieldObject = fieldInfo.get(curObject)
+    var fieldObjectList:Option[Growable[Any]] =  None;
+    if(fieldObject.isInstanceOf[Growable[_]]) {
+      fieldObjectList = Some(fieldObject.asInstanceOf[Growable[Any]])
+    }
+    if(fieldObjectList.isDefined) {
+      fieldObjectList.get.clear();
+      for(childElem <- xmlNode.child) {
+        val retValue = this.convDstValue(childElem.toScalaValue(),None)
+        fieldObjectList.get += retValue
+      }
+    } else if(xmlNode.child.length > 0) {
+      val fstValue = xmlNode.child(0).toScalaValue()
+      val retValue = this.convDstValue(fstValue,Some(fieldInfo))
+      fieldInfo.set(curObject,retValue)
+    }
+  }
 
+  protected def convDstValue(value:Any,castType:Option[FieldInfo]):Any = {
+    var convValue = value match
+      case xml:XmlNode => this.parse(xml).get
+      case _ => value
+   
+    if(castType.isDefined) {
+      convValue = DynTypeConv.convertStrTypeTry(convValue.getClass.getName,castType.get.typName,convValue).get
+    }
+    convValue
   }
 
   def setRes(resName: String,typeInfo: TypeInfo,key: String,curObject: Any): Unit = {

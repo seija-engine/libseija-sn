@@ -38,13 +38,14 @@ class TestDemo extends IGameApp {
     this.loadAsset()
 
     UIResourceMgr.loadScriptResource("example/assets/ui/AppStyle.clj")
+    /*
     val viewModel = new TestViewModel();
     this.testViewModel = Some(viewModel);
     XmlUIElement.fromFile("example/assets/ui/xmltest/testStyle.xml").logError().foreach {loadElement =>
       loadElement.addIDScope();
       loadElement.dataContext = this.testViewModel.get;
       ui.CanvasManager.fst().addElement(loadElement)
-    } 
+    }*/
 }
 
   override def OnUpdate(): Unit = {

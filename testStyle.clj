@@ -30,10 +30,10 @@
                      <Image Name="BG" sprite="default.scale-slider" />
                      <ControlTemplate.VSM>
                         (match [(% :common) (% :checked)]
-                            ["Hover","Checked"]     #((set! "BG" :sprite "default.scale-slider-hover"))
-                            ["Hover","Unchecked"]   #((set! "BG" :sprite "default.scale-slider-normal"))
-                            ["Normal","Checked"]    #((set!   "BG" :sprite "default.scale-slider-normal"))
-                            ["Normal","Unchecked"]  #((set! "BG" :sprite "default.scale-slider-normal"))
+                            ["Hover","Checked"]     (set! "BG" :sprite "default.scale-slider-hover")
+                            ["Hover","Unchecked"]   (set! "BG" :sprite "default.scale-slider-normal")
+                            ["Normal","Checked"]    (set! "BG" :sprite "default.scale-slider-normal")
+                            ["Normal","Unchecked"]  (set! "BG" :sprite "default.scale-slider-normal")
                         )
                      </ControlTemplate:VSM>
                   </ControlTemplate>
