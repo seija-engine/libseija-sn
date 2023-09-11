@@ -3,7 +3,7 @@ import sxml.vm.SXmlVM
 import sxml.vm.VMValue
 import scala.util.Try
 import sxml.vm.ExternModule
-import scala.collection.mutable
+import scala.collection.mutable.HashMap as MutHashMap
 import scala.collection.immutable.HashMap
 import ui.resources.Style
 import scala.util.Failure
@@ -11,6 +11,7 @@ import scala.util.Success
 
 object UISXmlEnv {
   private val vm: SXmlVM = SXmlVM()
+  private val envValueDict:MutHashMap[String,Any] = MutHashMap.empty
 
   def init(): Unit = {
     vm.addBuildinModule()
@@ -19,9 +20,18 @@ object UISXmlEnv {
 
   def evalFile(path: String): Try[VMValue] = this.vm.callFile(path)
 
+  def setGlobal(key:String,value:Any):Unit = {
+    if(value == null) {
+      this.envValueDict.remove(key)
+    } else {
+      this.envValueDict.put(key,value)
+    }
+  }
+
+  def getGlobal(key:String):Option[Any] = this.envValueDict.get(key)
 
   def uiExternModule():ExternModule = {
-    val uiModule = ExternModule("ui",mutable.HashMap.empty)
+    val uiModule = ExternModule("ui",MutHashMap.empty)
     uiModule.addFunc(style,true) 
     uiModule.addFunc(setter,true)
     uiModule

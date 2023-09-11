@@ -17,7 +17,8 @@ package object s3log {
     def logImpl(msg:Expr[String])(using q:Quotes):Expr[Unit] = {
         import q.reflect.*
         val line:Int = Position.ofMacroExpansion.startLine
-        val fileName:String = Position.ofMacroExpansion.sourceFile.getJPath.map(_.getFileName().toString()).getOrElse("")
+        val fileName:String = Position.ofMacroExpansion.sourceFile.getJPath
+                                      .map(_.getFileName().toString()).getOrElse("")
         val repr = '{
             val lineValue = ${Expr(line)} 
             val fileValue = ${Expr(fileName)}

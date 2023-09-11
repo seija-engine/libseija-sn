@@ -9,6 +9,7 @@ import core.reflect.Assembly
 import core.reflect.DynTypeConv
 import core.logError;
 import ui.xml.SXmlObjectParser
+import ui.xml.UISXmlEnv
 case class Style(
     val forTypeInfo:TypeInfo,
     val setterList:ArrayBuffer[Setter],
@@ -40,23 +41,29 @@ object Style {
     
     val typInfo = XmlNSResolver.default.resolver(forType.get).flatMap(Assembly.get)
     if(typInfo.isEmpty) throw new Exception(s"not found type ${forType.get}")
-    
+    UISXmlEnv.setGlobal("*type-info*",typInfo.get)
     val setDict = dict.toScalaValue().asInstanceOf[HashMap[String,Any]]
+    val setterList:ArrayBuffer[Setter] = this.readSetterList(setDict,typInfo.get).get
+    UISXmlEnv.setGlobal("*type-info*",null)
+    Style(typInfo.get,setterList)
+  }
+
+  def readSetterList(setDict:HashMap[String,Any],typInfo:TypeInfo):Try[ArrayBuffer[Setter]] = Try {
     val setterList:ArrayBuffer[Setter] = ArrayBuffer()
     for((setName,setValue) <- setDict) {
       var realValue = setValue
       if(setValue.isInstanceOf[sxml.vm.XmlNode]) {
         realValue = SXmlObjectParser(XmlNSResolver.default).parse(setValue.asInstanceOf[sxml.vm.XmlNode]).get
       }
-      val field = typInfo.get.getField(setName)
-                             .getOrElse(throw new Exception(s"not found field ${setName} in ${typInfo.get.name}"))
+      val field = typInfo.getField(setName)
+                           .getOrElse(throw new Exception(s"not found field ${setName} in ${typInfo.name}"))
       val fromTypName = Assembly.getTypeName(realValue)
       val tryConvValue = DynTypeConv.convertStrTypeTry(fromTypName,field.typName,realValue)
       tryConvValue.logError()
       if(tryConvValue.isSuccess) {
-        setterList += Setter(setName,tryConvValue.get,null)
+          setterList += Setter(setName,tryConvValue.get,null)
       }
     }
-    Style(typInfo.get,setterList)
+    setterList
   }
 }

@@ -11,10 +11,12 @@
                   <ControlTemplate.vsm>
                     <VisualStateDict>
                       {
-                        :CommonStates #(match %
-                          "Normal"    (println 1)
-                          "MouseOver" 2
-                          "Pressed"   3)
+                        :CommonStates 
+                        {
+                          :Normal    {:sprite "default.button" }
+                          :MouseOver {:sprite "default.button-hover" }
+                          :Pressed   {:sprite "default.button-active" }  
+                        }
                       }
                     </VisualStateDict>
                   </ControlTemplate.VSM>

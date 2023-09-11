@@ -213,6 +213,7 @@ class UIElement extends INotifyPropertyChanged
         //println(s"addBindItem: $bindItem")
         this.bindItemList.addOne(bindItem);
     }
+    
     def applyBindItems():Unit = {
        for(bindItem <- this.bindItemList) {
             bindItem.sourceType match {
