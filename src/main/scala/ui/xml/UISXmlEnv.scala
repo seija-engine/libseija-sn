@@ -8,6 +8,7 @@ import scala.collection.immutable.HashMap
 import ui.resources.Style
 import scala.util.Failure
 import scala.util.Success
+import ui.resources.Setter
 
 object UISXmlEnv {
   private val vm: SXmlVM = SXmlVM()
@@ -48,7 +49,9 @@ object UISXmlEnv {
       } 
   }
 
-  private def setter(fst:VMValue,t:VMValue,v:VMValue):VMValue = {
-    VMValue.NIL()
+  private def setter(target:VMValue,value:VMValue):VMValue = {
+    val targetName = target.toScalaValue().asInstanceOf[String]
+    
+    VMValue.VMUserData(Setter(null,value.toScalaValue(),targetName))
   }
 }

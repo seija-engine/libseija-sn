@@ -7,6 +7,6 @@ trait ElementNameScope {
     def setScopeElement(name:String,elem:UIElement):Unit = {}
 }
 
-trait IAwake {
-    def Awake():Unit;
+trait IPostReader {
+    def OnPostRead():Unit;
 }

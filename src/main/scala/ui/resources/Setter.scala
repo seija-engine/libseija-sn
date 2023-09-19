@@ -2,24 +2,24 @@ package ui.resources
 import core.reflect.*;
 import ui.ContentProperty;
 import core.logError;
-import ui.IAwake
+import ui.IPostReader
 import ui.ElementNameScope
 
 
 @ContentProperty("value")
-class OldSetter extends IApplyStyleType derives ReflectType {
+class OldSetter derives ReflectType {
   var key: String = "";
   var value: Any = null;
   var target:String = null;
 
   private var typInfo: Option[TypeInfo] = None;
-
+  /*
   override def applyType(typInfo: Option[TypeInfo]): Unit = {
     if(this.target != null) return;
     val info = typInfo.flatMap(_.getField(this.key));
     this.typInfo = typInfo;
     this.setValue(info);
-  }
+  }*/
 
   protected  def setValue(info:Option[FieldInfo]):Unit = {
     if (info.isDefined) {
@@ -53,12 +53,12 @@ class OldSetter extends IApplyStyleType derives ReflectType {
       if (this.value.isInstanceOf[Some[Any]]) {
         callValue = this.value.asInstanceOf[Some[Any]].get;
       }
-      if(callValue.isInstanceOf[IAwake]) {
-        callValue.asInstanceOf[IAwake].Awake();
+      if(callValue.isInstanceOf[IPostReader]) {
+        callValue.asInstanceOf[IPostReader].OnPostRead();
       }
-      if (callValue.isInstanceOf[IApplyStyleType]) {
-        callValue.asInstanceOf[IApplyStyleType].applyType(typInfo);
-      }
+      //if (callValue.isInstanceOf[IApplyStyleType]) {
+      //  callValue.asInstanceOf[IApplyStyleType].applyType(typInfo);
+      //}
     }
   }
 

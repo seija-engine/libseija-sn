@@ -29,16 +29,16 @@ class Control extends UIElement with ElementNameScope derives ReflectType {
         _IsHover = value;
         this.callPropertyChanged("IsHover",this);
     }
-
+    /*
     override def Awake(): Unit = {
        if(this.template.isDefined) {
          this.template.get.Awake();
          val typInfo = Assembly.getTypeInfo(this);
-         this.template.get.applyType(typInfo);
-         this.visualStateGroups.applyType(typInfo);
+         //this.template.get.applyType(typInfo);
+         //this.visualStateGroups.applyType(typInfo);
        }
        super.Awake();
-    }
+    }*/
 
     override def OnEnter(): Unit = {
         this.createBaseEntity(true);

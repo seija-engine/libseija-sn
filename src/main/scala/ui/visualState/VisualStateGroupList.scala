@@ -2,11 +2,10 @@ package ui.visualState
 import scala.collection.mutable.{Growable,ArrayBuffer,HashMap};
 import core.reflect.*;
 import ui.ContentProperty;
-import ui.resources.IApplyStyleType
 import ui.ElementNameScope
 
 @ContentProperty("content")
-class VisualStateGroupList extends IApplyStyleType derives ReflectType {
+class VisualStateGroupList  derives ReflectType {
     var content:VisualStateGroupInnerList = VisualStateGroupInnerList()
 
     def isEmpty():Boolean = this.content.groupDict.size == 0
@@ -15,9 +14,10 @@ class VisualStateGroupList extends IApplyStyleType derives ReflectType {
         this.content.groupDict.get(name)
     }
     
+    /*
     override def applyType(info: Option[TypeInfo]): Unit = {
         this.content.applyType(info);
-    }
+    }*/
 
     def applyNameScope(nameScope:ElementNameScope):Unit = {
         this.content.applyNameScope(nameScope);

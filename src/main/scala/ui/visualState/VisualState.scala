@@ -12,7 +12,7 @@ class VisualState derives ReflectType {
     var Setters:SettersGroup = SettersGroup()
 
     def applyType(info: Option[TypeInfo]):Unit = {
-        this.Setters.setters.foreach(_.applyType(info))
+        //this.Setters.setters.foreach(_.applyType(info))
     }
 
     def applyNameScope(nameScope:ElementNameScope):Unit = {

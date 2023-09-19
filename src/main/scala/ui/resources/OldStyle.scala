@@ -5,10 +5,10 @@ import scala.collection.mutable.ArrayBuffer
 import scala.collection.mutable.Growable
 import ui.xml.XmlNSResolver
 import core.logError;
-
+/*
 trait IApplyStyleType {
    def applyType(info:Option[TypeInfo]):Unit;
-}
+}*/
 
 @ContentProperty("setterList")
 class OldStyle extends BaseUIResource derives ReflectType {
@@ -33,7 +33,7 @@ case class SetterGroup(style:OldStyle) extends Growable[OldSetter] {
    var setterList:ArrayBuffer[OldSetter] = ArrayBuffer.empty;
    override def addOne(setter: OldSetter): this.type = {
      val styleTypeInfo = style.getForTypeInfo();
-     setter.applyType(styleTypeInfo);
+     //setter.applyType(styleTypeInfo);
      this.setterList.addOne(setter);
      this
    }

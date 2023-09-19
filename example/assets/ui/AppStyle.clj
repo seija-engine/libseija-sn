@@ -13,9 +13,9 @@
                       {
                         :CommonStates 
                         {
-                          :Normal    {:sprite "default.button" }
-                          :MouseOver {:sprite "default.button-hover" }
-                          :Pressed   {:sprite "default.button-active" }  
+                          :Normal    {:sprite (setter "BtnBG" "default.button")         }
+                          :MouseOver {:sprite (setter "BtnBG" "default.button-hover")   }
+                          :Pressed   {:sprite (setter "BtnBG" "default.button-active")  }
                         }
                       }
                     </VisualStateDict>

@@ -9,6 +9,7 @@ import ui.resources.UIResourceMgr
 import scala.collection.mutable
 import scala.collection.mutable.Growable
 import scala.util.Try
+import ui.IPostReader
 
 trait IXmlObject {
     def OnAddContent(value:Any):Unit;
@@ -19,7 +20,13 @@ class SXmlObjectParser(val nsResolver: XmlNSResolver = XmlNSResolver.default) {
   def parse(xml: XmlNode): Try[Any] = Try {
     xml.Name match
       case "string" | "String" => xml.child(0).toScalaValue()
-      case _                   => this._parse(xml).get
+      case value                   => {
+         val retValue = this._parse(xml).get
+         if(retValue.isInstanceOf[IPostReader]) {
+            retValue.asInstanceOf[IPostReader].OnPostRead()
+         }
+         retValue
+      }
   }
 
   def _parse(xml: XmlNode): Try[Any] = Try {
@@ -58,7 +65,7 @@ class SXmlObjectParser(val nsResolver: XmlNSResolver = XmlNSResolver.default) {
   def _addObjectContent(contentField:FieldInfo, contentList:Option[mutable.Growable[Any]], value:Any,curObject:Any):Unit = {
     val curElement = if(curObject.isInstanceOf[IXmlObject]) { Some(curObject.asInstanceOf[IXmlObject]) } else { None }
     val childObject = value match
-      case xmlValue: XmlNode => this.parse(xmlValue).get
+      case xmlValue: XmlNode => this._parse(xmlValue).get
       case _ => value
     contentList match
       case Some(ctxList) => {
@@ -122,7 +129,7 @@ class SXmlObjectParser(val nsResolver: XmlNSResolver = XmlNSResolver.default) {
 
   protected def convDstValue(value:Any,castType:Option[FieldInfo]):Any = {
     var convValue = value match
-      case xml:XmlNode => this.parse(xml).get
+      case xml:XmlNode => this._parse(xml).get
       case _ => value
    
     if(castType.isDefined) {

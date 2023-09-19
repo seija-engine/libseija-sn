@@ -10,13 +10,12 @@ import core.ICopy;
 import core.copyObject
 import scala.util.Success
 import ui.visualState.VisualStateGroupList
-import ui.resources.IApplyStyleType
-import ui.IAwake
+import ui.IPostReader
 import ui.resources.BaseUIResource
 import ui.visualState.VisualStateDict
 
 @ContentProperty("content")
-class ControlTemplate extends BaseTemplate with IApplyStyleType with ElementNameScope with IAwake with BaseUIResource derives ReflectType {
+class ControlTemplate extends BaseTemplate with ElementNameScope with IPostReader with BaseUIResource derives ReflectType {
     var key:String = "";
     var forType:String = null;
     def getKey: String = this.key;
@@ -24,12 +23,14 @@ class ControlTemplate extends BaseTemplate with IApplyStyleType with ElementName
     var content:UIElement = UIElement.zero;
     var visualStateGroups:VisualStateGroupList = VisualStateGroupList();
     var vsm:VisualStateDict = VisualStateDict()
-    override def Awake(): Unit = {
-       this.putNameToScope(content);
+   
+    override def OnPostRead():Unit = {
+        this.putNameToScope(content)
+        this.vsm.applyNameScope(this)
     }
 
     protected def putNameToScope(element:UIElement):Unit = {
-        if(element.Name != null) {
+        if(element.Name != null && element.Name != "") {
             this.nameDict.put(element.Name,element);
         }
         element.children.foreach(putNameToScope)
@@ -45,8 +46,4 @@ class ControlTemplate extends BaseTemplate with IApplyStyleType with ElementName
         Success(instObject)
     }
 
-    override def applyType(info: Option[TypeInfo]): Unit = {
-        this.visualStateGroups.applyType(info);
-        this.visualStateGroups.applyNameScope(this);
-    }
 }
