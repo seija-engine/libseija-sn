@@ -2,7 +2,7 @@ package core.reflect
 import scala.quoted._;
 import scala.annotation.MacroAnnotation;
 import scala.annotation.experimental;
-
+/*
 @experimental
 class AutoGetSetter extends MacroAnnotation  {
   override def transform(using Quotes)(tree:quotes.reflect.Definition): List[quotes.reflect.Definition] = {
@@ -30,3 +30,4 @@ def autoPropsImpl[T:Type](thisValue:Expr[T])(using Quotes):Expr[Any] = {
     }
     endExpr
 }
+*/

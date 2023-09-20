@@ -2,7 +2,7 @@ package ui.controls
 import core.Entity
 import ui.binding.INotifyPropertyChanged
 import ui.core.{FFISeijaUI, ItemLayout, LayoutAlignment, Rect2D, SizeValue, Thickness}
-import core.reflect.{AutoGetSetter, ReflectType, autoProps}
+import core.reflect.{ ReflectType}
 import scala.Conversion
 import ui.resources.UIResource
 import core.logError

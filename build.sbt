@@ -1,5 +1,4 @@
 scalaVersion := "3.3.0"
-
 enablePlugins(ScalaNativePlugin)
 import scala.scalanative.build._
 
@@ -16,3 +15,5 @@ lazy val root = project
 nativeConfig ~= {
     _.withMode(Mode.debug)
 }
+
+libraryDependencies +=  "com.lihaoyi" %%% "sourcecode" % "0.3.0"
