@@ -36,7 +36,7 @@ object LayoutUtils {
     this.frameSet.clear()
     this._postLayoutStep = step
     if(step > 0) {
-      println(s"trigger post step:${step}")
+      slog.debug(s"trigger post step:${step}")
     }
     _vecPtr = vecPtr
     _isInPostLayout = true

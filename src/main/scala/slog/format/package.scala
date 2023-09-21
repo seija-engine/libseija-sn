@@ -3,8 +3,66 @@ package slog
 import slog.output.LogOutput
 import slog.output.EmptyOutput
 import slog.output.CompositeOutput
+import slog.output.BoldOutput
+import slog.output.ColoredOutput
+import slog.output.Color
+import scala.collection.mutable.ListBuffer
 
 package object format {
+    def date: FormatBlock = FormatBlock.Date.Standard
+    def dateFull: FormatBlock = FormatBlock.Date.Full
+    def newLine: FormatBlock = FormatBlock.NewLine
+    def multiLine(blocks: FormatBlock*): FormatBlock = new MultiLine(blocks = blocks.toList)
+
+    def bold(block: FormatBlock): FormatBlock = FormatBlock { logRecord =>
+        new BoldOutput(block.format(logRecord))
+    }
+
+    def fg(color: Color, block: FormatBlock): FormatBlock = FormatBlock { logRecord =>
+        new ColoredOutput(color, block.format(logRecord))
+    }
+
+    def cyan(block: FormatBlock): FormatBlock = fg(Color.Cyan, block)
+    def green(block: FormatBlock): FormatBlock = fg(Color.Green, block)
+
+    def string(value: String): FormatBlock = FormatBlock.RawString(value)
+
+    def messages: FormatBlock = FormatBlock.Messages
+
+    lazy val space: FormatBlock = string(" ")
+    lazy val openBracket: FormatBlock = string("[")
+    lazy val closeBracket: FormatBlock = string("]")
+
+    def level: FormatBlock = FormatBlock.Level
+
+    def position: FormatBlock = FormatBlock.Position
+
+    def levelColored: FormatBlock = FormatBlock { logRecord =>
+        val color = logRecord.level match {
+            case Level.Trace => Color.White
+            case Level.Debug => Color.Green
+            case Level.Info => Color.Blue
+            case Level.Warn => Color.Yellow
+            case Level.Error => Color.Red
+            case Level.Fatal => Color.Magenta
+            case _ => Color.Cyan
+        }
+        new ColoredOutput(color, level.format(logRecord))
+    }
+    
+    def levelColor(block: FormatBlock): FormatBlock = FormatBlock { logRecord =>
+        val color = logRecord.level match {
+            case Level.Trace => Color.White
+            case Level.Debug => Color.Green
+            case Level.Info => Color.Blue
+            case Level.Warn => Color.Yellow
+            case Level.Error => Color.Red
+            case Level.Fatal => Color.Magenta
+            case _ => Color.Cyan
+        }
+        new ColoredOutput(color, block.format(logRecord))
+    }
+
     def groupBySecond(blocks: FormatBlock*): FormatBlock = {
         var lastId: Long = 0L
         var lastThreadName: String = ""
@@ -38,4 +96,23 @@ package object format {
             }
         }
     }
+
+    implicit class FormatterInterpolator(val sc: StringContext) extends AnyVal {
+    def formatter(args: Any*): Formatter = {
+      val list = ListBuffer.empty[FormatBlock]
+      val argsVector = args.toVector.asInstanceOf[Vector[FormatBlock]]
+      sc.parts.zipWithIndex.foreach {
+        case (part, index) => {
+          if (part.nonEmpty) {
+            list += string(part)
+          }
+          if (index < argsVector.size) {
+            list += argsVector(index)
+          }
+        }
+      }
+      Formatter.fromBlocks(list.toList: _*)
+    }
+  }
+
 }

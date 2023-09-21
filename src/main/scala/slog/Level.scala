@@ -1,6 +1,11 @@
 package slog
 
-case class Level(name: String, value: Double)
+case class Level(name: String, value: Double) {
+  def namePadded: String = Level.padded(this)
+
+  def test() = {
+  }
+}
 
 
 object Level {
@@ -12,4 +17,6 @@ object Level {
   val Warn: Level = Level("WARN", 400.0)
   val Error: Level = Level("ERROR", 500.0)
   val Fatal: Level = Level("FATAL", 600.0)
+
+  private var padded = Map.empty[Level, String]
 }

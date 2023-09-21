@@ -58,7 +58,6 @@ case class TypeInfo(val name:String,
    }
 
    def getField(fieldName:String):Option[FieldInfo] = {
-      //println(s"TypeInfo.getField($fieldName) ${this.name} ${this.fieldMap.keySet.mkString(",")}}")
       val baseType = getBaseType();
       if(baseType.isDefined) {
          val baseField = baseType.get.getField(fieldName);

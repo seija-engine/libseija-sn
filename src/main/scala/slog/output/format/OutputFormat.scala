@@ -13,5 +13,5 @@ trait OutputFormat {
 }
 
 object OutputFormat {
-  var default: OutputFormat = ASCIIOutputFormat
+  var default: OutputFormat = ANSIOutputFormat
 }

@@ -14,8 +14,49 @@ trait LoggerSupport[F] extends Any {
     log(record)
   }
 
-  def info(features: LogFeature*):Unit = {
+  inline def trace(features: LogFeature*)(implicit
+      pkg: sourcecode.Pkg,
+      fileName: sourcecode.FileName,
+      name: sourcecode.Name,
+      line: sourcecode.Line
+  ):Unit = {
+    this.log(slog.Level.Trace, features: _*)
+  }
+
+  inline def debug(features: LogFeature*)(implicit
+      pkg: sourcecode.Pkg,
+      fileName: sourcecode.FileName,
+      name: sourcecode.Name,
+      line: sourcecode.Line
+  ):Unit = {
+    this.log(slog.Level.Debug, features: _*)
+  }
+
+  inline def info(features: LogFeature*)(implicit
+      pkg: sourcecode.Pkg,
+      fileName: sourcecode.FileName,
+      name: sourcecode.Name,
+      line: sourcecode.Line
+  ):Unit = {
     this.log(slog.Level.Info, features: _*)
+  }
+
+  inline def warn(features: LogFeature*)(implicit
+      pkg: sourcecode.Pkg,
+      fileName: sourcecode.FileName,
+      name: sourcecode.Name,
+      line: sourcecode.Line
+  ):Unit = {
+    this.log(slog.Level.Warn, features: _*)
+  }
+
+  inline def error(features: LogFeature*)(implicit
+      pkg: sourcecode.Pkg,
+      fileName: sourcecode.FileName,
+      name: sourcecode.Name,
+      line: sourcecode.Line
+  ):Unit = {
+    this.log(slog.Level.Error, features: _*)
   }
 }
 

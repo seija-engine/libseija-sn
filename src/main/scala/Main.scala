@@ -5,13 +5,11 @@ import ruv.RUVModule
 import transform.TransformModule
 import ui.UIModule
 import window.WindowModule
-import java.util.concurrent.atomic.AtomicLong
 import scala.io.AnsiColor
 import math.Color
-
 object Main {
   def main(args: Array[String]): Unit = {
-    println(s"run main")
+    slog.info("run main")
     runSeija()
   }
 
