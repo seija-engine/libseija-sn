@@ -18,7 +18,7 @@ object Assembly {
   inline def add[T]()(using t: ReflectType[T]) = { this.addTypeInfo(t.info); }
 
   def addTypeInfo(info:TypeInfo) = {
-    slog.debug(s"add type info: ${info.name}")
+    slog.trace(s"add type info: ${info.name}")
     this.typeShortMap.put(info.shortName, info);
     this.typeMap.put(info.name, info);
   }

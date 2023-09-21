@@ -7,7 +7,7 @@ import sourcecode.Name
 
 import sourcecode.Pkg
 package object slog extends LoggerSupport[Unit] {
-  
+  lazy val lineSeparator: String = System.getProperty("line.separator")
   inline override final def log(record: LogRecord): Unit = {
     Logger(record.className).log(record)
   }

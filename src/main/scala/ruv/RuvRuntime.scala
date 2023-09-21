@@ -8,7 +8,7 @@ import ruv.http.HttpHandle;
 import scala.collection.mutable.ArrayBuffer
 
 object RuvRuntime {
-  val runtimePtr = FFIRuv.createRuntime()
+  val runtimePtr: Ptr[Byte] = FFIRuv.createRuntime()
   FFIRuv.setEnvCallBack(runtimePtr, 
                         CFuncPtr3.fromScalaFunction(_on_http_resp),
                         CFuncPtr3.fromScalaFunction(_on_http_resp_read_end));

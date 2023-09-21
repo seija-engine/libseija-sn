@@ -23,20 +23,25 @@ class VisualStateDict extends IXmlObject  derives ReflectType {
     override def OnAddContent(value: Any): Unit = {
        val typeInfo = UISXmlEnv.getGlobal("*type-info*");
        if(typeInfo.isEmpty) return
-
        val dict = value.asInstanceOf[HashMap[String,Any]]
        for(kv <- dict) {
         kv._2 match
             case stateDict:HashMap[?, ?] => {
               val strStateDict = stateDict.asInstanceOf[HashMap[String,Any]]
-              for((stateName,setDict) <- strStateDict) {
+              for((stateName,stateValue) <- strStateDict) {
+                stateValue match
+                  case setDict:HashMap[?,?] => {
+                    println(setDict)
+                  }
+                
+                /*
                 val strSetterDict = setDict.asInstanceOf[HashMap[String,Any]]
                 val setterList = Style.readSetterList(strSetterDict,typeInfo.get.asInstanceOf[TypeInfo])
                 setterList match
-                  case Failure(exception) => System.err.println(exception.toString())
+                  case Failure(exception) => slog.error(exception)
                   case Success(value) => {
                     this.stateDict.put(stateName,value)
-                  }
+                  }*/
                 
               }
             }

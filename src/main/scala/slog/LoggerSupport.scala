@@ -14,7 +14,7 @@ trait LoggerSupport[F] extends Any {
     log(record)
   }
 
-  inline def trace(features: LogFeature*)(implicit
+  def trace(features: LogFeature*)(implicit
       pkg: sourcecode.Pkg,
       fileName: sourcecode.FileName,
       name: sourcecode.Name,
@@ -23,7 +23,7 @@ trait LoggerSupport[F] extends Any {
     this.log(slog.Level.Trace, features: _*)
   }
 
-  inline def debug(features: LogFeature*)(implicit
+  def debug(features: LogFeature*)(implicit
       pkg: sourcecode.Pkg,
       fileName: sourcecode.FileName,
       name: sourcecode.Name,
@@ -32,7 +32,7 @@ trait LoggerSupport[F] extends Any {
     this.log(slog.Level.Debug, features: _*)
   }
 
-  inline def info(features: LogFeature*)(implicit
+  def info(features: LogFeature*)(implicit
       pkg: sourcecode.Pkg,
       fileName: sourcecode.FileName,
       name: sourcecode.Name,
@@ -41,7 +41,7 @@ trait LoggerSupport[F] extends Any {
     this.log(slog.Level.Info, features: _*)
   }
 
-  inline def warn(features: LogFeature*)(implicit
+  def warn(features: LogFeature*)(implicit
       pkg: sourcecode.Pkg,
       fileName: sourcecode.FileName,
       name: sourcecode.Name,
@@ -50,7 +50,7 @@ trait LoggerSupport[F] extends Any {
     this.log(slog.Level.Warn, features: _*)
   }
 
-  inline def error(features: LogFeature*)(implicit
+  def error(features: LogFeature*)(implicit
       pkg: sourcecode.Pkg,
       fileName: sourcecode.FileName,
       name: sourcecode.Name,

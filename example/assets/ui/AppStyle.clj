@@ -17,6 +17,17 @@
                           :MouseOver {:sprite (setter "BtnBG" "default.button-hover")   }
                           :Pressed   {:sprite (setter "BtnBG" "default.button-active")  }
                         }
+                        :CheckStates (fn [stateDict]
+                            (match [(stateDict :Checked) (stateDict :Hover)]
+                              ["Check" "Hover"] (do 
+                                                    (set! "BtnBG" "default.checked-hover")
+                                                 )
+                              ["UnCheck" "Hover"] (do 
+                                                    (set! "BtnBG" "default.unchecked-hover")
+                                                  )
+                              
+                            )
+                        )
                       }
                     </VisualStateDict>
                   </ControlTemplate.VSM>
