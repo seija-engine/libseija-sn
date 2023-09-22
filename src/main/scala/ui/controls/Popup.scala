@@ -116,7 +116,7 @@ class Popup extends UIElement derives ReflectType {
   protected def calcPopupPos():Vector2 = {
     val thisEntity = this.getEntity().get
     val thisRect = thisEntity.get[Rect2D]().toData
-    println(s"thisRect:${thisRect}")
+    slog.debug(s"thisRect:${thisRect}")
     val (targetUIPos,targetRect) = this.calcTargetInfo()
     val ltPos:Vector2 = this._mode match {
       case PlacementMode.Center => {

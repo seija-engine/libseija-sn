@@ -239,7 +239,7 @@ case class Compiler(vmEnv:VMEnv) {
 
   protected def loadIdentifier(pos:SpanPos,symbol:VMSymbol,envs:FunctionEnvs):Try[Unit] = Try {
    
-    val findVar = this.find(symbol,envs).getOrElse(throw NotFoundSymbol(pos))
+    val findVar = this.find(symbol,envs).getOrElse(throw NotFoundSymbol(pos,symbol.name))
     
     findVar match
       case FindVariable.Stack(index) => envs.current.emit(Instruction.Push(index))

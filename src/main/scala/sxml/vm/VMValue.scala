@@ -164,7 +164,7 @@ def wrapExternFuncImpl[T](expr:Expr[T])(using Type[T])(using Quotes):Expr[Extern
       _wrap
     };
     
-    val retExpr = '{ExternFuncData(${Expr(fnName)},${wrapFunc})}
+    val retExpr = '{ExternFuncData(${Expr(fnName.replace('_','-'))},${wrapFunc})}
     //report.info(retExpr.show) 
     retExpr
 }

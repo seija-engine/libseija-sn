@@ -46,6 +46,10 @@ class UIResource extends Growable[BaseUIResource] derives ReflectType {
                     this.allResDict.put(style.getKey,style)
                 }
             }
+            case dataTemplate: DataTemplate => {
+                this.dataTemplateDict.addOne(dataTemplate.dataType,dataTemplate);
+                this.allResDict.put(dataTemplate.dataType,dataTemplate);
+            }
             case _ =>
         this
     }

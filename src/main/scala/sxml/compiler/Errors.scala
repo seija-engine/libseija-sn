@@ -18,10 +18,10 @@ case class InvalidLetFN(pos:SpanPos) extends TransError(pos)
 case class InvalidDispatch(pos:SpanPos) extends TransError(pos)
 
 
-sealed class CompileError(pos:SpanPos) extends Exception {
+sealed class CompileError(pos:SpanPos,errString:String = "") extends Exception(errString) {
     def Pos:SpanPos = this.pos
 }
-case class NotFoundSymbol(pos:SpanPos) extends CompileError(pos)
+case class NotFoundSymbol(pos:SpanPos,symName:String) extends CompileError(pos,symName)
 case class ErrMapCount(pos:SpanPos) extends CompileError(pos)
 case class InvalidLet(pos:SpanPos) extends CompileError(pos)
 case class InvalidRecur(pos:SpanPos) extends CompileError(pos)

@@ -50,6 +50,7 @@ case class DictSetter(stateSetterDict:HashMap[String,Any]) extends VisualStateCh
           } else nameScope.foreach {scope =>
             val findElement = scope.getScopeElement(setter.target)
             findElement.foreach { elem =>
+
                 Assembly.getTypeInfo(elem).get.getField(setter.key).foreach {f => 
                   f.set(elem,setter.value);
                   elem.callPropertyChanged(setter.key,this);

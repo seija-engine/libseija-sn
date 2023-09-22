@@ -1,5 +1,4 @@
 package ui.xml
-import core.xml.XmlElement
 import scala.util.Try
 import ui.controls.UIElement
 import core.reflect.Assembly

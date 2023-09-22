@@ -6,6 +6,8 @@ import ui.resources.BaseUIResource;
 import scala.util.Try
 import scala.util.Success
 import ui.ElementNameScope
+import sxml.vm.VMValue
+
 @ContentProperty("content")
 class DataTemplate extends BaseTemplate with BaseUIResource derives ReflectType {
     var key:String = ""

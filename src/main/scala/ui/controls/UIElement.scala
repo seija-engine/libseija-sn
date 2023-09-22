@@ -7,7 +7,6 @@ import scala.Conversion
 import ui.resources.UIResource
 import core.logError
 import scala.quoted.Expr
-import core.xml.XmlElement
 import scala.collection.mutable.ListBuffer
 import transform.Transform
 import ui.binding.BindingItem

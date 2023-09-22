@@ -1,6 +1,5 @@
 package ui.controls
 import core.reflect.*;
-import core.xml.XmlElement
 import scala.collection.mutable.ListBuffer
 import ui.core.StackLayout
 import ui.core.Orientation

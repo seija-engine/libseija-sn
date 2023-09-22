@@ -11,11 +11,11 @@
                 </StackPanel>
             </ControlTemplate>
         </MemuItem.template>
-        <String>A</String>
-        <String>B</String>
-        <String>C</String>
-        <String>D</String>
+        <String>"A"</String>
+        <String>"B"</String>
+        <String>"C"</String>
+        <String>"D"</String>
     </MenuItem>
 
-    <ButtonBase ver="End">OK</ButtonBase>
+    <ButtonBase ver="End"> "OK" </ButtonBase>
 </Panel>

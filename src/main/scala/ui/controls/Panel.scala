@@ -1,7 +1,6 @@
 package ui.controls
 import core.reflect.*;
 import scala.collection.mutable.ListBuffer
-import core.xml.XmlElement
 import ui.xml.XmlUIElement
 import core.logError;
 import ui.ContentProperty

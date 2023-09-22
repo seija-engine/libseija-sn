@@ -1,11 +1,11 @@
 <Panel isCanvas="true">
     <Image sprite="default.white" color="#e8e8e7" />
     <StackPanel isCanvas="true" height="50" spacing="10" ver="Start" orientation="Hor">
-        <ButtonBase margin="0,10,0,0"  ver="Start">添加</ButtonBase>
-        <ButtonBase  ver="Start">插入</ButtonBase>
-        <ButtonBase  ver="Start">删除</ButtonBase>
-        <ButtonBase  ver="Start">替换</ButtonBase>
-        <ButtonBase  ver="Start">移动</ButtonBase>
-        <ButtonBase  ver="Start">清除</ButtonBase>
+        <ButtonBase margin="0,10,0,0"  ver="Start">"添加"</ButtonBase>
+        <ButtonBase  ver="Start">"插入"</ButtonBase>
+        <ButtonBase  ver="Start">"删除"</ButtonBase>
+        <ButtonBase  ver="Start">"替换"</ButtonBase>
+        <ButtonBase  ver="Start">"移动"</ButtonBase>
+        <ButtonBase  ver="Start">"清除"</ButtonBase>
     </StackPanel>
 </Panel>

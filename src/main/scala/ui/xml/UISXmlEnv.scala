@@ -9,6 +9,8 @@ import ui.resources.Style
 import scala.util.Failure
 import scala.util.Success
 import ui.resources.Setter
+import ui.controls.DataTemplate
+import sxml.vm.XmlNode
 
 object UISXmlEnv {
   private val vm: SXmlVM = SXmlVM()
@@ -51,7 +53,7 @@ object UISXmlEnv {
 
   private def setter(target:VMValue,value:VMValue):VMValue = {
     val targetName = target.toScalaValue().asInstanceOf[String]
-    
     VMValue.VMUserData(Setter(null,value.toScalaValue(),targetName))
   }
+
 }

@@ -5,16 +5,17 @@
             <Image sprite="default.white"   color="#334422" />
          </ControlTemplate>
       </ContentControl.template>
-      <ContentControl.dataTemplate>
+      <ContentControl.contentTemplate>
          <DataTemplate>
             <Text />
          </DataTemplate>
-      </ContentControl.dataTemplate>
+      </ContentControl.contentTemplate>
+      "123123"
    </ContentControl>
 
    <Image sprite="default.white" height="100" color="#ff0000" />
 
    <Text color="#ffffff" height="30">
-      汨罗渊中波涛动，巫山峰旁乱云飞；
+      "汨罗渊中波涛动，巫山峰旁乱云飞；"
    </Text>
 </StackPanel>

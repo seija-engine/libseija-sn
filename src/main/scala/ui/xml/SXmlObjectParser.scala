@@ -18,18 +18,20 @@ trait IXmlObject {
 
 class SXmlObjectParser(val nsResolver: XmlNSResolver = XmlNSResolver.default) {
   def parse(xml: XmlNode): Try[Any] = Try {
-    xml.Name match
-      case "string" | "String" => xml.child(0).toScalaValue()
-      case value                   => {
-         val retValue = this._parse(xml).get
-         if(retValue.isInstanceOf[IPostReader]) {
-            retValue.asInstanceOf[IPostReader].OnPostRead()
-         }
-         retValue
-      }
+    val retValue = this._parse(xml)
+    if(retValue.isSuccess && retValue.get.isInstanceOf[IPostReader]) {
+      retValue.get.asInstanceOf[IPostReader].OnPostRead()
+    }
+    retValue.get
   }
 
   def _parse(xml: XmlNode): Try[Any] = Try {
+    xml.Name match
+      case "string" | "String" => xml.child(0).toScalaValue()
+      case value                   => this.__parse(xml).get
+  }
+
+  def __parse(xml: XmlNode): Try[Any] = Try {
     val curTypeInfo = nsResolver.resolverTypeInfo(xml.Name).get
     val curObject = curTypeInfo.create()
     //设置attr里的属性
