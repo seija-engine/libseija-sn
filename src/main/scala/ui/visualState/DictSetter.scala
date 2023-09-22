@@ -44,7 +44,7 @@ case class DictSetter(stateSetterDict:HashMap[String,Any]) extends VisualStateCh
         for(setter <- setterList.get) {
           if(setter.target == null) {
             typeInfo.get.getField(setter.key).foreach {f => 
-                f.set(this,setter.value);
+                f.set(element,setter.value);
                 element.callPropertyChanged(setter.key,this);
             }
           } else nameScope.foreach {scope =>

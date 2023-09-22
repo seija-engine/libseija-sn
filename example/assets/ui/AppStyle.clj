@@ -84,6 +84,64 @@
     }
   )
 
+  (style "Menu" {
+    :template <ControlTemplate>
+                  <Panel>
+                    <Image  sprite="default.white" />
+                    <Image imageType="Slice" sprite="default.menu-border" />
+                    <ItemsPresenter />
+                  </Panel>
+              </ControlTemplate>
+  })
+
+  (style "MenuItem" {
+    :template
+    <ControlTemplate>
+                <Panel margin="0,1,0,1">
+                    <Image sprite="default.white" color="#ffffff" />
+                    <ContentPresenter contentSource="header" />
+                    <Popup width="150" height="30" hor="Center" ver="Center" isOpen="{Binding Owner isSubmenuOpen}" mode="Bottom">
+                        <Panel>
+                            <Image sprite="default.white" color="#ffffff" />
+                            <Image imageType="Slice" sprite="default.frame" color="#ffffff" />
+                            
+                            <Text  fontSize="16" text="新建项目" color="#000000" />
+                        </Panel>
+                    </Popup>
+                </Panel>
+    </ControlTemplate>
+  })
+
+  (style {:type "Thumb" :key "SliderThumb"} {
+    :width "26"
+    :height "26"
+    :template <ControlTemplate>
+                <Image Name="BG" sprite="default.scale-slider" />
+                <ControlTemplate.vsm>
+                <VisualStateList>
+                  [
+                    :CommonStates {
+                      :Normal     {:sprite  (setter "BG" "default.scale-slider")    }
+                      :MouseOver  {:sprite  (setter "BG" "default.scale-slider-hover")   }
+                      :Pressed    {:sprite  (setter "BG" "default.scale-slider-active")   }
+                    }
+                  ]
+                </VisualStateList>
+              </ControlTemplate.vsm>
+              </ControlTemplate>
+  })
+
+  (style "ScrollBar" {
+    :vsm <VisualStateList>
+          [
+            :OrientationStates {
+                :Horizontal  {:height "26" }
+                :Vertical    {:width "26" }
+              }
+          ]
+         </VisualStateList>
+  })
+
   <DataTemplate dataType="java.lang.String">
     <Text height="22" fontSize="18" text="{Binding Data this}" />
   </DataTemplate>

@@ -340,6 +340,7 @@ class UIElement extends INotifyPropertyChanged
         val cloneObject = super.clone().asInstanceOf[UIElement];
         cloneObject.children = new ListBuffer[UIElement]()
         cloneObject.setRouteEventElem(cloneObject)
+        cloneObject.vsm = cloneObject.vsm.clone()
         for(child <- this.children) {
             val cloneChild = child.clone()
             cloneObject.addChild(cloneChild)

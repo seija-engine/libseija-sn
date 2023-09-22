@@ -141,6 +141,7 @@ class SXmlObjectParser(val nsResolver: XmlNSResolver = XmlNSResolver.default) {
   }
 
   def setRes(resName: String,typeInfo: TypeInfo,key: String,curObject: Any): Unit = {
+    
     UIResourceMgr.appResource.findRes(resName).foreach { res =>
       typeInfo.getField(key).foreach { f =>
         DynTypeConv

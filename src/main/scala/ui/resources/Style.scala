@@ -51,11 +51,15 @@ case class Setter(
 object Style {
   def loadFromValue(attr:VMValue,dict:VMValue):Try[Style] = Try {
     var forType:Option[String] = None
+    var strKey:Option[String] = None;
     attr match
            case VMValue.VMString(value) => forType = Some(value) 
            case VMValue.VMMap(value) =>  {
               val attrDict = attr.toScalaValue().asInstanceOf[HashMap[String,Any]]
               forType = attrDict.get("type").map(_.asInstanceOf[String])
+              if(attrDict.contains("key")) {
+                strKey = Some(attrDict("key").asInstanceOf[String])
+              }
            }
            case _ => 
     if(forType.isEmpty) throw new Exception("style need type")
@@ -66,7 +70,8 @@ object Style {
     val setDict = dict.toScalaValue().asInstanceOf[HashMap[String,Any]]
     val setterList:ArrayBuffer[Setter] = this.readSetterList(setDict,typInfo.get).get
     UISXmlEnv.setGlobal("*type-info*",null)
-    Style(typInfo.get,setterList)
+   
+    Style(typInfo.get,setterList,strKey.getOrElse(""))
   }
 
   def readSetterList(setDict:HashMap[String,Any],typInfo:TypeInfo):Try[ArrayBuffer[Setter]] = Try {

@@ -18,6 +18,6 @@
     </ScrollViewer>
 
 
-    <ButtonBase  command="{Binding Data lstCommand}" ver="Start" >添加</ButtonBase>
-    <ButtonBase  command="{Binding Data removeCommand}" ver="Start" margin="0,40,0,0" >删除</ButtonBase>
+    <ButtonBase  command="{Binding Data lstCommand}" ver="Start" >"添加"</ButtonBase>
+    <ButtonBase  command="{Binding Data removeCommand}" ver="Start" margin="0,40,0,0" >"删除"</ButtonBase>
 </Panel>

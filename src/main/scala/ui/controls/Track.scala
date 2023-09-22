@@ -66,6 +66,7 @@ class Track extends RangeBase derives ReflectType {
     this.createEntity()
     this.loadControlTemplate()
     this.thumb = this.thumb.clone()
+    
     this.addChild(this.thumb)
     LayoutUtils.addPostLayout(this.postLayoutProcess)
   }

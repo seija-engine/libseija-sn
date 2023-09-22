@@ -67,4 +67,8 @@ class VisualStateList extends IXmlObject  derives ReflectType {
             case ui.visualState.StateMatch.Any => handleItem.handle.onViewStateChanged(element,changeGroup,newState,nameScope)
       }
     }
+
+    override def clone():VisualStateList = {
+        super.clone().asInstanceOf[VisualStateList];
+    }
 }

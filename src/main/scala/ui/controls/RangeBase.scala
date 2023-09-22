@@ -3,7 +3,7 @@ import core.reflect.*;
 
 class RangeBase extends Control derives ReflectType {
     protected var _value:Float = 0;
-    protected var _maxValue:Float = 0;
+    protected var _maxValue:Float = 1;
     protected var _minValue:Float = 0;
     //region Setter
 

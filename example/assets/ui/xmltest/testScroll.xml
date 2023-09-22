@@ -1,6 +1,6 @@
 <Panel isCanvas="true">
     <Image sprite="default.white" color="#e8e8e7" />
-    <ButtonBase>AAA</ButtonBase>
+   
     <Track width="26" hor="Center" orientation="Ver" value="0.6">
         <Track.template>
             <ControlTemplate>
