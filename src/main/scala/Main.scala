@@ -7,8 +7,10 @@ import ui.UIModule
 import window.WindowModule
 import scala.io.AnsiColor
 import math.Color
+import slog.Level
 object Main {
   def main(args: Array[String]): Unit = {
+    slog.Logger.root.clearModifiers().withMinimumLevel(Level.Debug)
     slog.info("run main")
     runSeija()
   }

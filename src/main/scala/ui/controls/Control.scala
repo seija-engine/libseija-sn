@@ -48,9 +48,7 @@ class Control extends UIElement with ElementNameScope derives ReflectType {
     override protected def onViewStateChanged(changeGroup: String, newState: String): Unit = {
       super.onViewStateChanged(changeGroup,newState);
       if(this.template.isDefined) {
-        val visualGroup = this.template.get.visualStateGroups.getGroup(changeGroup);
-        if(visualGroup.isEmpty) return;
-        this.applyVisualGroup(visualGroup.get,newState,Some(this));
+         this.template.get.vsm.onViewStateChanged(this,changeGroup,newState,Some(this))
       }
     }
 

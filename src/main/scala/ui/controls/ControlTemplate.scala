@@ -9,10 +9,9 @@ import scala.collection.mutable.HashMap;
 import core.ICopy;
 import core.copyObject
 import scala.util.Success
-import ui.visualState.VisualStateGroupList
 import ui.IPostReader
 import ui.resources.BaseUIResource
-import ui.visualState.VisualStateDict
+import ui.visualState.VisualStateList
 
 @ContentProperty("content")
 class ControlTemplate extends BaseTemplate with ElementNameScope with IPostReader with BaseUIResource derives ReflectType {
@@ -21,8 +20,7 @@ class ControlTemplate extends BaseTemplate with ElementNameScope with IPostReade
     def getKey: String = this.key;
     var nameDict:HashMap[String,UIElement] = HashMap.empty;
     var content:UIElement = UIElement.zero;
-    var visualStateGroups:VisualStateGroupList = VisualStateGroupList();
-    var vsm:VisualStateDict = VisualStateDict()
+    var vsm:VisualStateList = VisualStateList()
    
     override def OnPostRead():Unit = {
         this.putNameToScope(content)

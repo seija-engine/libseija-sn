@@ -22,8 +22,6 @@ import ui.resources.OldStyle
 import scala.collection.mutable.HashMap
 import ui.resources.UIResourceMgr
 import scala.collection.mutable.ArrayBuffer
-import ui.visualState.VisualStateGroupList
-import ui.visualState.VisualStateGroup
 import core.reflect.Assembly
 import ui.ElementNameScope
 import ui.event.{IRouteEventElement, RouteEventController,RouteEventArgs}
@@ -32,6 +30,7 @@ import ui.xml.IXmlObject
 import scala.collection.mutable
 import transform.FFISeijaTransform
 import ui.resources.Style
+import ui.visualState.VisualStateList
 
 
 class UIElement extends INotifyPropertyChanged
@@ -61,8 +60,7 @@ class UIElement extends INotifyPropertyChanged
     protected var resources:UIResource = UIResource.empty();
 
     protected var curViewStateDict:mutable.HashMap[String,String] = mutable.HashMap.empty
-    var visualStateGroups:VisualStateGroupList = VisualStateGroupList();
-
+    var vsm:VisualStateList = VisualStateList()
     private var idScope:Option[IDScope] = None
 
     //region Setter
@@ -316,34 +314,9 @@ class UIElement extends INotifyPropertyChanged
     }
 
     protected def onViewStateChanged(changeGroup:String,newState:String):Unit = {
-        val visualGroup = this.visualStateGroups.getGroup(changeGroup);
-        if(visualGroup.isEmpty) return;
-        this.applyVisualGroup(visualGroup.get,newState,None);
+        this.vsm.onViewStateChanged(this,changeGroup,newState,None)
     }
-
-    protected def applyVisualGroup(group:VisualStateGroup,newState:String,nameScope:Option[ElementNameScope]):Unit = {
-       val newVisualState = group.getState(newState);
-       if(newVisualState.isEmpty) return;
-       val typeInfo = Assembly.getTypeInfo(this);
-       if(typeInfo.isDefined) {
-         for(setter <- newVisualState.get.Setters.setters) {
-           if(setter.target == null) {
-              typeInfo.get.getField(setter.key).foreach {f => 
-                f.set(this,setter.value);
-                this.callPropertyChanged(setter.key,this);
-              };
-           } else nameScope.foreach { scope =>
-              val findElement = scope.getScopeElement(setter.target);
-              findElement.foreach { elem =>
-                Assembly.getTypeInfo(elem).get.getField(setter.key).foreach {f => 
-                  f.set(elem,setter.value);
-                  elem.callPropertyChanged(setter.key,this);
-                }
-              };
-           }
-         }
-       }
-    }
+   
 
     private var _routeEventController:RouteEventController = RouteEventController(this)
 
@@ -368,7 +341,6 @@ class UIElement extends INotifyPropertyChanged
         val cloneObject = super.clone().asInstanceOf[UIElement];
         cloneObject.children = new ListBuffer[UIElement]()
         cloneObject.setRouteEventElem(cloneObject)
-        cloneObject.visualStateGroups = this.visualStateGroups.clone()
         for(child <- this.children) {
             val cloneChild = child.clone()
             cloneObject.addChild(cloneChild)
