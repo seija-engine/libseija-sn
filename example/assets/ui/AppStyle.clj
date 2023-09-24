@@ -130,13 +130,79 @@
               </ControlTemplate.vsm>
               </ControlTemplate>
   })
+  
+  (style {:type "Thumb" :key "ScrollBarVerThumb"} {
+    :width "13"
+    :template <ControlTemplate>
+                <Image Name="BG" imageType="Slice" sprite="default.scrollbar-vert-slider" />
+                <ControlTemplate.vsm>
+                  <VisualStateList>
+                  [
+                    :CommonStates {
+                      :Normal { :sprite  (setter "BG" "default.scrollbar-vert-slider")  }
+                      :MouseOver { :sprite  (setter "BG" "default.scrollbar-vert-slider-hover")  }
+                      :Pressed { :sprite  (setter "BG" "default.scrollbar-vert-slider-active")  }
+                    }
+                  ]
+                  </VisualStateList>
+                </ControlTemplate.vsm>
+              </ControlTemplate>
+  })
+
+  (style {:type "Thumb" :key "ScrollBarHorThumb"} {
+    :height "13"
+    :template <ControlTemplate>
+                <Image Name="BG" imageType="Slice" sprite="default.scrollbar-horz-slider" />
+                <ControlTemplate.vsm>
+                  <VisualStateList>
+                  [
+                    :CommonStates {
+                      :Normal { :sprite  (setter "BG" "default.scrollbar-horz-slider")  }
+                      :MouseOver { :sprite  (setter "BG" "default.scrollbar-horz-slider-hover")  }
+                      :Pressed { :sprite  (setter "BG" "default.scrollbar-horz-slider-active")  }
+                    }
+                  ]
+                  </VisualStateList>
+                </ControlTemplate.vsm>
+              </ControlTemplate>
+  })
+  
+  <ControlTemplate key="HorScrollBar" forType="ScrollBar">
+        <Panel isCanvas="true">
+            <Image imageType="Slice" sprite="default.scrollbar-horz-trough" />
+            <Track Name="PART_Track" orientation="Hor"
+                   thumbSize="{Binding Owner barLength}"
+                   minValue="{Binding Owner minValue}"
+                   maxValue="{Binding Owner maxValue}"
+                   value="{Binding Owner value}">
+                <Track.thumb>
+                    <Thumb style="{Res ScrollBarHorThumb}" />
+                </Track.thumb>
+            </Track>
+        </Panel>
+  </ControlTemplate>
+
+  <ControlTemplate key="VerScrollBar" forType="ScrollBar">
+        <Panel isCanvas="true">
+            <Image imageType="Slice" sprite="default.scrollbar-vert-trough" />
+            <Track Name="PART_Track" orientation="Ver"
+                   thumbSize="{Binding Owner barLength}"
+                   minValue="{Binding Owner minValue}"
+                   maxValue="{Binding Owner maxValue}"
+                   value="{Binding Owner value}">
+                <Track.thumb>
+                    <Thumb style="{Res ScrollBarVerThumb}" />
+                </Track.thumb>
+            </Track>
+        </Panel>
+  </ControlTemplate>
 
   (style "ScrollBar" {
     :vsm <VisualStateList>
           [
             :OrientationStates {
-                :Horizontal  {:height "26" }
-                :Vertical    {:width "26" }
+                :Horizontal  { :height "14" :template (res "HorScrollBar") }
+                :Vertical    {  :width "14" :template (res "VerScrollBar") }
               }
           ]
          </VisualStateList>
@@ -145,4 +211,55 @@
   <DataTemplate dataType="java.lang.String">
     <Text height="22" fontSize="18" text="{Binding Data this}" />
   </DataTemplate>
+
+  <ControlTemplate key="HorSlider" forType="Slider">
+        <Panel isCanvas="true">
+            <Image imageType="Slice" sprite="default.scale-horz-trough" />
+            <Track Name="PART_Track"
+                   minValue="{Binding Owner minValue}"
+                   maxValue="{Binding Owner maxValue}"
+                   value="{Binding Owner value}">
+                <Track.template>
+                    <ControlTemplate>
+                        <Image imageType="Slice" hor="Start" width="{Binding Owner fillLength}"
+                            sprite="default.scale-horz-trough-active" />
+                    </ControlTemplate>
+                </Track.template>
+                <Track.thumb>
+                    <Thumb style="{Res SliderThumb}" />
+                </Track.thumb>
+            </Track>
+        </Panel>
+  </ControlTemplate>
+
+  <ControlTemplate key="VerSlider" forType="Slider">
+        <Panel isCanvas="true">
+            <Image imageType="Slice" sprite="default.scale-vert-trough" />
+            <Track Name="PART_Track" orientation="Ver"
+                   minValue="{Binding Owner minValue}"
+                   maxValue="{Binding Owner maxValue}"
+                   value="{Binding Owner value}">
+                <Track.template>
+                    <ControlTemplate>
+                        <Image imageType="Slice" ver="Start" height="{Binding Owner fillLength}"
+                            sprite="default.scale-vert-trough-active" />
+                    </ControlTemplate>
+                </Track.template>
+                <Track.thumb>
+                    <Thumb style="{Res SliderThumb}" />
+                </Track.thumb>
+            </Track>
+        </Panel>
+  </ControlTemplate>
+
+  (style "Slider" {
+    :vsm <VisualStateList>
+          [
+            :OrientationStates {
+                :Horizontal  { :height "26" :template (res "HorSlider") }
+                :Vertical    {  :width "26" :template (res "VerSlider") }
+              }
+          ]
+         </VisualStateList>
+  })
 ]

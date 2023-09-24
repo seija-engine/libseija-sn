@@ -11,6 +11,7 @@ import scala.util.Success
 import ui.resources.Setter
 import ui.controls.DataTemplate
 import sxml.vm.XmlNode
+import ui.resources.UIResourceMgr
 
 object UISXmlEnv {
   private val vm: SXmlVM = SXmlVM()
@@ -37,6 +38,7 @@ object UISXmlEnv {
     val uiModule = ExternModule("ui",MutHashMap.empty)
     uiModule.addFunc(style,true) 
     uiModule.addFunc(setter,true)
+    uiModule.addFunc(res,true)
     uiModule
   }
 
@@ -56,4 +58,10 @@ object UISXmlEnv {
     VMValue.VMUserData(Setter(null,value.toScalaValue(),targetName))
   }
 
+  private def res(value:VMValue):VMValue = {
+    VMValue.VMUserData(ResKey(value.toScalaValue().asInstanceOf[String]))
+  }
+
 }
+
+case class ResKey(resName:String)

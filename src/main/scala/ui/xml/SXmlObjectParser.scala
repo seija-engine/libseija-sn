@@ -141,16 +141,15 @@ class SXmlObjectParser(val nsResolver: XmlNSResolver = XmlNSResolver.default) {
   }
 
   def setRes(resName: String,typeInfo: TypeInfo,key: String,curObject: Any): Unit = {
-    
-    UIResourceMgr.appResource.findRes(resName).foreach { res =>
-      typeInfo.getField(key).foreach { f =>
+    UIResourceMgr.appResource.findRes(resName) match
+      case Some(res) => typeInfo.getField(key).foreach { f =>
         DynTypeConv
           .convertStrTypeTry(res.getClass.getName, f.typName, res)
           .foreach { v =>
             f.set(curObject, v)
           }
       }
-    }
+      case None => slog.error(s"not found res:${resName}")
   }
 
 }

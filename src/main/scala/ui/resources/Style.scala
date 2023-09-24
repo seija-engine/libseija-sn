@@ -11,39 +11,69 @@ import core.logError;
 import ui.xml.SXmlObjectParser
 import ui.xml.UISXmlEnv
 import ui.ElementNameScope
+import ui.xml.ResKey
+import core.reflect.FieldInfo
 case class Style(
     val forTypeInfo:TypeInfo,
     val setterList:ArrayBuffer[Setter],
     val key:String = ""
-) extends BaseUIResource {
+) extends BaseUIResource with IPostReadResource {
     override def getKey:String = this.key
+
+    override def OnPostReadResource(): Unit = {
+      
+      this.setterList.foreach(_.OnPostReadResource())
+    }
 }
 
 
 case class Setter(
     var key:String,
     var value:Any,
-    val target:String
-) {
+    val target:String,
+    val fieldInfo:FieldInfo = null
+) extends IPostReadResource {
+
   def applyNameScope(nameScope:ElementNameScope):Unit = {
     if(target == null) return;
     val targetElement = nameScope.getScopeElement(this.target)
     targetElement match {
-        case Some(value) => {
-           val info = Assembly.getTypeInfo(value).flatMap(_.getField(this.key));
-           if(info.isDefined) {
-            val fromTypName = Assembly.getTypeName(this.value)
-            val tryConvValue = DynTypeConv.convertStrTypeTry(fromTypName,info.get.typName,this.value)
+        case Some(value) => { this.setConvValue(value) }
+        case None => System.err.println(s"not found name in setter ${this.target} key:${this.key}");
+    }
+  }
+
+  def setConvValue(value:Any):Unit = {
+    val info = Assembly.getTypeInfo(value).flatMap(_.getField(this.key))
+    if(info.isDefined) {
+      val fromTypName = Assembly.getTypeName(this.value)
+      val tryConvValue = DynTypeConv.convertStrTypeTry(fromTypName,info.get.typName,this.value)
+      tryConvValue.logError()
+      if (tryConvValue.isSuccess) {
+        this.value = tryConvValue.get
+      }
+    }
+  }
+
+  override def OnPostReadResource(): Unit = {
+    value match
+      case post:IPostReadResource => post.OnPostReadResource()
+      case reskey:ResKey => {
+        val resName = value.asInstanceOf[ResKey].resName
+        UIResourceMgr.appResource.findRes(resName) match
+          case None => slog.error(s"not found setter:${key} res key:${resName}")
+          case Some(value) => {
+            val fromTypName = Assembly.getTypeName(value)
+            val tryConvValue = DynTypeConv.convertStrTypeTry(fromTypName,this.fieldInfo.typName,value)
             tryConvValue.logError()
             if (tryConvValue.isSuccess) {
               this.value = tryConvValue.get
-              //println(this.value)
             }
-           }
-        }
-        case None => System.err.println(s"not found name in setter ${this.target} key:${this.key}");
-    }
-  } 
+          }
+      }
+      case _ => 
+  }
+
 }
 
 
@@ -78,22 +108,31 @@ object Style {
     val setterList:ArrayBuffer[Setter] = ArrayBuffer()
     for((setName,setValue) <- setDict) {
       var realValue = setValue
-
-      if(realValue.isInstanceOf[Setter]) {
-        val setter = realValue.asInstanceOf[Setter]
-        setter.key = setName
-        setterList += setter
+      if(realValue != null) {
+        if(realValue.isInstanceOf[Setter]) {
+          val setter = realValue.asInstanceOf[Setter]
+          setter.key = setName
+          setterList += setter
+        } else {
+          if(setValue.isInstanceOf[sxml.vm.XmlNode]) {
+            realValue = SXmlObjectParser(XmlNSResolver.default).parse(setValue.asInstanceOf[sxml.vm.XmlNode]).get
+          }
+          if(!realValue.isInstanceOf[ResKey]) {
+            val field = typInfo.getFieldTry(setName).get
+            val fromTypName = Assembly.getTypeName(realValue)
+            val tryConvValue = DynTypeConv.convertStrTypeTry(fromTypName,field.typName,realValue)
+            tryConvValue.logError()
+            if(tryConvValue.isSuccess) {
+              setterList += Setter(setName,tryConvValue.get,null,field)
+            }
+          } else {
+            val field = typInfo.getFieldTry(setName).get
+            setterList += Setter(setName,realValue,null,field)
+          }
+          
+        }
       } else {
-        if(setValue.isInstanceOf[sxml.vm.XmlNode]) {
-          realValue = SXmlObjectParser(XmlNSResolver.default).parse(setValue.asInstanceOf[sxml.vm.XmlNode]).get
-        }
-        val field = typInfo.getFieldTry(setName).get
-        val fromTypName = Assembly.getTypeName(realValue)
-        val tryConvValue = DynTypeConv.convertStrTypeTry(fromTypName,field.typName,realValue)
-        tryConvValue.logError()
-        if(tryConvValue.isSuccess) {
-          setterList += Setter(setName,tryConvValue.get,null)
-        }
+        slog.error(s"setter ${setName} value is null")
       }
     }
     setterList

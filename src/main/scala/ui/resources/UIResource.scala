@@ -11,6 +11,10 @@ import ui.controls.DataTemplate
 import ui.xml.IXmlObject
 import ui.controls.ControlTemplate
 
+trait IPostReadResource {
+    def OnPostReadResource():Unit
+}
+
 @ContentProperty("resList")
 class UIResource extends Growable[BaseUIResource] derives ReflectType {
     var resList:ArrayBuffer[BaseUIResource] = ArrayBuffer[BaseUIResource]()
@@ -49,6 +53,12 @@ class UIResource extends Growable[BaseUIResource] derives ReflectType {
             case dataTemplate: DataTemplate => {
                 this.dataTemplateDict.addOne(dataTemplate.dataType,dataTemplate);
                 this.allResDict.put(dataTemplate.dataType,dataTemplate);
+            }
+            case controlTemplate:ControlTemplate => {
+                if(controlTemplate.key != null) { 
+                    this.controlTemplateDict.put(controlTemplate.key,controlTemplate);
+                    this.allResDict.put(controlTemplate.key,controlTemplate);
+                }
             }
             case _ =>
         this

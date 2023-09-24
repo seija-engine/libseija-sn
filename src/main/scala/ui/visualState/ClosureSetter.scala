@@ -11,4 +11,8 @@ case class ClosureSetter(closure:ClosureData) extends VisualStateChangedHandle {
     override def onViewStateChanged(element:UIElement,changeGroup:String,newState:String,nameScope:Option[ElementNameScope]):Unit = {
         
     }
+
+    override def OnPostReadResource():Unit = {
+      
+    }
 }

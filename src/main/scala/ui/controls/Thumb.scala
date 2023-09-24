@@ -13,9 +13,7 @@ import ui.LayoutUtils
 
 class Thumb extends Control derives ReflectType {
     override def OnEnter(): Unit = {
-        println(s"Thumb Enter ${this.parent} ${this.style}" );
         val thisEntity = this.createBaseEntity(true);
-        println(s"thumb:${thisEntity}")
         EventManager.register(thisEntity,EventType.ALL,this.OnElementEvent)
         this.loadControlTemplate()
         thisEntity.add[FreeLayoutItem]();

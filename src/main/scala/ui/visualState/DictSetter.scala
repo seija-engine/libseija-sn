@@ -59,6 +59,10 @@ case class DictSetter(stateSetterDict:HashMap[String,Any]) extends VisualStateCh
           }
         }
     }
+
+    override def OnPostReadResource():Unit = {
+      this.statesSetter.values.foreach(_.foreach(_.OnPostReadResource()))
+    }
 }
 
  /*

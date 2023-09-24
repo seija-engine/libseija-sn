@@ -15,8 +15,9 @@ import ui.resources.Setter
 import ui.ElementNameScope
 import ui.IPostReader
 import ui.controls.UIElement
+import ui.resources.IPostReadResource
 
-trait VisualStateChangedHandle {
+trait VisualStateChangedHandle extends IPostReadResource {
    def applyNameScope(nameScope:ElementNameScope):Unit
    def onViewStateChanged(element:UIElement,changeGroup:String,newState:String,nameScope:Option[ElementNameScope]):Unit;
 }
@@ -29,7 +30,7 @@ enum StateMatch {
 case class StateChangedHandle(sMatch:StateMatch,handle:VisualStateChangedHandle)
 
 @ContentProperty("content")
-class VisualStateList extends IXmlObject  derives ReflectType {
+class VisualStateList extends IXmlObject with IPostReadResource derives ReflectType {
     var content:Vector[Any] = Vector()
     
     private val handleList:ArrayBuffer[StateChangedHandle] = ArrayBuffer()
@@ -70,5 +71,9 @@ class VisualStateList extends IXmlObject  derives ReflectType {
 
     override def clone():VisualStateList = {
         super.clone().asInstanceOf[VisualStateList];
+    }
+
+    override def OnPostReadResource(): Unit = {
+      this.handleList.foreach(_.handle.OnPostReadResource())
     }
 }

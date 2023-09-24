@@ -17,7 +17,6 @@ import scala.util.Success
 import core.copyObject
 import core.ICopy
 import ui.ContentProperty
-import ui.resources.OldStyle
 import scala.collection.mutable.HashMap
 import ui.resources.UIResourceMgr
 import scala.collection.mutable.ArrayBuffer

@@ -21,5 +21,10 @@ object UIResourceMgr {
         }
         case res:BaseUIResource => this.appResource += resItem.asInstanceOf[BaseUIResource]
     }
+
+    resList.foreach {
+      case v:IPostReadResource => v.OnPostReadResource()
+      case _ => 
+    }
   }
 }
