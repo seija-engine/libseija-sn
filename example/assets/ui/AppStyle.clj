@@ -110,13 +110,17 @@
                     </Popup>
                 </Panel>
     </ControlTemplate>
-    :triggers [
-        (prop-trigger "Role"
-           "TopLevelHeader" {:template (res "TopLevelHeaderTemplate") }
-           "TopLevelItem" {:template (res "TopLevelItemTemplate") }
-           "SubmenuHeader" {:template (res "SubmenuHeaderTemplate") }
-        )
-    ]
+    :triggers <TriggerList>
+              [
+                  (prop-trigger "Role" 
+                    [
+                      "TopLevelHeader" {:template (res "TopLevelHeaderTemplate") }
+                      "TopLevelItem" {:template (res "TopLevelItemTemplate") }
+                      "SubmenuHeader" {:template (res "SubmenuHeaderTemplate") }
+                    ]
+                  )
+              ]
+              </TriggerList>
   })
 
   (style {:type "Thumb" :key "SliderThumb"} {

@@ -24,7 +24,8 @@ final case class UIModule() extends IModule {
     DynTypeConv.register[scala.Float, SizeValue];
     Assembly.scanPackage(ui.controls.Image);
     Assembly.scanPackage(ui.resources.UIResource);
-    Assembly.scanPackage(ui.visualState.ViewStates);
+    Assembly.scanPackage(ui.visualState.ViewStates)
+    Assembly.scanPackage(ui.trigger.TriggerList)
   }
 
   override def updateECSPtr(worldPtr: Ptr[CSignedChar]): Unit = {

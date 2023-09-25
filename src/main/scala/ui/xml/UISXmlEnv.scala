@@ -12,6 +12,7 @@ import ui.resources.Setter
 import ui.controls.DataTemplate
 import sxml.vm.XmlNode
 import ui.resources.UIResourceMgr
+import ui.trigger.PropTrigger
 
 object UISXmlEnv {
   private val vm: SXmlVM = SXmlVM()
@@ -39,13 +40,14 @@ object UISXmlEnv {
     uiModule.addFunc(style,true) 
     uiModule.addFunc(setter,true)
     uiModule.addFunc(res,true)
+    uiModule.addFunc(prop_trigger,true)
     uiModule
   }
 
   private def style(attr:VMValue,dict:VMValue):VMValue = {
     ui.resources.Style.loadFromValue(attr,dict) match
       case Failure(exception) => {
-        System.err.println(exception.toString())
+        slog.error(exception)
         VMValue.NIL()
       }
       case Success(value) => {
@@ -60,6 +62,15 @@ object UISXmlEnv {
 
   private def res(value:VMValue):VMValue = {
     VMValue.VMUserData(ResKey(value.toScalaValue().asInstanceOf[String]))
+  }
+
+  private def prop_trigger(prop:VMValue,lst:VMValue):VMValue = {
+    PropTrigger.fromScript(prop,lst) match
+      case Success(trigger) => VMValue.VMUserData(trigger)
+      case Failure(e) => {
+        slog.error(e)
+        VMValue.NIL()
+      }
   }
 
 }

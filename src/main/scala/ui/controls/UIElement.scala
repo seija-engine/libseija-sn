@@ -29,6 +29,7 @@ import scala.collection.mutable
 import transform.FFISeijaTransform
 import ui.resources.Style
 import ui.visualState.VisualStateList
+import ui.trigger.TriggerList
 
 
 class UIElement extends INotifyPropertyChanged
@@ -59,6 +60,7 @@ class UIElement extends INotifyPropertyChanged
 
     protected var curViewStateDict:mutable.HashMap[String,String] = mutable.HashMap.empty
     var vsm:VisualStateList = VisualStateList()
+    var triggers:TriggerList = TriggerList()
     private var idScope:Option[IDScope] = None
 
     //region Setter

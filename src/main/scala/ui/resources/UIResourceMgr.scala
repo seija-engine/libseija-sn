@@ -20,6 +20,7 @@ object UIResourceMgr {
             case Success(value) => this.appResource += value.asInstanceOf[BaseUIResource]
         }
         case res:BaseUIResource => this.appResource += resItem.asInstanceOf[BaseUIResource]
+        case other => slog.error(s"not support res typ:${other}")
     }
 
     resList.foreach {

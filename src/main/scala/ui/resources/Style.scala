@@ -116,6 +116,7 @@ object Style {
         } else {
           if(setValue.isInstanceOf[sxml.vm.XmlNode]) {
             realValue = SXmlObjectParser(XmlNSResolver.default).parse(setValue.asInstanceOf[sxml.vm.XmlNode]).get
+           
           }
           if(!realValue.isInstanceOf[ResKey]) {
             val field = typInfo.getFieldTry(setName).get

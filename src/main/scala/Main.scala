@@ -10,7 +10,7 @@ import math.Color
 import slog.Level
 object Main {
   def main(args: Array[String]): Unit = {
-    slog.Logger.root.clearModifiers().withMinimumLevel(Level.Debug)
+    slog.Logger.root.clearModifiers().withMinimumLevel(Level.Trace)
     slog.info("run main")
     runSeija()
   }
