@@ -1,20 +1,18 @@
 package ui.controls
-import ui.controls.ControlTemplate
-import core.reflect.*;
-import core.logError;
-import scala.util.Try
-import scala.util.Success
-import scala.util.Failure
-import scala.collection.mutable;
+import core.logError
+import core.reflect.*
 import ui.ElementNameScope
 import ui.event.EventType
-import scala.collection.mutable.HashMap
-import scalanative.unsigned._;
 import ui.visualState.ViewStates
+
+import scala.collection.mutable
+import scala.collection.mutable.HashMap
+import scala.scalanative.unsigned.*
+import scala.util.Try
 
 class Control extends UIElement with ElementNameScope derives ReflectType {
     var template:Option[ControlTemplate] = None
-    var nameDict:HashMap[String,UIElement] = HashMap.empty;
+    var nameDict:mutable.HashMap[String,UIElement] = mutable.HashMap.empty;
 
     var _IsActive:Boolean = false;
     def IsActive:Boolean = _IsActive;

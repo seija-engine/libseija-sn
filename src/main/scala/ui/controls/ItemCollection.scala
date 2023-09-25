@@ -14,15 +14,14 @@ trait IDataElementGenerator {
 }
 
 case class ItemCollection(elemGen:IDataElementGenerator) {
-    protected var cacheLst:IndexedSeq[Any] = IndexedSeq.empty;
-    protected var notifyList:Option[INotifyCollectionChanged] = None;
-    protected var cacheElementList:ArrayBuffer[UIElement] = ArrayBuffer.empty;
-    var changedCallBack:Option[CollectionChangedCallBack] = None;
+    protected var cacheLst:IndexedSeq[Any] = IndexedSeq.empty
+    protected var notifyList:Option[INotifyCollectionChanged] = None
+    var changedCallBack:Option[CollectionChangedCallBack] = None
 
-    def getDataList:IndexedSeq[Any] = this.cacheLst;
+    def getDataList:IndexedSeq[Any] = this.cacheLst
 
     def setItemSource(lst:IndexedSeq[Any]):Unit = {
-       this.cacheLst = lst;
+       this.cacheLst = lst
        if(this.cacheLst.isInstanceOf[INotifyCollectionChanged]) {
           val notifyList = this.cacheLst.asInstanceOf[INotifyCollectionChanged];
           this.notifyList = Some(notifyList);
@@ -66,7 +65,7 @@ case class ItemElementListMgr(val parent:UIElement,val collection:ItemCollection
               value.getEntity().get.setParent(parent.getEntity());
               //parent.getEntity().get.insertChild(value.getEntity().get,args.newStartingIndex);
             }
-            case Failure(exception) => System.err.println(exception.toString());
+            case Failure(exception) => slog.error(exception)
           }
         }
         case CollectionChangedAction.Replace => {
