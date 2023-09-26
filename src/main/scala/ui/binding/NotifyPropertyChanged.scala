@@ -28,7 +28,7 @@ trait INotifyPropertyChanged {
 
   def onPropertyChanged(propertyName: String): Unit = {}
 }
-
+/*
 trait BProp[T] {
   var value: T;
   val parent:INotifyPropertyChanged;
@@ -50,4 +50,4 @@ def autoPropImpl[T](base: Expr[INotifyPropertyChanged],fieldName: Expr[String], 
     }
     newProp
   }
-}
+}*/

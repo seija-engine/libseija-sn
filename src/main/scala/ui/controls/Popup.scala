@@ -63,6 +63,7 @@ class Popup extends UIElement derives ReflectType {
     this._target = value;callPropertyChanged("target",this)
   }
   //endregion
+  
 
   override def OnEnter(): Unit = {
     this._active = this._isOpen
@@ -86,8 +87,11 @@ class Popup extends UIElement derives ReflectType {
             })
     newEntity.add[FreeLayoutItem]()
     this.entity = Some(newEntity)
-    this.addChild(this.cloneChild())
-            
+               
+  }
+
+  override def OnAddContent(value:Any):Unit = {
+    this.addChild(this.cloneChild()) 
   }
 
   override def onPropertyChanged(propertyName: String): Unit = {
@@ -151,17 +155,17 @@ class Popup extends UIElement derives ReflectType {
     if(isHasTargetMode) {
       val targetElement: Option[UIElement] = Option(this._target).orElse(this.parent)
       if(targetElement.isEmpty) {
-        System.err.println("popup need target")
+        slog.error("popup need target")
         return (Vector3.zero,math.Rect2D.zero)
       }
       val targetEntity = targetElement.get.getEntity().get
-      println(s"targetEntity:${targetElement}")
+      
       val mat4 = Transform.relativeTo(targetEntity,Some(ui.CanvasManager.fst().getEntity().get))
-       println(s"mat4:${mat4.pos}")
+      
       val targetPos = ui.core.FFISeijaUI.toUIPos(mat4.pos)
-      println(s"targetPos:${targetPos}")
+      
       val targetRect = targetEntity.get[Rect2D]()
-      println(s"targetRect:${targetRect.toData}")
+      //println(targetRect.toData)
       return (targetPos,targetRect.toData)
     }
     ???

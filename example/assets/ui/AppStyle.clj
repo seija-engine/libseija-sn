@@ -84,45 +84,6 @@
     }
   )
 
-  (style "Menu" {
-    :template <ControlTemplate>
-                  <Panel>
-                    <Image  sprite="default.white" />
-                    <Image imageType="Slice" sprite="default.menu-border" />
-                    <ItemsPresenter />
-                  </Panel>
-              </ControlTemplate>
-  })
-
-  (style "MenuItem" {
-    :template
-    <ControlTemplate>
-                <Panel margin="0,1,0,1">
-                    <Image sprite="default.white" color="#ffffff" />
-                    <ContentPresenter contentSource="header" />
-                    <Popup width="150" height="30" hor="Center" ver="Center" isOpen="{Binding Owner isSubmenuOpen}" mode="Bottom">
-                        <Panel>
-                            <Image sprite="default.white" color="#ffffff" />
-                            <Image imageType="Slice" sprite="default.frame" color="#ffffff" />
-                            
-                            <Text  fontSize="16" text="新建项目" color="#000000" />
-                        </Panel>
-                    </Popup>
-                </Panel>
-    </ControlTemplate>
-    :triggers <TriggerList>
-              [
-                  (prop-trigger "Role" 
-                    [
-                      "TopLevelHeader" {:template (res "TopLevelHeaderTemplate") }
-                      "TopLevelItem" {:template (res "TopLevelItemTemplate") }
-                      "SubmenuHeader" {:template (res "SubmenuHeaderTemplate") }
-                    ]
-                  )
-              ]
-              </TriggerList>
-  })
-
   (style {:type "Thumb" :key "SliderThumb"} {
     :width "26"
     :height "26"
@@ -273,4 +234,69 @@
           ]
          </VisualStateList>
   })
+
+  (style "Menu" {
+    :template <ControlTemplate>
+                  <Panel>
+                    <Image  sprite="default.white" />
+                    <Image imageType="Slice" sprite="default.menu-border" />
+                    <ItemsPresenter />
+                  </Panel>
+              </ControlTemplate>
+  })
+
+  (style "MenuItem" {
+    :triggers <TriggerList>
+                ["role"
+                    [
+                      "TopLevelHeader" {:template (res "TopLevelHeaderTemplate") }
+                      "TopLevelItem"   {:template (res "TopLevelItemTemplate")   }
+                      "SubmenuHeader" {:template (res "SubmenuHeaderTemplate") }
+                      "SubmenuItem" {:template (res "SubmenuItemTemplate") }
+                    ]
+                ]
+              </TriggerList>
+    
+    
+  })
+
+
+  <ControlTemplate key="TopLevelHeaderTemplate" forType="MenuItem">
+        <Panel margin="0,1,0,1">
+            <Image sprite="default.white" color="#ffffff" />
+            <ContentPresenter contentSource="header" />
+            <Popup width="120" isOpen="{Binding Owner isSubmenuOpen}" mode="Bottom">
+              <Panel  width="120">
+                <Image  width="120" sprite="default.white" color="#ffffff" />
+                <Image  width="120" imageType="Slice" sprite="default.frame" color="#ffffff" />
+                <ItemsPresenter  width="120" />
+                
+              </Panel>
+            </Popup>
+        </Panel>
+  </ControlTemplate>
+
+  <ControlTemplate key="SubmenuHeaderTemplate" forType="MenuItem">
+        <Panel width="120" padding="1,1,1,1">
+            <Image  sprite="default.menubar-item-active" color="#ffffff" />
+            <ContentPresenter contentSource="header" />
+            <Popup width="120" hor="Center" ver="Center" isOpen="{Binding Owner isSubmenuOpen}" mode="Right">
+              <Panel>
+                <Image sprite="default.white" color="#ffffff" />
+                <Image imageType="Slice" sprite="default.frame" color="#ffffff" />
+                <ItemsPresenter />
+              </Panel>
+            </Popup>
+        </Panel>
+  </ControlTemplate>
+
+  <ControlTemplate key="TopLevelItemTemplate" forType="MenuItem">
+      <ContentPresenter contentSource="header" />
+  </ControlTemplate>
+
+  <ControlTemplate key="SubmenuItemTemplate" forType="MenuItem">
+      <ContentPresenter contentSource="header" />
+  </ControlTemplate>
+
+  
 ]

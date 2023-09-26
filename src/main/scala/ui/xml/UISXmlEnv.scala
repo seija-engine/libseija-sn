@@ -40,7 +40,6 @@ object UISXmlEnv {
     uiModule.addFunc(style,true) 
     uiModule.addFunc(setter,true)
     uiModule.addFunc(res,true)
-    uiModule.addFunc(prop_trigger,true)
     uiModule
   }
 
@@ -64,14 +63,6 @@ object UISXmlEnv {
     VMValue.VMUserData(ResKey(value.toScalaValue().asInstanceOf[String]))
   }
 
-  private def prop_trigger(prop:VMValue,lst:VMValue):VMValue = {
-    PropTrigger.fromScript(prop,lst) match
-      case Success(trigger) => VMValue.VMUserData(trigger)
-      case Failure(e) => {
-        slog.error(e)
-        VMValue.NIL()
-      }
-  }
 
 }
 

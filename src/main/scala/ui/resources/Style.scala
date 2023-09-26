@@ -1,18 +1,21 @@
 package ui.resources
 import core.reflect.TypeInfo
+
 import scala.util.Try
 import sxml.vm.VMValue
+
 import scala.collection.mutable.ArrayBuffer
 import scala.collection.immutable.HashMap
 import ui.xml.XmlNSResolver
 import core.reflect.Assembly
 import core.reflect.DynTypeConv
-import core.logError;
+import core.logError
 import ui.xml.SXmlObjectParser
 import ui.xml.UISXmlEnv
 import ui.ElementNameScope
 import ui.xml.ResKey
 import core.reflect.FieldInfo
+import ui.controls.UIElement
 case class Style(
     val forTypeInfo:TypeInfo,
     val setterList:ArrayBuffer[Setter],
@@ -74,6 +77,14 @@ case class Setter(
       case _ => 
   }
 
+  def applyTo(typInfo:TypeInfo,elem:UIElement):Unit = {
+    if(target == null) {
+      typInfo.getFieldTry(this.key).logError().foreach {field =>
+        field.set(elem,this.value)
+        elem.callPropertyChanged(this.key,elem)
+      }
+    }
+  }
 }
 
 
@@ -97,9 +108,11 @@ object Style {
     val typInfo = XmlNSResolver.default.resolver(forType.get).flatMap(Assembly.get)
     if(typInfo.isEmpty) throw new Exception(s"not found type ${forType.get}")
     UISXmlEnv.setGlobal("*type-info*",typInfo.get)
+
     val setDict = dict.toScalaValue().asInstanceOf[HashMap[String,Any]]
     val setterList:ArrayBuffer[Setter] = this.readSetterList(setDict,typInfo.get).get
     UISXmlEnv.setGlobal("*type-info*",null)
+
    
     Style(typInfo.get,setterList,strKey.getOrElse(""))
   }

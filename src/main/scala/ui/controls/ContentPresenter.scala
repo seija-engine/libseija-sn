@@ -17,15 +17,16 @@ class ContentPresenter extends UIElement derives ReflectType {
             val dataType = this.content.getClass.getName;
             this.contentTemplate = this.findDataTemplate(dataType);
         }
-        super.OnEnter();
-        this.createByDataTemplate();
+        super.OnEnter()
+        this.createByDataTemplate()
     }
 
     protected def createByDataTemplate():Unit = {
         this.contentTemplate match {
             case Some(value) => {
                 value.LoadContent(this,None).logError().foreach(v => {
-                    this.addChild(v);
+                    this.addChild(v)
+                    v.setLogicParent(this.templateParent)
                 })
             }
             case None =>
@@ -33,11 +34,13 @@ class ContentPresenter extends UIElement derives ReflectType {
                 this.content match {
                     case contentElement: UIElement =>
                       this.addChild(contentElement)
+                      contentElement.setLogicParent(this.templateParent)
                     case _ =>
                       val stringValue = this.content.toString
                       val textElement = new Text()
                       textElement.text = stringValue
                       this.addChild(textElement)
+                      textElement.setLogicParent(this.templateParent)
                 }
               }
         }

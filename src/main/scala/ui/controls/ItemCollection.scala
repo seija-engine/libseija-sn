@@ -60,7 +60,7 @@ case class ItemElementListMgr(val parent:UIElement,val collection:ItemCollection
           val newElement = this.collection.elemGen.genElement(args.newItem);
           newElement match {
             case Success(value) => {
-              value.Enter();
+              value.Enter()
               parent.insertChild(args.newStartingIndex,value)
               value.getEntity().get.setParent(parent.getEntity());
               //parent.getEntity().get.insertChild(value.getEntity().get,args.newStartingIndex);

@@ -36,9 +36,10 @@ class UIElement extends INotifyPropertyChanged
   with Cloneable with IXmlObject with IRouteEventElement derives ReflectType {
     protected var entity:Option[Entity] = None
     protected var style:Option[Style] = None
-    protected var _dataContext:Any = null;
-    protected var isEntered:Boolean = false;
-    var templateParent:Option[UIElement] = None;
+    protected var _dataContext:Any = null
+    protected var isEntered:Boolean = false
+    var templateParent:Option[UIElement] = None
+    protected var logicParent:Option[UIElement] = None
     var Name:String = "";
     var Id:String = "";
 
@@ -72,10 +73,10 @@ class UIElement extends INotifyPropertyChanged
     def width: SizeValue = this._width;
     def width_=(value:SizeValue): Unit = { this._width = value; this.callPropertyChanged("width",this) }
     def height: SizeValue = this._height;
-    def height_=(value:SizeValue) = { this._height = value; this.callPropertyChanged("height",this) }
-    def padding = this._padding;
-    def padding_=(value:Thickness) = { this._padding = value; this.callPropertyChanged("padding",this) }
-    def margin = this._margin;
+    def height_=(value:SizeValue):Unit = { this._height = value; this.callPropertyChanged("height",this) }
+    def padding:Thickness = this._padding
+    def padding_=(value:Thickness):Unit = { this._padding = value; this.callPropertyChanged("padding",this) }
+    def margin = this._margin
     def margin_=(value:Thickness) = { this._margin = value; this.callPropertyChanged("margin",this) }
     def active = this._active
     def active_=(value:Boolean):Unit = { this._active = value; callPropertyChanged("active",this)  }
@@ -98,12 +99,12 @@ class UIElement extends INotifyPropertyChanged
 
     def Awake():Unit = {
       this.children.foreach(child => {
-            child.setParent(Some(this));
-            child.Awake();
+            child.setParent(Some(this))
+            child.Awake()
         })
     }
 
-    def getEntity():Option[Entity] = this.entity;
+    def getEntity():Option[Entity] = this.entity
 
     def addIDScope():Unit = {
         this.idScope = Some(IDScope())
@@ -120,7 +121,7 @@ class UIElement extends INotifyPropertyChanged
         None
     }
 
-    def addChild(elem:UIElement) = {
+    def addChild(elem:UIElement):Unit = {
        elem.parent = Some(this);
        this.children.addOne(elem);
     }
@@ -130,24 +131,22 @@ class UIElement extends INotifyPropertyChanged
         this.children.insert(index,elem);
     }
 
-    def setParent(elem:Option[UIElement]): Unit = {
-        this.parent = elem;
-    }
-
-    def getParent:Option[UIElement] = this.parent;
-
+    def setParent(elem:Option[UIElement]): Unit = { this.parent = elem; }
+    def getParent:Option[UIElement] = this.parent
+    def setLogicParent(elem:Option[UIElement]):Unit = { this.logicParent = elem }
+    def getLogicParent:Option[UIElement] = this.logicParent
     def Enter():Unit = {
         if(this.Id != null && this.Id != "") {
             findIdScope().foreach { idScope =>
                 idScope.addElement(this.Id,this)
             }
         }
-        this.applyStyle();
-        this.applyBindItems();
-        this.OnEnter();
+        this.applyStyle()
+        this.applyBindItems()
+        this.OnEnter()
         this.isEntered = true;
         this.children.foreach(child => {
-          child.setParent(Some(this));
+          child.setParent(Some(this))
           child.Enter()
         });
     }
@@ -181,6 +180,7 @@ class UIElement extends INotifyPropertyChanged
             //println(s"set ACtive:${this.entity.get}=${this._active}");
             this.getEntity().get.setActive(this._active)
         }
+        this.triggers.onPropChanged(this,propertyName)
     }
 
     protected def createBaseEntity(addBaseLayout:Boolean = true):Entity = {

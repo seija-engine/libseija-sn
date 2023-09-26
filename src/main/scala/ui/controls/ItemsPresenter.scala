@@ -13,7 +13,7 @@ class ItemsPresenter extends UIElement derives ReflectType {
       this.createBaseEntity(true)
       val itemsControl = this.getItemsControl
       if(itemsControl.isEmpty) {
-        slog.error("ItemsPresenter collection or parent is empty")
+        slog.error(s"ItemsPresenter collection or parent is empty ${this.templateParent}")
         return 
       }
       val warpPanel = itemsControl.get.getWarpPanel

@@ -28,8 +28,9 @@ class Panel extends UIElement with IXmlObject derives ReflectType {
 
     override def OnAddContent(value: Any): Unit = {
       if(value.isInstanceOf[UIElement]) {
-        value.asInstanceOf[UIElement].setParent(Some(this));
+        val elemValue = value.asInstanceOf[UIElement]
+        elemValue.setParent(Some(this))
+        elemValue.setLogicParent(Some(this))
       }
     }
-    
 }

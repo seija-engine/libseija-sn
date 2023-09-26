@@ -19,11 +19,11 @@ class MenuItem extends HeaderedItemsControl derives ReflectType {
         this._isSubmenuOpen = value; callPropertyChanged("isSubmenuOpen",this)
     }
     protected var _role:MenuItemRole = MenuItemRole.TopLevelItem
-    def Role:MenuItemRole = this._role
-    def Role_=(value: MenuItemRole): Unit = {
+    def role:MenuItemRole = this._role
+    def role_=(value: MenuItemRole): Unit = {
       this._role = value
-      callPropertyChanged("Role",this)
-      slog.info(s"Role:${this._role}")
+      callPropertyChanged("role",this)
+      //slog.info(s"Role:${this._role}")
     }
 
     override def Awake(): Unit = {
@@ -37,19 +37,26 @@ class MenuItem extends HeaderedItemsControl derives ReflectType {
 
     protected def OnElementEvent(typ:UInt,px:Float,py:Float,args:Any):Unit = {
         val zero = 0.toUInt
-        if((typ & EventType.CLICK) != zero) {
-           if(!isSubmenuOpen) { isSubmenuOpen = true }
+        if(this.role == MenuItemRole.TopLevelHeader) {
+          if((typ & EventType.CLICK) != zero) {
+            if(!isSubmenuOpen) { isSubmenuOpen = true }
+          }
+        } else if(this.role == MenuItemRole.SubmenuHeader) {
+          if((typ & EventType.CLICK) != zero) {
+            if(!isSubmenuOpen) { isSubmenuOpen = true }
+          }
         }
     }
 
     def updateMenuRole():Unit = {
-      val isParentMenu = this.parent.isDefined && this.parent.get.isInstanceOf[Menu]
+      this.updateHasItems()
+      val isParentMenu = this.getLogicParent.isDefined && this.getLogicParent.get.isInstanceOf[Menu]
       val menuRole = if(this.hasItems) {
-        if(isParentMenu) MenuItemRole.TopLevelItem  else MenuItemRole.SubmenuHeader
+        if(isParentMenu) MenuItemRole.TopLevelHeader  else MenuItemRole.SubmenuHeader
       } else {
         if(isParentMenu) MenuItemRole.TopLevelItem else MenuItemRole.SubmenuItem
       }
-      this.Role = menuRole
+      this.role = menuRole
     }
 
     override def OnItemsChanged(args: NotifyCollectionChangedEventArgs): Unit = {

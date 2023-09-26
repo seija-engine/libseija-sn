@@ -1,15 +1,14 @@
 package ui.controls
 import core.reflect.*
-
 import scala.collection.mutable.ArrayBuffer
 import scala.collection.IndexedSeq
 import ui.ContentProperty
 import core.logError
 import ui.binding.{INotifyCollectionChanged, NotifyCollectionChangedEventArgs}
-
 import scala.util.Try
 import scala.util.Failure
 import scala.util.Success
+
 @ContentProperty("items")
 class ItemsControl extends Control with IDataElementGenerator derives ReflectType {
     var items:ArrayBuffer[Any] = ArrayBuffer.empty
@@ -58,11 +57,12 @@ class ItemsControl extends Control with IDataElementGenerator derives ReflectTyp
         case _ =>
     }
     override def OnEnter(): Unit = {
+      this.updateHasItems()
       if(this.items.nonEmpty) {
-        this.itemCollection.setItemSource(items);
+        this.itemCollection.setItemSource(items)
       }
       if(this.itemsSource != null) {
-        this.itemCollection.setItemSource(this.itemsSource);
+        this.itemCollection.setItemSource(this.itemsSource)
       }
       this.realWarpPanel = warpElement.clone();
       super.OnEnter()
@@ -77,12 +77,13 @@ class ItemsControl extends Control with IDataElementGenerator derives ReflectTyp
         case Some(template) => {
           val tryElement = template.LoadContent(this,None).logError()
           tryElement.foreach(item => item.dataContext = data)
+          tryElement.foreach(_.setLogicParent(Some(this)))
           tryElement
         }
-
         case _ => {
           if(data.isInstanceOf[UIElement]) {
             val newElement = data.asInstanceOf[UIElement]
+            newElement.setLogicParent(Some(this))
             return Success(newElement.clone())
           }
           Failure(Exception("not found itemTemplate"))
