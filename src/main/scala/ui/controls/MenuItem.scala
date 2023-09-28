@@ -23,29 +23,47 @@ class MenuItem extends HeaderedItemsControl derives ReflectType {
     def role_=(value: MenuItemRole): Unit = {
       this._role = value
       callPropertyChanged("role",this)
-      //slog.info(s"Role:${this._role}")
     }
+
+    private var parentMenu:Option[Menu] = None
+    private var parentMenuItem:Option[MenuItem] = None
 
     override def Awake(): Unit = {
       super.Awake()
     }
     override def OnEnter(): Unit = {
+        this.logicParent.foreach {
+          case item:MenuItem => this.parentMenuItem = Some(item)
+          case menu:Menu => this.parentMenu = Some(menu)
+          case _ =>
+        }
         this.updateMenuRole()
         super.OnEnter()
-        EventManager.register(this.getEntity().get,EventType.CLICK,OnElementEvent)
+        EventManager.register(this.getEntity().get,EventType.CLICK | EventType.ALL_MOUSE,OnElementEvent)
     }
 
     protected def OnElementEvent(typ:UInt,px:Float,py:Float,args:Any):Unit = {
-        val zero = 0.toUInt
-        if(this.role == MenuItemRole.TopLevelHeader) {
-          if((typ & EventType.CLICK) != zero) {
-            if(!isSubmenuOpen) { isSubmenuOpen = true }
-          }
-        } else if(this.role == MenuItemRole.SubmenuHeader) {
-          if((typ & EventType.CLICK) != zero) {
-            if(!isSubmenuOpen) { isSubmenuOpen = true }
-          }
+      val zero = 0.toUInt
+      val isClick = (typ & EventType.CLICK) != zero
+      val isMouseEnter = (typ & EventType.MOUSE_ENTER) != zero
+      val isMouseLeave = (typ & EventType.MOUSE_LEAVE) != zero
+      this._role match
+        case MenuItemRole.TopLevelItem => {
+          if(isClick || isMouseEnter || isMouseLeave) { this.parentMenu.foreach(_.onChildItemEvent(this,typ)) }
         }
+        case MenuItemRole.TopLevelHeader => {
+          if(isClick || isMouseEnter || isMouseLeave) { this.parentMenu.foreach(_.onChildItemEvent(this,typ)) }
+        }
+        case MenuItemRole.SubmenuItem => {
+          if(isClick || isMouseEnter || isMouseLeave) { this.parentMenuItem.foreach(_.onChildItemEvent(typ)) }
+        }
+        case MenuItemRole.SubmenuHeader => {
+          if(isClick || isMouseEnter || isMouseLeave) { this.parentMenuItem.foreach(_.onChildItemEvent(typ)) }
+        }
+    }
+
+    def onChildItemEvent(typ:UInt):Unit = {
+
     }
 
     def updateMenuRole():Unit = {

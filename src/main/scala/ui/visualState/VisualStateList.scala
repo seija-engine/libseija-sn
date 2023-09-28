@@ -32,12 +32,11 @@ case class StateChangedHandle(sMatch:StateMatch,handle:VisualStateChangedHandle)
 @ContentProperty("content")
 class VisualStateList extends IXmlObject with IPostReadResource derives ReflectType {
     var content:Vector[Any] = Vector()
+    var forType:String = null;
     
     private val handleList:ArrayBuffer[StateChangedHandle] = ArrayBuffer()
 
     override def OnAddContent(value: Any): Unit = {
-       val typeInfo = UISXmlEnv.getGlobal("*type-info*");
-
        for(idx <- 0.until(this.content.length,2)) {
          val matchKey = this.content(idx)
          val stateMatch = matchKey match

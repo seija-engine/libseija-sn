@@ -3,16 +3,16 @@
     <Menu ver="Start" margin="0,0,0,0">
         <MenuItem header="File" width="50"  height="24" />
         <MenuItem header="Editor" width="60"  height="24" >
-            <MenuItem header="Find" width="60"  height="24" />
-            <MenuItem header="SerachXXXXXX" width="60"  height="24">
-                <MenuItem header="搜索文件" width="60"  height="24">
-                    <MenuItem header="搜索AAA" width="60"  height="24" />
-                    <MenuItem header="搜索BBB" width="60"  height="24" />
+            <MenuItem header="Find"   height="24" />
+            <MenuItem header="Serach"   height="24">
+                <MenuItem header="搜索文件" height="24">
+                    <MenuItem header="搜索AAA" height="24" />
+                    <MenuItem header="搜索BBB"  height="24" />
                 </MenuItem>
-                <MenuItem header="搜索工程" width="60"  height="24" />
-                <MenuItem header="搜索符号" width="60"  height="24" />
+                <MenuItem header="搜索工程"  height="24" />
+                <MenuItem header="搜索符号"  height="24" />
             </MenuItem>
-            <MenuItem header="Undo" width="60"  height="24" />
+            <MenuItem header="Undo"   height="24" />
         </MenuItem>
 
     </Menu>

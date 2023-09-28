@@ -263,22 +263,32 @@
 
   <ControlTemplate key="TopLevelHeaderTemplate" forType="MenuItem">
         <Panel margin="0,1,0,1">
-            <Image sprite="default.white" color="#ffffff" />
+            <Image Name="BG" sprite="default.white" color="#ffffff" />
             <ContentPresenter contentSource="header" />
             <Popup width="120" isOpen="{Binding Owner isSubmenuOpen}" mode="Bottom">
               <Panel  width="120">
                 <Image  width="120" sprite="default.white" color="#ffffff" />
                 <Image  width="120" imageType="Slice" sprite="default.frame" color="#ffffff" />
                 <ItemsPresenter  width="120" />
-                
               </Panel>
             </Popup>
         </Panel>
+        <ControlTemplate.vsm>
+            <VisualStateList forType="MenuItem">
+               [
+                  :CommonStates {
+                     :Normal     {:sprite (setter "BG" "default.white")         }
+                     :MouseOver  {:sprite (setter "BG" "default.menubar-item-active")   }
+                  }
+               ]
+            </VisualStateList>
+        </ControlTemplate.vsm>
   </ControlTemplate>
 
   <ControlTemplate key="SubmenuHeaderTemplate" forType="MenuItem">
         <Panel width="120" padding="1,1,1,1">
-            <Image  sprite="default.menubar-item-active" color="#ffffff" />
+            <Image Name="BG" sprite="default.white" color="#ffffff" />
+            <Image hor="End" sprite="default.menu-pan-right" width="16" height="16" />
             <ContentPresenter contentSource="header" />
             <Popup width="120" hor="Center" ver="Center" isOpen="{Binding Owner isSubmenuOpen}" mode="Right">
               <Panel>
@@ -288,14 +298,44 @@
               </Panel>
             </Popup>
         </Panel>
+        <ControlTemplate.vsm><VisualStateList forType="MenuItem">
+            [
+                 :CommonStates {
+                   :Normal     {:sprite (setter "BG" "default.white")         }
+                   :MouseOver  {:sprite (setter "BG" "default.menubar-item-active")   }
+                 }
+            ]
+        </VisualStateList></ControlTemplate.vsm>
   </ControlTemplate>
 
   <ControlTemplate key="TopLevelItemTemplate" forType="MenuItem">
-      <ContentPresenter contentSource="header" />
+      <Panel width="120" padding="1,1,1,1">
+        <Image Name="BG" sprite="default.white" color="#ffffff" />
+        <ContentPresenter contentSource="header" />
+      </Panel>
+      <ControlTemplate.vsm><VisualStateList>
+                  [
+                       :CommonStates {
+                         :Normal     {:sprite (setter "BG" "default.white")         }
+                         :MouseOver  {:sprite (setter "BG" "default.menubar-item-active")   }
+                       }
+                  ]
+      </VisualStateList></ControlTemplate.vsm>
   </ControlTemplate>
 
   <ControlTemplate key="SubmenuItemTemplate" forType="MenuItem">
-      <ContentPresenter contentSource="header" />
+      <Panel width="120" padding="1,1,1,1">
+         <Image Name="BG" sprite="default.white" color="#ffffff" />
+         <ContentPresenter contentSource="header" />
+      </Panel>
+      <ControlTemplate.vsm><VisualStateList>
+                        [
+                             :CommonStates {
+                               :Normal     {:sprite (setter "BG" "default.white")         }
+                               :MouseOver  {:sprite (setter "BG" "default.menubar-item-active")   }
+                             }
+                        ]
+      </VisualStateList></ControlTemplate.vsm>
   </ControlTemplate>
 
   

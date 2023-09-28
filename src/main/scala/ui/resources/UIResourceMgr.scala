@@ -19,7 +19,7 @@ object UIResourceMgr {
             case Failure(exception) => slog.error(exception)
             case Success(value) => this.appResource += value.asInstanceOf[BaseUIResource]
         }
-        case res:BaseUIResource => this.appResource += resItem.asInstanceOf[BaseUIResource]
+        case res:BaseUIResource => this.appResource += res
         case other => slog.error(s"not support res typ:${other}")
     }
 

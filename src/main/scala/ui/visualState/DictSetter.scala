@@ -18,7 +18,7 @@ case class DictSetter(stateSetterDict:HashMap[String,Any]) extends VisualStateCh
     init()
 
     def init():Unit = {
-        val typeInfo = UISXmlEnv.getGlobal("*type-info*").get.asInstanceOf[TypeInfo]
+        val typeInfo = UISXmlEnv.getGlobal("*type-info*").orNull.asInstanceOf[TypeInfo]
         for((stateName,stateValue) <- stateSetterDict) {
             stateValue match
                 case setDict:HashMap[?,?] => {

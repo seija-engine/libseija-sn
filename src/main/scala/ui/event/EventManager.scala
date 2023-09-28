@@ -5,7 +5,7 @@ import ui.core.EventNode.EventNodeComponent
 import ui.core.FFISeijaUI
 
 import scala.collection.mutable
-import scala.scalanative.unsafe.{CFuncPtr3, CFuncPtr4, Ptr}
+import scala.scalanative.unsafe.CFuncPtr4
 import scala.scalanative.unsigned.*
 object EventType {
     val NONE: UInt = 0.toUInt;

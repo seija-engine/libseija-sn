@@ -36,8 +36,6 @@ class ControlTemplate extends BaseTemplate with ElementNameScope with IPostReade
 
     override def getScopeElement(name:String):Option[UIElement] = { this.nameDict.get(name) }
 
-    
-
     override def LoadContent(parent:UIElement,nameScope:Option[ElementNameScope]): Try[UIElement] = {
         val instObject:UIElement = content.clone();
         setUIElementTemplate(instObject,parent,nameScope);
