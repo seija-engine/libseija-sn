@@ -76,6 +76,7 @@ class TestViewModel extends INotifyPropertyChanged derives ReflectType {
       "Data@1",
       "Data@2",
       "Data@3","Data@4","Data@5"));
+    var newCommand:FCommand = FCommand(this.testNew)
 
     def setCount(count: Int): Unit = {
       this.count = count;
@@ -119,5 +120,9 @@ class TestViewModel extends INotifyPropertyChanged derives ReflectType {
         case "+" => this.setCount(this.count + 1)
         case "-" => this.setCount(this.count - 1)
         case _ =>
+    }
+
+    def testNew(params:Any):Unit = {
+      slog.info("On New Menu")
     }
 }

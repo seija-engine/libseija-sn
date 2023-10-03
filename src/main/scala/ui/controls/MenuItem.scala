@@ -5,6 +5,7 @@ import ui.event.EventManager
 import ui.event.EventType
 import scalanative.unsigned.*
 import ui.visualState.ViewStates
+import ui.command.ICommand
 
 enum MenuItemRole {
   case TopLevelItem
@@ -14,6 +15,9 @@ enum MenuItemRole {
 }
 
 class MenuItem extends HeaderedItemsControl derives ReflectType {
+    var command:Option[ICommand] = None
+    var commandParams:Any = null
+
     protected var _isSubmenuOpen:Boolean = false
     def isSubmenuOpen:Boolean = this._isSubmenuOpen
     def isSubmenuOpen_=(value:Boolean):Unit = {
@@ -51,7 +55,7 @@ class MenuItem extends HeaderedItemsControl derives ReflectType {
       val isMouseLeave = (typ & EventType.MOUSE_LEAVE) != zero
       if(isMouseLeave) this.IsHover = false
       if(isMouseEnter) this.IsHover = true
-   
+      
       this._role match
         case MenuItemRole.TopLevelItem | MenuItemRole.TopLevelHeader => {
           if(isClick || isMouseEnter || isMouseLeave) { this.parentMenu.foreach(_.onChildItemEvent(this,typ)) }
@@ -59,6 +63,10 @@ class MenuItem extends HeaderedItemsControl derives ReflectType {
         case MenuItemRole.SubmenuItem | MenuItemRole.SubmenuHeader => {
           if(isClick || isMouseEnter || isMouseLeave) { this.parentMenuItem.foreach(_.onChildItemEvent(this,typ)) }
         }
+      
+      if(isClick && (this._role == MenuItemRole.TopLevelItem || this.role == MenuItemRole.SubmenuItem)) {
+        this.callCommand()
+      }
     }
 
     private var selectItem:Option[MenuItem] = None
@@ -67,10 +75,6 @@ class MenuItem extends HeaderedItemsControl derives ReflectType {
       val zero = 0.toUInt
       val isMouseEnter = (typ & EventType.MOUSE_ENTER) != zero
       val isMouseLeave = (typ & EventType.MOUSE_LEAVE) != zero
-
-      if(isMouseLeave) {
-        
-      }
 
       if(isMouseEnter && childItem.IsHover) {
         this.selectItem.foreach {v =>
@@ -116,6 +120,23 @@ class MenuItem extends HeaderedItemsControl derives ReflectType {
       }
     }
 
+    def closeALLItem():Unit = {
+      val wrapPanel = this.getWarpPanel
+      if(wrapPanel != null) {
+        for(child <- wrapPanel.children) {
+           child match
+             case childItem:MenuItem => { childItem.closeALLItem() }
+             case _ =>
+        }
+      }
+      if(this.IsHover == false || this.role == MenuItemRole.SubmenuItem || this.role == MenuItemRole.SubmenuHeader) {
+        this.setViewState(ViewStates.CommonStates,ViewStates.Normal)
+      }
+      if(this.isSubmenuOpen) {
+        this.isSubmenuOpen = false
+      }
+    }
+
    
 
     def updateMenuRole():Unit = {
@@ -133,6 +154,11 @@ class MenuItem extends HeaderedItemsControl derives ReflectType {
       super.OnItemsChanged(args)
       this.updateMenuRole()
     }
+
+    protected def callCommand():Unit = {
+      this.command.foreach { cmd => cmd.Execute(this.commandParams); }
+    }
+
 
     override def Exit(): Unit = {
         EventManager.unRegister(this.getEntity().get)

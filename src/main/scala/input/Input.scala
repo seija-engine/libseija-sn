@@ -5,6 +5,13 @@ import math.Vector2
 import math.RawVector2;
 
 type RawInput = CStruct3[RawVector2,RawVector2,Boolean];
+
+object MouseButton {
+    val Left = 0
+    val Right = 1
+    val Middle = 2
+}
+
 object Input {
     private[input] var ptr:Ptr[Byte] = null;
 
@@ -29,4 +36,8 @@ object Input {
         val y = inputPtr._1._2;
         Vector2(x,y)
     }
+
+    def getMouseDown(key:Int):Boolean = FFISeijaInput.inputGetMouseDown(Input.ptr,key)
+
+    def getMouseUp(key:Int):Boolean = FFISeijaInput.inputGetMouseUp(Input.ptr,key)
 }
