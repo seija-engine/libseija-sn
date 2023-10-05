@@ -1,0 +1,25 @@
+<Panel>
+    <Image sprite="default.white"  color="#eeeeee" />
+    <TabItem header="TabHeader" height="200" content="Content" >
+        <TabItem.headerTemplate>
+            <DataTemplate>
+                <Panel>
+                    <Image sprite="default.white" color="#ccffff" />
+                    <Text  fontSize="26" text="{Binding Data this}" />
+                </Panel>
+            </DataTemplate>
+        </TabItem.headerTemplate>
+        <TabItem.template>
+            <ControlTemplate>
+                <Panel>
+                    <Image sprite="default.white" color="#aaaaaa" />
+                    <StackPanel  >
+                        <ContentPresenter  height="100"  contentSource="header" />
+                        <ContentPresenter  height="100"  />
+                    </StackPanel>
+                </Panel>
+            </ControlTemplate>
+        </TabItem.template>
+        
+    </TabItem>
+</Panel>
