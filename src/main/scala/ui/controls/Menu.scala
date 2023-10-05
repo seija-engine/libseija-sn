@@ -88,4 +88,9 @@ class Menu extends ItemsControl derives ReflectType {
     }
   }
 
+  override def Exit(): Unit = {
+    super.Exit()
+    UpdateMgr.remove(this.onUpdate)
+  }
+
 }

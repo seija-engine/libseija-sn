@@ -36,8 +36,6 @@ object SizeValue {
   }
 }
 
-
-
 enum LayoutAlignment(val v:Byte) {
   case Start extends LayoutAlignment(0)
   case Center extends LayoutAlignment(1)
@@ -46,8 +44,6 @@ enum LayoutAlignment(val v:Byte) {
 }
 
 object LayoutAlignment {
-  
-
     given Into[String,LayoutAlignment] with {
       override def into(fromValue: String): LayoutAlignment = fromValue match {
         case "Start" => LayoutAlignment.Start
@@ -58,9 +54,6 @@ object LayoutAlignment {
       }
     }
 }
-
-
-
 
 enum Orientation(val v:Byte) {
     case Horizontal extends Orientation(0)
@@ -77,12 +70,9 @@ object Orientation {
   }
 }
 
-
-
 case class UISize(var width: SizeValue, var height: SizeValue)
 
 object UISize {
-
   given Into[String,UISize] with {
     override def into(fromValue: String): UISize = {
         val values = fromValue.split("x");
@@ -97,7 +87,24 @@ object UISize {
   }
 }
 
+enum Dock(val v:Byte) {
+  case Left extends Dock(0)
+  case Top extends Dock(1)
+  case Right extends Dock(2)
+  case Bottom extends Dock(3)
+}
 
+object Dock {
+  given Into[String,Dock] with {
+    override def into(fromValue: String): Dock = fromValue match {
+      case "Left" => Dock.Left
+      case "Top" => Dock.Top
+      case "Right" => Dock.Right
+      case "Bottom" => Dock.Bottom
+      case _: String => throw TypeCastException("String","Dock")
+    }
+  }
+}
 
 case class CommonView(
   var margin:Thickness = Thickness.zero,

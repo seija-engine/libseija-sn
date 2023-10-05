@@ -29,6 +29,6 @@ class StackPanel extends Panel derives ReflectType {
             v.orientation = this._orientation;
             v.spacing = this._spacing;
         })
-        this.checkAddCanvas();
+        this.checkAddCanvas()
     }
 }

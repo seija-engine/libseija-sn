@@ -1,0 +1,19 @@
+<Panel>
+    <Image sprite="default.white"  color="#eeeeee" />
+    <FlexPanel wrap="NoWrap" direction="Column"  alignItems="Start" >
+        <Panel width="121" height="100">
+            <Image sprite="default.white"  color="#aa22ea" />
+            <Text text="100" color="#ffffff"/>
+        </Panel>
+        <Panel width="121" height="100">
+            <Image sprite="default.white"  color="#aa22ea" />
+            <Text text="200" color="#ffffff"/>
+        </Panel>
+        <Panel width="121" height="100">
+            <Image sprite="default.white"  color="#aa22ea" />
+            <Text text="300" color="#ffffff"/>
+        </Panel>
+    </FlexPanel>
+
+    <ButtonBase>"刷新"</ButtonBase>
+</Panel>

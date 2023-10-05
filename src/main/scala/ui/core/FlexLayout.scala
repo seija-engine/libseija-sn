@@ -2,10 +2,22 @@ package ui.core
 import core.RawComponentBuilder
 import core.Entity
 import core.RawComponent
-import scala.scalanative.unsafe._
+import core.reflect.{Into, TypeCastException}
+
+import scala.scalanative.unsafe.*
 import ui.core.FFISeijaUI
 
-class FlexLayout;
+class FlexLayout
+
+object FlexLayout {
+  given FlexLayoutComponent: RawComponent[FlexLayout] with {
+    type BuilderType = FlexLayoutBuilder
+
+    override def builder(): BuilderType = new FlexLayoutBuilder()
+
+    override def getRaw(entity: Entity, isMut: Boolean): RawType = ???
+  }
+}
 
 enum FlexDirection(val v:Byte) {
     case Row extends FlexDirection(0)
@@ -14,9 +26,31 @@ enum FlexDirection(val v:Byte) {
     case ColumnReverse extends FlexDirection(3)
 }
 
+object FlexDirection {
+  given Into[String, FlexDirection] with {
+    override def into(fromValue: String): FlexDirection = fromValue match {
+      case "Row" => FlexDirection.Row
+      case "RowReverse" => FlexDirection.RowReverse
+      case "Column" => FlexDirection.Column
+      case "ColumnReverse" => FlexDirection.ColumnReverse
+      case _:String => throw TypeCastException("String", "FlexDirection")
+    }
+  }
+}
+
 enum FlexWrap(val v:Byte) {
     case NoWrap extends FlexWrap(0)
     case Wrap extends FlexWrap(1)
+}
+
+object FlexWrap {
+  given Into[String,FlexWrap] with {
+    override def into(fromValue: String): FlexWrap = fromValue match {
+      case "Wrap" => FlexWrap.Wrap
+      case "NoWrap" => FlexWrap.NoWrap
+      case _: String => throw TypeCastException("String", "FlexWrap")
+    }
+  }
 }
 
 enum FlexJustify(val v:Byte) {
@@ -27,11 +61,35 @@ enum FlexJustify(val v:Byte) {
     case SpaceAround extends FlexJustify(4)
 }
 
+object FlexJustify {
+  given Into[String,FlexJustify] with {
+    override def into(fromValue: String): FlexJustify = fromValue match {
+      case "Start" => FlexJustify.Start
+      case "Center" => FlexJustify.Center
+      case "End" => FlexJustify.End
+      case "SpaceBetween" => FlexJustify.SpaceBetween
+      case "SpaceAround" => FlexJustify.SpaceAround
+      case _ => throw TypeCastException("String","FlexJustify")
+    }
+  }
+}
+
 enum FlexAlignItems(val v:Byte) {
     case Stretch extends FlexAlignItems(0)
     case Center extends FlexAlignItems(1)
     case Start extends FlexAlignItems(2)
     case End extends FlexAlignItems(3)
+}
+
+object FlexAlignItems {
+  given Into[String,FlexAlignItems] with {
+    override def into(fromValue: String): FlexAlignItems = fromValue match
+      case "Start" => FlexAlignItems.Start
+      case "End" => FlexAlignItems.End
+      case "Center" => FlexAlignItems.Center
+      case "Stretch" => FlexAlignItems.Stretch
+      case _ => throw TypeCastException("String","FlexAlignItems")
+  }
 }
 
 enum FlexAlignContent(val v:Byte) {
@@ -43,17 +101,19 @@ enum FlexAlignContent(val v:Byte) {
     case SpaceAround extends FlexAlignContent(5)
 }
 
-/*
-#[derive(Clone, Copy,Hash,PartialEq, Eq)]
-#[repr(C)]
-pub enum FlexAlignSelf {
-    Auto,
-    Stretch,
-    Center,
-    Start,
-    End
+object FlexAlignContent {
+  given Into[String,FlexAlignContent] with {
+    override def into(fromValue: String): FlexAlignContent = fromValue match
+      case "Start" => FlexAlignContent.Start
+      case "Center" => FlexAlignContent.Center
+      case "End" => FlexAlignContent.End
+      case "Stretch" => FlexAlignContent.Stretch
+      case "SpaceBetween" => FlexAlignContent.SpaceBetween
+      case "SpaceAround" => FlexAlignContent.SpaceAround
+      case _ => throw TypeCastException("String","FlexAlignContent")
+  }
 }
-*/
+
 
 enum FlexAlignSelf(val v:Byte) {
   case Auto extends FlexAlignSelf(0)
@@ -63,15 +123,27 @@ enum FlexAlignSelf(val v:Byte) {
   case End extends FlexAlignSelf(4)
 }
 
+object FlexAlignSelf {
+  given Into[String,FlexAlignSelf] with {
+    override def into(fromValue: String): FlexAlignSelf = fromValue match
+      case "Auto" => FlexAlignSelf.Auto
+      case "Stretch" => FlexAlignSelf.Stretch
+      case "Center" => FlexAlignSelf.Center
+      case "End" => FlexAlignSelf.End
+      case "Start" => FlexAlignSelf.Start
+      case _ => throw TypeCastException("String","FlexAlignSelf")
+  }
+}
+
 type RawFlexLayout = CStruct5[Byte,Byte,Byte,Byte,Byte]
 
 class FlexLayoutBuilder extends RawComponentBuilder {
-  var common:CommonView = CommonView();
-  var direction:FlexDirection = FlexDirection.Row;
-  var warp:FlexWrap = FlexWrap.NoWrap;
-  var justify:FlexJustify = FlexJustify.Start;
-  var alignItems:FlexAlignItems = FlexAlignItems.Stretch;
-  var alignContent:FlexAlignContent = FlexAlignContent.Stretch;
+  var common:CommonView = CommonView()
+  var direction:FlexDirection = FlexDirection.Row
+  var warp:FlexWrap = FlexWrap.NoWrap
+  var justify:FlexJustify = FlexJustify.Start
+  var alignItems:FlexAlignItems = FlexAlignItems.Stretch
+  var alignContent:FlexAlignContent = FlexAlignContent.Stretch
 
   override def build(entity: Entity): Unit = {
     val flexPtr = stackalloc[RawFlexLayout]();
@@ -84,12 +156,7 @@ class FlexLayoutBuilder extends RawComponentBuilder {
   }
 }
 
-given FlexLayoutComponent:RawComponent[FlexLayout] with {
-  type BuilderType = FlexLayoutBuilder;
-  override def builder(): BuilderType = new FlexLayoutBuilder()
 
-  override def getRaw(entity: Entity,isMut:Boolean): RawType = ???
-}
 
 
 class FlexItem;
