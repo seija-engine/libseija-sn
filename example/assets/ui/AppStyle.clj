@@ -338,5 +338,17 @@
       </VisualStateList></ControlTemplate.vsm>
   </ControlTemplate>
 
-  
+  (style "TabItem" {
+    :headerTemplate
+    <DataTemplate>
+      <Text color="#fff"  fontSize="26" text="{Binding Data this}" />
+    </DataTemplate>
+    :template
+    <ControlTemplate>
+      <Panel>
+        <Image sprite="default.white" color="#000"  />
+        <ContentPresenter contentSource="header" />
+      </Panel>
+    </ControlTemplate>
+  })
 ]

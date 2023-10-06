@@ -1,0 +1,18 @@
+<Panel>
+    <Image sprite="default.white"  color="#eeeeee" />
+    <TabControl>
+        <TabControl.warpElement>
+            <StackPanel orientation="Hor" spacing="10" isCanvas="true"  />
+        </TabControl.warpElement>
+        <TabControl.template>
+            <ControlTemplate>
+                <Panel>
+                    <Image sprite="default.white"  color="#aaaaaa" />
+                    <ItemsPresenter ver="Start"  />
+                </Panel>
+            </ControlTemplate>
+        </TabControl.template>
+        <TabItem header="Tab1" width="100" height="50" />
+        <TabItem header="Tab2" width="100" height="50" />
+    </TabControl>
+</Panel>
