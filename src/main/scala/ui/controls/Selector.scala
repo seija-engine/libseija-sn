@@ -1,5 +1,6 @@
 package ui.controls
 import core.reflect.ReflectType
+import ui.controls.Selector.SelectedEvent
 import ui.event.RouteEvent
 import ui.event.RouteEventArgs
 
@@ -18,16 +19,26 @@ class Selector extends ItemsControl derives ReflectType {
 
     override def Enter(): Unit = {
         super.Enter()
-        this.routeEventController.addEvent(Selector.SelectedEvent,onSelectdEvent)
-        this.routeEventController.addEvent(Selector.UnselectedEvent,onUnselectdEvent)
+        this.routeEventController.addEvent(Selector.SelectedEvent,onSelectedEvent)
+        this.routeEventController.addEvent(Selector.UnselectedEvent,onUnselectedEvent)
     }
 
-    def onSelectdEvent(args:RouteEventArgs):Unit = {
-        args.handled = true
+    def onSelectedEvent(args:RouteEventArgs):Unit = {
+       this.NotifyIsSelectedChanged(true,args)
     }
 
-    def onUnselectdEvent(args:RouteEventArgs):Unit = {
-        args.handled = true
+    def onUnselectedEvent(args:RouteEventArgs):Unit = {
+      this.NotifyIsSelectedChanged(false,args)
+    }
+
+    def NotifyIsSelectedChanged(selected:Boolean,e:RouteEventArgs):Unit = {
+      println(s"NotifyIsSelectedChanged:${selected}")
+    }
+
+    override def Exit():Unit = {
+      super.Exit()
+      this.routeEventController.removeEvent(Selector.SelectedEvent)
+      this.routeEventController.removeEvent(Selector.UnselectedEvent)
     }
 }
 

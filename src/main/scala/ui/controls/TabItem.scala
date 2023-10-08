@@ -1,9 +1,10 @@
 package ui.controls
 import core.reflect.ReflectType
+
 import scala.scalanative.unsigned.UInt
-import ui.event.EventManager
-import ui.event.EventType
-import scalanative.unsigned._
+import ui.event.{EventManager, EventType, RouteEventArgs}
+
+import scalanative.unsigned.*
 class TabItem extends HeaderedContentControl derives ReflectType {
     var _IsSelected:Boolean = false
     def IsSelected:Boolean = this._IsSelected
@@ -29,6 +30,18 @@ class TabItem extends HeaderedContentControl derives ReflectType {
     }
 
     private def OnIsSelectedChanged():Unit = {
-        println(s"new Select:${this.IsSelected}")
+       if(this._IsSelected) {
+         this.OnSelected(RouteEventArgs(Selector.SelectedEvent))
+       } else {
+         this.OnUnselected(RouteEventArgs(Selector.UnselectedEvent))
+       }
     }
+
+    def OnSelected(args:RouteEventArgs):Unit = {
+      this.routeEventController.fireEvent(args)
+    }
+    def OnUnselected(args:RouteEventArgs):Unit = {
+      this.routeEventController.fireEvent(args)
+    }
+
 }

@@ -38,6 +38,11 @@
 
   (style "ItemsControl"
     {
+      :itemsPanel 
+      <ItemsPanelTemplate>
+        <StackPanel />
+      </ItemsPanelTemplate>
+      
       :template <ControlTemplate>
                   <Panel >
                     <Image sprite="default.white" color="#cccccc" />

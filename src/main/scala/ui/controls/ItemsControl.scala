@@ -10,13 +10,17 @@ import scala.util.Failure
 import scala.util.Success
 
 @ContentProperty("items")
-class ItemsControl extends Control with IDataElementGenerator derives ReflectType {
+class ItemsControl extends Control with IDataElementGenerator with IGeneratorHost derives ReflectType {
     var items:ArrayBuffer[Any] = ArrayBuffer.empty
     protected var _itemsSource:IndexedSeq[Any] = null
     var itemTemplate:Option[DataTemplate] = None;
     var warpElement:UIElement = this.defaultWrapPanel
     
     var itemCollection:ItemCollection = ItemCollection(this)
+    var itemGenerator:ItemContainerGenerator = ItemContainerGenerator(this)
+
+    var itemsPanel:Option[ItemsPanelTemplate] = None
+
     private var realWarpPanel:UIElement = null
     protected var _hasItems:Boolean = false
     def hasItems: Boolean = this._hasItems
@@ -109,3 +113,11 @@ class ItemsControl extends Control with IDataElementGenerator derives ReflectTyp
 }
 
 
+object ItemsControl {
+  def GetItemsOwner(panel:Panel):Option[ItemsControl] = {
+    panel.templateParent match {
+        case Some(value:ItemsPresenter) if panel.isItemsHost => value.getItemsControl
+        case _ => None
+      }
+  }
+}
