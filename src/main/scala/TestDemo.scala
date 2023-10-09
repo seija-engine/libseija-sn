@@ -41,7 +41,7 @@ class TestDemo extends IGameApp {
     
     val viewModel = new TestViewModel();
     this.testViewModel = Some(viewModel);
-    XmlUIElement.fromFile("example/assets/ui/xmltest/testMenu.xml").logError().foreach {loadElement =>
+    XmlUIElement.fromFile("example/assets/ui/xmltest/testScrollView.xml").logError().foreach {loadElement =>
       loadElement.addIDScope();
       loadElement.dataContext = this.testViewModel.get;
       ui.CanvasManager.fst().addElement(loadElement)

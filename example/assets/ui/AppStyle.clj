@@ -40,7 +40,7 @@
     {
       :itemsPanel 
       <ItemsPanelTemplate>
-        <StackPanel spacing="10" isCanvas="true" isClip="true" />
+        <StackPanel spacing="10"  isCanvas="true" isClip="true" />
       </ItemsPanelTemplate>
       
       :template <ControlTemplate>
@@ -58,6 +58,7 @@
 
   (style "ScrollViewer"
     {
+      
       :template <ControlTemplate>
                   <Panel isCanvas="true" isClip="true" >
                       <Image sprite="default.white" color="#cccccc" />

@@ -2,10 +2,10 @@
     <Image sprite="default.white" color="#e8e8e7" />
 
     <ScrollViewer width="480" height="320">
-        <ItemsControl itemsSource="{Binding Data dataList}" ver="Start">
-            <ItemsControl.warpElement>
-                <StackPanel spacing="10" ver="Start" />
-            </ItemsControl.warpElement>
+        <ItemsControl itemsSource="{Binding Data dataList}" ver="Start" ItemContainerStyle="{Res ItemsPresenterStyle}">
+            <ItemsControl.itemsPanel><ItemsPanelTemplate>
+                <StackPanel spacing="10" ver="Start" orientation="Ver" />
+            </ItemsPanelTemplate></ItemsControl.itemsPanel>
             <ItemsControl.itemTemplate>
                 <DataTemplate>
                     <Panel isCanvas="true" height="30">
