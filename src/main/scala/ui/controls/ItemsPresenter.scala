@@ -5,8 +5,6 @@ import core.reflect.*
 class ItemsPresenter extends UIElement derives ReflectType {
     var template:Option[ItemsPanelTemplate] = None
 
-    protected var lstMgr:Option[ItemElementListMgr] = None;
-
     def getItemsControl:Option[ItemsControl] = this.templateParent match {
       case Some(value: ItemsControl) => Some(value)
       case _ => None
@@ -29,6 +27,7 @@ class ItemsPresenter extends UIElement derives ReflectType {
 
     def attachToOwner(itemsOwner:ItemsControl):Unit = {
       this.template = itemsOwner.itemsPanel
+      itemsOwner.itemsPresenter = Some(this)
     }
 
     def applyTemplate():Unit = {

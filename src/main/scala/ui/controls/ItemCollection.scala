@@ -9,11 +9,9 @@ import scala.util.Success
 import scala.util.Failure
 import ui.binding.CollectionChangedAction
 
-trait IDataElementGenerator {
-  def genElement(data:Any):Try[UIElement];
-}
 
-case class ItemCollection(elemGen:IDataElementGenerator) {
+
+case class ItemCollection() {
     protected var cacheLst:IndexedSeq[Any] = IndexedSeq.empty
     protected var notifyList:Option[INotifyCollectionChanged] = None
     var changedCallBack:Option[CollectionChangedCallBack] = None
@@ -40,7 +38,7 @@ case class ItemCollection(elemGen:IDataElementGenerator) {
     }
 }
 
-
+/*
 case class ItemElementListMgr(val parent:UIElement,val collection:ItemCollection) {
     collection.changedCallBack = Some(OnCollectionChanged);
     def start():Unit = {
@@ -90,4 +88,4 @@ case class ItemElementListMgr(val parent:UIElement,val collection:ItemCollection
         }
        
     }
-}
+}*/

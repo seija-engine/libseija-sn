@@ -3,6 +3,7 @@ import core.reflect.*
 import ui.ContentProperty
 import ui.core.Canvas
 import ui.xml.IXmlObject
+import ui.binding.CollectionChangedAction
 
 @ContentProperty("children")
 class Panel extends UIElement with IXmlObject derives ReflectType {
@@ -35,6 +36,7 @@ class Panel extends UIElement with IXmlObject derives ReflectType {
       itemsControl match
         case Some(value) => {
           _itemGenerator = value.itemGenerator
+          _itemGenerator.ItemsChanged = Some(this.OnItemsChanged)
         }
         case _ => slog.error("Panel ItemsHost not found ItemsControl")
     }
@@ -66,5 +68,45 @@ class Panel extends UIElement with IXmlObject derives ReflectType {
           elemValue.setParent(Some(this))
           elemValue.setLogicParent(Some(this))
         case _ =>
+    }
+
+    def OnItemsChanged(sender:Any,args:ItemsChangedEventArgs):Unit = {
+      args.action match
+        case CollectionChangedAction.Add => {
+          _itemGenerator.StartAt(args.index)
+          _itemGenerator.GenerateNext().foreach {element => 
+            _itemGenerator.PrepareItemContainer(element)
+            this.insertChild(args.index,element)
+            element.Enter()
+            this.getEntity().get.insertChild(element.getEntity().get,args.index);
+          }
+        }
+        case CollectionChangedAction.Remove => {
+          val oldElement = this.children.remove(args.index);
+          oldElement.Release();
+        }
+        case CollectionChangedAction.Replace => {
+           this.children(args.index).dataContext = _itemGenerator.host.View.getDataList(args.index);
+        }
+        case CollectionChangedAction.Move => {
+          val dataList = _itemGenerator.host.View.getDataList;
+          val a = args.index;
+          val b = args.oldIndex;
+          val (startIdx,endIdx) = if(a > b) (b,a) else (a,b)
+          startIdx.to(endIdx).foreach {index => 
+            this.children(index).dataContext = dataList(index);  
+          }
+        }
+        case CollectionChangedAction.Clear => {
+          this.children.foreach(_.Release());
+          this.children.clear();
+        } 
+    }
+
+    override def Exit(): Unit = {
+      super.Enter()
+      if(_itemGenerator != null) {
+        _itemGenerator.ItemsChanged = None
+      }
     }
 }

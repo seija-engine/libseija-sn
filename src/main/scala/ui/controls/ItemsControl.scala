@@ -12,12 +12,12 @@ import ui.core.SizeValue
 import ui.resources.Style
 
 @ContentProperty("items")
-class ItemsControl extends Control with IDataElementGenerator with IGeneratorHost derives ReflectType {
+class ItemsControl extends Control with IGeneratorHost derives ReflectType {
     var items:ArrayBuffer[Any] = ArrayBuffer.empty
     protected var _itemsSource:IndexedSeq[Any] = null
     var itemTemplate:Option[DataTemplate] = None;
-    //TODO delete it
-    var warpElement:UIElement = this.defaultWrapPanel
+    
+    var itemsPresenter:Option[ItemsPresenter] = None
 
     var _ItemContainerStyle:Option[Style] = None;
     def ItemContainerStyle:Option[Style] = this._ItemContainerStyle
@@ -25,14 +25,13 @@ class ItemsControl extends Control with IDataElementGenerator with IGeneratorHos
       this._ItemContainerStyle = value;callPropertyChanged("ItemContainerStyle",this)
     }
     
-    var itemCollection:ItemCollection = ItemCollection(this)
+    var itemCollection:ItemCollection = ItemCollection()
     var itemGenerator:ItemContainerGenerator = ItemContainerGenerator(this)
 
     override def View: ItemCollection = this.itemCollection
 
     var itemsPanel:Option[ItemsPanelTemplate] = None
 
-    private var realWarpPanel:UIElement = null
     protected var _hasItems:Boolean = false
     def hasItems: Boolean = this._hasItems
     def hasItems_=(value:Boolean):Boolean = {
@@ -79,14 +78,12 @@ class ItemsControl extends Control with IDataElementGenerator with IGeneratorHos
       if(this.itemsSource != null) {
         this.itemCollection.setItemSource(this.itemsSource)
       }
-      this.realWarpPanel = warpElement.clone();
+     
       super.OnEnter()
     }
 
-    protected def defaultWrapPanel:Panel = StackPanel()
-
-    def getWarpPanel:UIElement = this.realWarpPanel
-
+    
+    /*
     def genElement(data:Any):Try[UIElement] = {
       this.itemTemplate.orElse(this.findDataTemplate(data.getClass.getName)) match {
         case Some(template) => {
@@ -104,7 +101,7 @@ class ItemsControl extends Control with IDataElementGenerator with IGeneratorHos
           Failure(Exception("not found itemTemplate"))
         }
       }
-    }
+    }*/
 
     def updateHasItems():Unit = {
       var hasItems = false
@@ -135,6 +132,7 @@ class ItemsControl extends Control with IDataElementGenerator with IGeneratorHos
       } else {
         this.GetContainerForItemOverride()
       }
+      container.setLogicParent(Some(this))
       container
     }
 
@@ -145,6 +143,9 @@ class ItemsControl extends Control with IDataElementGenerator with IGeneratorHos
       container match
         case cp:ContentPresenter => {
           cp.PrepareContentPresenter(itemData,this.itemTemplate)
+        }
+        case ip:ItemsPresenter => {
+
         }
         case _ =>
     }

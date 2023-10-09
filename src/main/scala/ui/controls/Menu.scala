@@ -10,13 +10,10 @@ import input.Input
 import input.KeyCode
 import input.MouseButton
 import core.Time
+import scala.collection.mutable.ArrayBuffer
 
 class Menu extends ItemsControl derives ReflectType {
-  override protected def defaultWrapPanel: Panel = {
-    val stack = StackPanel()
-    stack.orientation = Orientation.Horizontal
-    stack
-  }
+ 
   
   private var waitCloseFrame:Long = 0
   override def OnEnter(): Unit = {
@@ -59,8 +56,10 @@ class Menu extends ItemsControl derives ReflectType {
       }
   }
 
+  private var childItems:ArrayBuffer[MenuItem] = ArrayBuffer.empty
+
   def closeALLMenu():Unit = {
-    val wrapPanel = this.getWarpPanel
+    val wrapPanel = itemsPresenter.map(_.children(0)).orNull
     if(wrapPanel != null) {
       for(child <- wrapPanel.children) {
         child match

@@ -91,11 +91,6 @@ class UIElement extends INotifyPropertyChanged
         this._dataContext = value;
         this.callPropertyChanged("dataContext",this);
         this.onDataContextChanged();
-        this.children.foreach { child => {
-          if(child.dataContext == null) {
-            child.onDataContextChanged()
-          }
-       }};
     }
     //endregion
 
@@ -135,7 +130,9 @@ class UIElement extends INotifyPropertyChanged
 
     def setParent(elem:Option[UIElement]): Unit = { this.parent = elem; }
     def getParent:Option[UIElement] = this.parent
-    def setLogicParent(elem:Option[UIElement]):Unit = { this.logicParent = elem }
+    def setLogicParent(elem:Option[UIElement]):Unit = { 
+        this.logicParent = elem
+    }
     def getLogicParent:Option[UIElement] = this.logicParent
     def Enter():Unit = {
         if(this.Id != null && this.Id != "") {
@@ -161,6 +158,7 @@ class UIElement extends INotifyPropertyChanged
 
     protected def onDataContextChanged():Unit = {
        if(!this.isEntered) return;
+       
        for(curItem <- this.bindItemList) {
           if(curItem.sourceType == BindingSource.Data) {
             val oldInstIndex = this.bindingInstList.indexWhere(_.item == curItem);
@@ -177,6 +175,12 @@ class UIElement extends INotifyPropertyChanged
             }
           }
        }
+
+       this.children.foreach { child => {
+          if(child.dataContext == null) {
+            child.onDataContextChanged()
+          }
+       }};
     }
 
     override def onPropertyChanged(propertyName: String): Unit = {

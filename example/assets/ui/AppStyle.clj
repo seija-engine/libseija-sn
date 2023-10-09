@@ -40,7 +40,7 @@
     {
       :itemsPanel 
       <ItemsPanelTemplate>
-        <StackPanel spacing="10"/>
+        <StackPanel spacing="10" isCanvas="true" isClip="true" />
       </ItemsPanelTemplate>
       
       :template <ControlTemplate>
@@ -245,6 +245,10 @@
   })
 
   (style "Menu" {
+    :itemsPanel 
+      <ItemsPanelTemplate>
+        <StackPanel orientation="Hor" />
+      </ItemsPanelTemplate>
     :template <ControlTemplate>
                   <Panel>
                     <Image  sprite="default.white" />
@@ -255,6 +259,10 @@
   })
 
   (style "MenuItem" {
+    :itemsPanel 
+      <ItemsPanelTemplate>
+        <StackPanel  />
+      </ItemsPanelTemplate>
     :triggers <TriggerList>
                 ["role"
                     [

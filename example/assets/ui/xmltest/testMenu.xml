@@ -2,8 +2,8 @@
     <Image  sprite="default.white" color="#e8e8e7" />
     <Menu ver="Start" margin="0,0,0,0">
         <MenuItem header="File" width="50"  height="24" >
-            <MenuItem header="New"   command="{Binding Data newCommand}"  height="24" />
-            <MenuItem header="Open"   height="24" />
+            <MenuItem header="New"  command="{Binding Data newCommand}"  height="24" />
+            <MenuItem header="Open" height="24" />
         </MenuItem>
         <MenuItem header="Editor" width="60"  height="24" >
             <MenuItem header="Find"   height="24" />

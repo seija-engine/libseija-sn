@@ -90,10 +90,13 @@ class MenuItem extends HeaderedItemsControl derives ReflectType {
 
     def hasHover():Boolean = {
       if(this._IsHover) return true
-      for(child <- this.getWarpPanel.children) {
-        child match
-          case childItem:MenuItem => if(childItem.hasHover()) return true
-          case _ =>
+      val wrapPanel = this.itemsPresenter.map(_.children(0)).orNull
+      if(wrapPanel != null) {
+        for(child <- wrapPanel.children) {
+          child match
+            case childItem:MenuItem => if(childItem.hasHover()) return true
+            case _ =>
+          } 
       }
       false
     }
@@ -101,16 +104,18 @@ class MenuItem extends HeaderedItemsControl derives ReflectType {
 
     private def setMenuItemOpen(item:MenuItem,isOpen:Boolean):Unit = {
       if(isOpen == false) {
-        val wrapPanel = item.getWarpPanel
-        if(wrapPanel != null) {
-          for(child <- wrapPanel.children) {
-           child match
-             case childItem:MenuItem => {
-              childItem.selectItem = None
-              this.setMenuItemOpen(childItem,false)
-             }
-             case _ =>
-           }
+        if(item.itemsPresenter.isDefined) {
+          val wrapPanel = item.itemsPresenter.get.children(0)
+          if(wrapPanel != null) {
+            for(child <- wrapPanel.children) {
+              child match
+                case childItem:MenuItem => {
+                  childItem.selectItem = None
+                  this.setMenuItemOpen(childItem,false)
+                }
+                case _ =>
+            }
+          }
         }
         item.IsHover = false
         item.setViewState(ViewStates.CommonStates,ViewStates.Normal)
@@ -119,9 +124,8 @@ class MenuItem extends HeaderedItemsControl derives ReflectType {
         item.isSubmenuOpen = isOpen
       }
     }
-
     def closeALLItem():Unit = {
-      val wrapPanel = this.getWarpPanel
+      val wrapPanel = itemsPresenter.map(_.children(0)).orNull
       if(wrapPanel != null) {
         for(child <- wrapPanel.children) {
            child match
@@ -142,6 +146,7 @@ class MenuItem extends HeaderedItemsControl derives ReflectType {
     def updateMenuRole():Unit = {
       this.updateHasItems()
       val isParentMenu = this.getLogicParent.isDefined && this.getLogicParent.get.isInstanceOf[Menu]
+     
       val menuRole = if(this.hasItems) {
         if(isParentMenu) MenuItemRole.TopLevelHeader  else MenuItemRole.SubmenuHeader
       } else {
