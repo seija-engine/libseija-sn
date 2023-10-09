@@ -47,7 +47,12 @@ class ContentPresenter extends UIElement derives ReflectType {
     }
     
     protected def initByContentSource():Unit = {
-      if(this.templateParent.isEmpty) return
+      if(this.templateParent.isEmpty) {
+        if(this.dataContext != null) {
+          this.content = this.dataContext
+        }
+        return
+      }
       val parentElement:UIElement =  this.templateParent.get
       val typInfo = Assembly.getTypeInfo(parentElement)
       if(typInfo.isEmpty) return
@@ -65,6 +70,13 @@ class ContentPresenter extends UIElement derives ReflectType {
       }
       if (this.content != null) {
         this._dataContext = content;
+      }
+    }
+
+
+    def PrepareContentPresenter(itemData:Any,itemTemplate:Option[DataTemplate]):Unit = {
+      if(itemTemplate.isDefined) {
+        this.contentTemplate = itemTemplate
       }
     }
 }

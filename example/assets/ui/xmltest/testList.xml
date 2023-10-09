@@ -9,10 +9,11 @@
     <ButtonBase command="{Binding Data clearCommand}" ver="Start">"清除"</ButtonBase>
   </StackPanel>
   
-  <ItemsControl width="750" height="500" itemsSource="{Binding Data dataList}">
-    <ItemsControl.warpElement>
+  <ItemsControl width="750" height="500" itemsSource="{Binding Data dataList}" ItemContainerStyle="{Res ItemsPresenterStyle}">
+    
+    <ItemsControl.itemsPanel><ItemsPanelTemplate>
       <StackPanel width="750" height="500" spacing="10" isCanvas="true"  />
-    </ItemsControl.warpElement>
+    </ItemsPanelTemplate></ItemsControl.itemsPanel>
     <ItemsControl.itemTemplate>
       <DataTemplate>
         <Panel isCanvas="true" height="30" width="730">

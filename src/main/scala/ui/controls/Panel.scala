@@ -1,10 +1,7 @@
 package ui.controls
-import core.reflect.*;
-import scala.collection.mutable.ListBuffer
-import ui.xml.XmlUIElement
-import core.logError;
+import core.reflect.*
 import ui.ContentProperty
-import ui.core.Canvas;
+import ui.core.Canvas
 import ui.xml.IXmlObject
 
 @ContentProperty("children")
@@ -44,7 +41,13 @@ class Panel extends UIElement with IXmlObject derives ReflectType {
 
     def generateChildren():Unit = {
       if(_itemGenerator != null) {
-        
+        this._itemGenerator.StartAt(0)
+        var item = this._itemGenerator.GenerateNext()
+        while(item.isDefined) {
+           this._itemGenerator.PrepareItemContainer(item.get)
+           this.addChild(item.get)
+           item = this._itemGenerator.GenerateNext()
+        }
       }
     }
 

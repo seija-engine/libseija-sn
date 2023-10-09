@@ -40,7 +40,7 @@
     {
       :itemsPanel 
       <ItemsPanelTemplate>
-        <StackPanel />
+        <StackPanel spacing="10"/>
       </ItemsPanelTemplate>
       
       :template <ControlTemplate>
@@ -51,6 +51,10 @@
                 </ControlTemplate>
     }
   )
+
+  (style {:type "ContentPresenter" :key "ItemsPresenterStyle"} {
+    :height "30"
+  })
 
   (style "ScrollViewer"
     {

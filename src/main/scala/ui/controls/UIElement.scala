@@ -64,6 +64,8 @@ class UIElement extends INotifyPropertyChanged
     var triggers:TriggerList = TriggerList()
     private var idScope:Option[IDScope] = None
 
+    //Other
+    var _ItemForItemContainer:Any = null
     //region Setter
 
     def hor: LayoutAlignment = this._hor;
@@ -141,7 +143,9 @@ class UIElement extends INotifyPropertyChanged
                 idScope.addElement(this.Id,this)
             }
         }
-        this.applyStyle()
+        this.findStyle().foreach {v =>
+            this.applyStyle(v,this)    
+        }
         this.applyBindItems()
         this.OnEnter()
         this.isEntered = true;
@@ -256,17 +260,16 @@ class UIElement extends INotifyPropertyChanged
         return this._dataContext;
     }
 
-    def applyStyle() = {
-      val style = this.findStyle();
-      if(style.isDefined) {
-        val typInfo = style.get.forTypeInfo;
-        for(setter <- style.get.setterList) {
-            typInfo.getFieldTry(setter.key).logError().foreach {f => 
-                f.set(this,setter.value);    
-            }
+    def applyStyle(style:Style,element:UIElement) = {
+      val typInfo = style.forTypeInfo;
+      for(setter <- style.setterList) {
+        typInfo.getFieldTry(setter.key).logError().foreach {f => 
+            f.set(element,setter.value);    
         }
       }
     }
+
+    
 
     def findStyle():Option[Style] = {
         if(this.style.isDefined) {
@@ -297,9 +300,9 @@ class UIElement extends INotifyPropertyChanged
     }
 
     def findDataTemplate(dataType:String):Option[DataTemplate] = {
-        val findDataTemplate = this.findResDataTemplate(dataType);
+        val findDataTemplate = this.findResDataTemplate(dataType)
         if(findDataTemplate.isDefined) {
-            return findDataTemplate;
+            return findDataTemplate
         }
         UIResourceMgr.appResource.findDataTemplate(dataType)
     }

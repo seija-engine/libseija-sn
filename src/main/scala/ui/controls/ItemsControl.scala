@@ -8,16 +8,27 @@ import ui.binding.{INotifyCollectionChanged, NotifyCollectionChangedEventArgs}
 import scala.util.Try
 import scala.util.Failure
 import scala.util.Success
+import ui.core.SizeValue
+import ui.resources.Style
 
 @ContentProperty("items")
 class ItemsControl extends Control with IDataElementGenerator with IGeneratorHost derives ReflectType {
     var items:ArrayBuffer[Any] = ArrayBuffer.empty
     protected var _itemsSource:IndexedSeq[Any] = null
     var itemTemplate:Option[DataTemplate] = None;
+    //TODO delete it
     var warpElement:UIElement = this.defaultWrapPanel
+
+    var _ItemContainerStyle:Option[Style] = None;
+    def ItemContainerStyle:Option[Style] = this._ItemContainerStyle
+    def ItemContainerStyle_=(value:Option[Style]):Unit = {
+      this._ItemContainerStyle = value;callPropertyChanged("ItemContainerStyle",this)
+    }
     
     var itemCollection:ItemCollection = ItemCollection(this)
     var itemGenerator:ItemContainerGenerator = ItemContainerGenerator(this)
+
+    override def View: ItemCollection = this.itemCollection
 
     var itemsPanel:Option[ItemsPanelTemplate] = None
 
@@ -110,6 +121,33 @@ class ItemsControl extends Control with IDataElementGenerator with IGeneratorHos
     }
 
     def OnItemsChanged(args:NotifyCollectionChangedEventArgs):Unit = {}
+
+    override def IsItemItsOwnContainer(itemData:Any):Boolean = { itemData.isInstanceOf[UIElement] }
+
+    def GetContainerForItemOverride():UIElement = { 
+      val element = new ContentPresenter()
+      element
+    }
+
+    override def GetContainerForItem(itemData: Any): UIElement = {
+      val container = if(IsItemItsOwnContainer(itemData)) {
+        itemData.asInstanceOf[UIElement]
+      } else {
+        this.GetContainerForItemOverride()
+      }
+      container
+    }
+
+    override def PrepareItemContainer(container: UIElement, itemData: Any): Unit = {
+      this._ItemContainerStyle.foreach {style =>
+        this.applyStyle(style,container)
+      }
+      container match
+        case cp:ContentPresenter => {
+          cp.PrepareContentPresenter(itemData,this.itemTemplate)
+        }
+        case _ =>
+    }
 }
 
 
