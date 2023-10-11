@@ -1,9 +1,9 @@
 <Panel>
     <Image sprite="default.white"  color="#eeeeee" />
     <TabControl>
-        <TabControl.warpElement>
+        <TabControl.itemsPanel><ItemsPanelTemplate>
             <StackPanel orientation="Hor" spacing="10" isCanvas="true"  />
-        </TabControl.warpElement>
+        </ItemsPanelTemplate></TabControl.itemsPanel>
         <TabControl.template>
             <ControlTemplate>
                 <Panel>

@@ -82,27 +82,6 @@ class ItemsControl extends Control with IGeneratorHost derives ReflectType {
       super.OnEnter()
     }
 
-    
-    /*
-    def genElement(data:Any):Try[UIElement] = {
-      this.itemTemplate.orElse(this.findDataTemplate(data.getClass.getName)) match {
-        case Some(template) => {
-          val tryElement = template.LoadContent(this,None).logError()
-          tryElement.foreach(item => item.dataContext = data)
-          tryElement.foreach(_.setLogicParent(Some(this)))
-          tryElement
-        }
-        case _ => {
-          if(data.isInstanceOf[UIElement]) {
-            val newElement = data.asInstanceOf[UIElement]
-            newElement.setLogicParent(Some(this))
-            return Success(newElement.clone())
-          }
-          Failure(Exception("not found itemTemplate"))
-        }
-      }
-    }*/
-
     def updateHasItems():Unit = {
       var hasItems = false
       if(this.items.nonEmpty) hasItems = true
@@ -148,6 +127,14 @@ class ItemsControl extends Control with IGeneratorHost derives ReflectType {
 
         }
         case _ =>
+    }
+
+    def GetItemOrContainerFromContainer(container:UIElement):Any = {
+      var itemData = this.itemGenerator.ItemFromContainer(container)
+      if(itemData == null && this.IsItemItsOwnContainer(container)) {
+        itemData = container
+      }
+      itemData
     }
 }
 

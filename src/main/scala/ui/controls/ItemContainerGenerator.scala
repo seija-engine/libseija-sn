@@ -70,4 +70,14 @@ case class ItemContainerGenerator(host:IGeneratorHost) {
     def OnItemAdded(item:Any,index:Int):Unit = {
         this.ItemsChanged.foreach(_(this,ItemsChangedEventArgs(CollectionChangedAction.Add,index,1)))   
     }
+
+    def ItemFromContainer(element:UIElement):Any = {
+       var itemData = element._ItemForItemContainer
+       itemData
+    }
+
+    def IndexFromContainer(container:UIElement):Int = {
+        
+        -1
+     }
 }

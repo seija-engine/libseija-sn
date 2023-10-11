@@ -31,17 +31,17 @@ class TabItem extends HeaderedContentControl derives ReflectType {
 
     private def OnIsSelectedChanged():Unit = {
        if(this._IsSelected) {
-         this.OnSelected(RouteEventArgs(Selector.SelectedEvent))
+         this.OnSelected(SelectEventArgs(this))
        } else {
-         this.OnUnselected(RouteEventArgs(Selector.UnselectedEvent))
+         this.OnUnselected(UnselectEventArgs(this))
        }
     }
 
     def OnSelected(args:RouteEventArgs):Unit = {
       this.routeEventController.fireEvent(args)
     }
+
     def OnUnselected(args:RouteEventArgs):Unit = {
       this.routeEventController.fireEvent(args)
     }
-
 }
