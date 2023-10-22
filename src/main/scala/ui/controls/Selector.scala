@@ -4,6 +4,7 @@ import ui.controls.Selector.SelectedEvent
 import ui.event.RouteEvent
 import ui.event.RouteEventArgs
 import ui.controls.Selector.ItemInfo
+import scala.collection.mutable.ArrayBuffer
 
 class Selector extends ItemsControl derives ReflectType {
     var _selectIndex:Int = -1
@@ -73,9 +74,22 @@ object Selector {
     var index:Int = -1
     def Update(generator:ItemContainerGenerator):Unit = {
       if(this.index < 0 && this.container.isDefined) {
-        
+        this.index = generator.IndexFromItemData(this.container.get)
       }
     }
+
+    override def equals(x: Any): Boolean = {
+      x match
+        case other:ItemInfo => {
+          if(other.container.isDefined && this.container.isDefined) {
+            return other.container == this.container;
+          } else {
+            other.item == this.item
+          }
+        }
+        case _ => false
+    }
+    
   }
 }
 
@@ -84,8 +98,12 @@ class UnselectEventArgs(val source:UIElement) extends RouteEventArgs(Selector.Un
 
 
 case class SelectionChanger(selector:Selector) {
-  def Begin():Unit = {
+  var toSelect:ArrayBuffer[ItemInfo] = ArrayBuffer.empty
+  var toUnselect:ArrayBuffer[ItemInfo] = ArrayBuffer.empty
 
+  def Begin():Unit = {
+    this.toSelect.clear()
+    this.toUnselect.clear()
   }
 
   def Select(info:ItemInfo):Unit = {

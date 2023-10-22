@@ -77,7 +77,8 @@ case class ItemContainerGenerator(host:IGeneratorHost) {
     }
 
     def IndexFromContainer(container:UIElement):Int = {
-        
         -1
-     }
+    }
+
+    def IndexFromItemData(itemData:Any):Int = host.View.getDataList.indexOf(itemData)
 }
