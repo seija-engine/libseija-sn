@@ -41,11 +41,11 @@ case class ItemContainerGenerator(host:IGeneratorHost) {
         if(container != itemData) {
             container.dataContext = itemData
         }
-        container._ItemForItemContainer = itemData
+        container.SetPropValue(ItemContainerGenerator.ItemForItemContainer,itemData)
     }
 
     def PrepareItemContainer(container:UIElement):Unit = {
-        val itemData = container._ItemForItemContainer
+        val itemData = container.GetPropValue(ItemContainerGenerator.ItemForItemContainer)
         this.host.PrepareItemContainer(container,itemData)
     }
 
@@ -72,7 +72,7 @@ case class ItemContainerGenerator(host:IGeneratorHost) {
     }
 
     def ItemFromContainer(element:UIElement):Any = {
-       var itemData = element._ItemForItemContainer
+       var itemData = element.GetPropValue(ItemContainerGenerator.ItemForItemContainer)
        itemData
     }
 
@@ -81,4 +81,8 @@ case class ItemContainerGenerator(host:IGeneratorHost) {
     }
 
     def IndexFromItemData(itemData:Any):Int = host.View.getDataList.indexOf(itemData)
+}
+
+object ItemContainerGenerator {
+    val ItemForItemContainer:PropertyDefine = PropertyDefine("ItemContainerGenerator.ItemForItemContainer",null)
 }

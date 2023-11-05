@@ -31,6 +31,7 @@ import ui.resources.Style
 import ui.visualState.VisualStateList
 import ui.trigger.TriggerList
 
+case class PropertyDefine(propKey:String,default:Any);
 
 class UIElement extends INotifyPropertyChanged
   with Cloneable with IXmlObject with IRouteEventElement derives ReflectType {
@@ -64,8 +65,6 @@ class UIElement extends INotifyPropertyChanged
     var triggers:TriggerList = TriggerList()
     private var idScope:Option[IDScope] = None
 
-    //Other
-    var _ItemForItemContainer:Any = null
     //region Setter
 
     def hor: LayoutAlignment = this._hor;
@@ -91,6 +90,15 @@ class UIElement extends INotifyPropertyChanged
         this._dataContext = value;
         this.callPropertyChanged("dataContext",this);
         this.onDataContextChanged();
+    }
+
+    private val exPropDict:HashMap[String,Any] = HashMap.empty
+    def GetPropValue(define:PropertyDefine):Any = {
+        exPropDict.get(define.propKey).getOrElse(define.default)
+    }
+
+    def SetPropValue(define:PropertyDefine,value:Any) = {
+        exPropDict.put(define.propKey,value)
     }
     //endregion
 
