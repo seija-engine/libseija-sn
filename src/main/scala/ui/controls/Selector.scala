@@ -15,6 +15,10 @@ class Selector extends ItemsControl derives ReflectType {
     this._selectIndex = value; callPropertyChanged("selectIndex", this)
   }
 
+  def InternalSelectedItem:Any = {
+    if(_selectedItems._list.length > 0) _selectedItems._list.head else null
+  }
+
   def isSelected: Boolean = this.GetPropValue(Selector.IsSelectedProperty).asInstanceOf[Boolean]
   def isSelected_=(value: Boolean): Unit = {
     this.SetPropValue(Selector.IsSelectedProperty,value); callPropertyChanged("isSelected", this)
@@ -30,7 +34,6 @@ class Selector extends ItemsControl derives ReflectType {
 
   def onSelectedEvent(args: RouteEventArgs): Unit = {
     val event = args.asInstanceOf[SelectEventArgs]
-
     this.NotifyIsSelectedChanged(event.source, true, args)
   }
 
@@ -47,6 +50,10 @@ class Selector extends ItemsControl derives ReflectType {
     if (item != null) {
       this.SetSelectedHelper(item, element, selected)
     }
+  }
+
+  def UpdatePublicSelectionProperties():Unit = {
+
   }
 
   private case class SelectionChanger(selector: Selector) {
@@ -92,16 +99,49 @@ class Selector extends ItemsControl derives ReflectType {
 
     def End(): Unit = {
       this.active = false;
+      this.ApplyCanSelectMultiple();
+      val unselected:ArrayBuffer[ItemInfo] = ArrayBuffer.empty;
+      val selected:ArrayBuffer[ItemInfo] = ArrayBuffer.empty;
+      this.CreateDeltaSelectionChange(unselected,selected);
+      this.selector.UpdatePublicSelectionProperties();
+
+      this.toSelect.clear();
+      this.toUnselect.clear();
+    }
+
+    def ApplyCanSelectMultiple():Unit = {
+      if(this.toSelect.length == 1) {
+        this.toUnselect.clear();
+        this.toUnselect.addAll(this.selector._selectedItems._list);
+      }// else {
+      //  if(this.selector._selectedItems._list.length > 1) {
+
+      //  }
+      //}
+    }
+
+    def CreateDeltaSelectionChange(unselectedItems:ArrayBuffer[ItemInfo],selectedItems:ArrayBuffer[ItemInfo]):Unit = {
+      for(info <-  this.toUnselect) {
+        this.selector.ItemSetIsSelected(info,false)
+        if(this.selector._selectedItems.Remove(info)) {
+          unselectedItems += info;
+        }
+      }
+
+      for(info <-  this.toSelect) {
+        this.selector.ItemSetIsSelected(info,true)
+        if(!this.selector._selectedItems.Contains(info)) {
+          this.selector._selectedItems._list += info;
+          selectedItems += info;
+        }
+      }
+
     }
   }
 
   private val SelectionChange: SelectionChanger = SelectionChanger(this)
 
-  def SetSelectedHelper(
-      itemData: Any,
-      ui: UIElement,
-      selected: Boolean
-  ): Unit = {
+  def SetSelectedHelper(itemData: Any,ui: UIElement,selected: Boolean): Unit = {
     this.SelectionChange.Begin()
     val info = Selector.ItemInfo(itemData, Some(ui))
     info.Update(this.itemGenerator)
@@ -132,10 +172,10 @@ class Selector extends ItemsControl derives ReflectType {
 
 object Selector {
   val IsSelectedProperty:PropertyDefine = PropertyDefine("Selector.IsSelected",false)
+  val SelectedItemProperty:PropertyDefine = PropertyDefine("Selector.SelectedItem",null);
 
   val SelectedEvent: RouteEvent = RouteEvent("SelectedEvent", classOf[Selector])
-  val UnselectedEvent: RouteEvent =
-    RouteEvent("UnselectedEvent", classOf[Selector])
+  val UnselectedEvent: RouteEvent = RouteEvent("UnselectedEvent", classOf[Selector])
 
   case class ItemInfo(item: Any, var container: Option[UIElement]) {
     var index: Int = -1
@@ -164,19 +204,18 @@ object Selector {
   def SetIsSelected(elem:UIElement,value:Boolean) = elem.SetPropValue(IsSelectedProperty,value)
 }
 
-class SelectEventArgs(val source: UIElement)
-    extends RouteEventArgs(Selector.SelectedEvent, false)
-class UnselectEventArgs(val source: UIElement)
-    extends RouteEventArgs(Selector.UnselectedEvent, false)
+class SelectEventArgs(val source: UIElement) extends RouteEventArgs(Selector.SelectedEvent, false)
+class UnselectEventArgs(val source: UIElement) extends RouteEventArgs(Selector.UnselectedEvent, false)
 
 class InternalSelectedItemsStorage {
-  private var _list: ArrayBuffer[ItemInfo] = ArrayBuffer.empty
+  var _list: ArrayBuffer[ItemInfo] = ArrayBuffer.empty
 
   def Contains(e: ItemInfo): Boolean = {
     this._list.contains(e)
   }
 
   def Add(info: ItemInfo): Unit = {
+    
     this._list += info;
   }
 
