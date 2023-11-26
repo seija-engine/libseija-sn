@@ -9,4 +9,27 @@ class TabControl extends Selector derives ReflectType {
     }
 
     var contentTemplate:Option[DataTemplate] = None
+
+    override def OnSelectionChanged(args: SelectionChangedEventArgs): Unit = {
+        this.UpdateSelectedContent()
+        super.OnSelectionChanged(args)
+    }
+
+    protected def UpdateSelectedContent():Unit = {
+        val tabItem = this.GetSelectedTabItem()
+        if(tabItem.isDefined) {
+           val selectedContent = tabItem.get.content;
+           
+        }
+    }
+
+    private def GetSelectedTabItem():Option[TabItem] = {
+        val selectItem = this.SelectedItem
+        val tabItem = selectItem.asInstanceOf[TabItem]
+        if(tabItem != null) {
+            Some(tabItem)   
+        } else {
+            None
+        }
+    }
 }

@@ -6,10 +6,9 @@ import ui.event.{EventManager, EventType, RouteEventArgs}
 
 import scalanative.unsigned.*
 class TabItem extends HeaderedContentControl derives ReflectType {
-    var _IsSelected:Boolean = false
-    def IsSelected:Boolean = this._IsSelected
+    def IsSelected:Boolean = this.GetPropValue(Selector.IsSelectedProperty).asInstanceOf[Boolean]
     def IsSelected_=(value:Boolean):Unit = {
-        this._IsSelected = value
+        this.SetPropValue(Selector.IsSelectedProperty,value)
         callPropertyChanged("IsSelected",this)
         OnIsSelectedChanged()
     }
@@ -23,14 +22,14 @@ class TabItem extends HeaderedContentControl derives ReflectType {
     protected def OnElementEvent(typ:UInt,px:Float,py:Float,args:Any):Unit = {
        val zero = 0.toUInt
        if((typ & EventType.TOUCH_START) != zero) {
-        if(!this._IsSelected) {
+        if(!this.IsSelected) {
             this.IsSelected = true
         }
        }
     }
 
     private def OnIsSelectedChanged():Unit = {
-       if(this._IsSelected) {
+       if(this.IsSelected) {
          this.OnSelected(SelectEventArgs(this))
        } else {
          this.OnUnselected(UnselectEventArgs(this))

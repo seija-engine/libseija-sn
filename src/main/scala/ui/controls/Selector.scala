@@ -15,8 +15,11 @@ class Selector extends ItemsControl derives ReflectType {
     this._selectIndex = value; callPropertyChanged("selectIndex", this)
   }
 
-  def InternalSelectedItem:Any = {
-    if(_selectedItems._list.length > 0) _selectedItems._list.head else null
+  def SelectedItem:Any = this.GetPropValue(Selector.SelectedItemProperty)
+  def SelectedItem_=(value:Any) = { this.SetPropValue(Selector.SelectedItemProperty,value) }
+
+  private def InternalSelectedItem:Any = {
+    if(_selectedItems._list.length > 0) _selectedItems._list.head.item else null
   }
 
   def isSelected: Boolean = this.GetPropValue(Selector.IsSelectedProperty).asInstanceOf[Boolean]
@@ -45,7 +48,6 @@ class Selector extends ItemsControl derives ReflectType {
   def NotifyIsSelectedChanged(element: UIElement,selected: Boolean,e: RouteEventArgs): Unit = {
     e.handled = true
     if(this.SelectionChange.active) return
-    println(s"NotifyIsSelectedChanged:${selected} ${element}")
     val item = GetItemOrContainerFromContainer(element);
     if (item != null) {
       this.SetSelectedHelper(item, element, selected)
@@ -53,7 +55,20 @@ class Selector extends ItemsControl derives ReflectType {
   }
 
   def UpdatePublicSelectionProperties():Unit = {
+    if(this.SelectedItem != this.InternalSelectedItem) {
+      this.SelectedItem = this.InternalSelectedItem;
+    }
+  }
 
+
+  private def InvokeSelectionChanged(selected:ArrayBuffer[ItemInfo],unselected:ArrayBuffer[ItemInfo]):Unit = {
+    val args = SelectionChangedEventArgs(this,selected.toList,unselected.toList)
+    this.OnSelectionChanged(args)
+  }
+
+  def OnSelectionChanged(args:SelectionChangedEventArgs):Unit = {
+    this.routeEventController.fireEvent(args)
+    
   }
 
   private case class SelectionChanger(selector: Selector) {
@@ -107,6 +122,9 @@ class Selector extends ItemsControl derives ReflectType {
 
       this.toSelect.clear();
       this.toUnselect.clear();
+      if(selected.length > 0 || unselected.length > 0) {
+        this.selector.InvokeSelectionChanged(selected,unselected)
+      }
     }
 
     def ApplyCanSelectMultiple():Unit = {
@@ -127,7 +145,6 @@ class Selector extends ItemsControl derives ReflectType {
           unselectedItems += info;
         }
       }
-
       for(info <-  this.toSelect) {
         this.selector.ItemSetIsSelected(info,true)
         if(!this.selector._selectedItems.Contains(info)) {
@@ -176,6 +193,7 @@ object Selector {
 
   val SelectedEvent: RouteEvent = RouteEvent("SelectedEvent", classOf[Selector])
   val UnselectedEvent: RouteEvent = RouteEvent("UnselectedEvent", classOf[Selector])
+  val SelectionChangedEvent: RouteEvent = RouteEvent("SelectionChangedEvent", classOf[Selector])
 
   case class ItemInfo(item: Any, var container: Option[UIElement]) {
     var index: Int = -1
@@ -206,6 +224,9 @@ object Selector {
 
 class SelectEventArgs(val source: UIElement) extends RouteEventArgs(Selector.SelectedEvent, false)
 class UnselectEventArgs(val source: UIElement) extends RouteEventArgs(Selector.UnselectedEvent, false)
+class SelectionChangedEventArgs(val source:UIElement,
+                                val selectedInfos:List[ItemInfo],
+                                val unselectedInfos:List[ItemInfo]) extends RouteEventArgs(Selector.SelectionChangedEvent,false)
 
 class InternalSelectedItemsStorage {
   var _list: ArrayBuffer[ItemInfo] = ArrayBuffer.empty
