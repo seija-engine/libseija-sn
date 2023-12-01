@@ -1,10 +1,13 @@
 package ui.controls
 import core.reflect.*;
 import core.logError;
+import ui.binding.DataBindingManager
+import ui.binding.{BindingItem,BindingType,BindingSource}
 
 class ContentPresenter extends UIElement derives ReflectType {
     var content:Any = _
     var contentTemplate:Option[DataTemplate] = None
+    
     protected var _contentSource:String = "content"
     def contentSource:String = this._contentSource
     def contentSource_=(value:String):Unit = {
@@ -12,16 +15,17 @@ class ContentPresenter extends UIElement derives ReflectType {
     }
 
     override def OnEnter(): Unit = {
-        this.initByContentSource();
-        if(this.contentTemplate.isEmpty && this.content != null) {
-            val dataType = this.content.getClass.getName;
-            this.contentTemplate = this.findDataTemplate(dataType);
-        }
+        this.attachSource();
+        
         super.OnEnter()
         this.createByDataTemplate()
     }
 
     protected def createByDataTemplate():Unit = {
+        if(this.contentTemplate.isEmpty && this.content != null) {
+            val dataType = this.content.getClass.getName;
+            this.contentTemplate = this.findDataTemplate(dataType);
+        }
         this.contentTemplate match {
             case Some(value) => {
                 value.LoadContent(this,None).logError().foreach(v => {
@@ -46,13 +50,12 @@ class ContentPresenter extends UIElement derives ReflectType {
         }
     }
     
-    protected def initByContentSource():Unit = {
+    protected def attachSource():Unit = {
       if(this.templateParent.isEmpty) {
-        if(this.dataContext != null) {
-          this.content = this.dataContext
-        }
+        if(this.dataContext != null) { this.content = this.dataContext  }
         return
       }
+
       val parentElement:UIElement =  this.templateParent.get
       val typInfo = Assembly.getTypeInfo(parentElement)
       if(typInfo.isEmpty) return
@@ -62,6 +65,8 @@ class ContentPresenter extends UIElement derives ReflectType {
         typInfo.get.getField(strContentKey).foreach {info =>
           this.content = info.get(parentElement)
         }
+        val inst = DataBindingManager.binding(parentElement,this,BindingItem(BindingSource.Owner,strContentKey,"content",None,BindingType.Src2Dst)).get
+        inst.foreach {v => this.bindingInstList += v }
       }
       if(this.contentTemplate.isEmpty) {
         typInfo.get.getField(strContentTemplate).foreach {info =>
@@ -78,5 +83,28 @@ class ContentPresenter extends UIElement derives ReflectType {
       if(itemTemplate.isDefined) {
         this.contentTemplate = itemTemplate
       }
+    }
+
+    override def onPropertyChanged(propertyName: String): Unit = {
+      super.onPropertyChanged(propertyName)
+      propertyName match
+        case "content" => this.onContentChanged()
+        case _ =>
+    }
+
+    def onContentChanged():Unit = {
+      this.content match
+        case contentElement:UIElement => {
+            this.children.headOption.foreach {v => 
+               v.Release();
+               this.children.clear();  
+            }
+            val newElement = contentElement.clone();
+            this.addChild(newElement)
+            newElement.setLogicParent(this.templateParent)
+            newElement.Enter()
+        }
+        case _ => 
+      
     }
 }

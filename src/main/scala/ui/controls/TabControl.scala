@@ -10,6 +10,14 @@ class TabControl extends Selector derives ReflectType {
 
     var contentTemplate:Option[DataTemplate] = None
 
+
+    override def Enter(): Unit = {
+        super.Enter()
+        if(this.hasItems && this._selectedItems._list.isEmpty) {
+            this.selectIndex = 0;
+        }
+    }
+
     override def OnSelectionChanged(args: SelectionChangedEventArgs): Unit = {
         this.UpdateSelectedContent()
         super.OnSelectionChanged(args)
@@ -18,8 +26,7 @@ class TabControl extends Selector derives ReflectType {
     protected def UpdateSelectedContent():Unit = {
         val tabItem = this.GetSelectedTabItem()
         if(tabItem.isDefined) {
-           val selectedContent = tabItem.get.content;
-           
+           this.selectedContent = tabItem.get.content;
         }
     }
 

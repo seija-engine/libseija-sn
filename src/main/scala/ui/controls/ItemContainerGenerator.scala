@@ -3,6 +3,7 @@ package ui.controls
 import ui.binding.INotifyCollectionChanged
 import ui.binding.NotifyCollectionChangedEventArgs
 import ui.binding.CollectionChangedAction
+import scala.collection.mutable.ArrayBuffer
 
 case class ItemsChangedEventArgs(action:CollectionChangedAction,index:Int,count:Int,oldIndex:Int = -1)
 
@@ -19,6 +20,7 @@ trait IGeneratorHost {
 case class ItemContainerGenerator(host:IGeneratorHost) {
     private var curIndex:Int = -1
     var ItemsChanged:Option[ItemsChangedEventHandler] = None
+    val itemInfos:ArrayBuffer[ItemInfo] = ArrayBuffer.empty
 
     host.View.changedCallBack = Some(this.OnCollectionChanged)
 
@@ -30,6 +32,9 @@ case class ItemContainerGenerator(host:IGeneratorHost) {
         val dataList = host.View.getDataList
        
         if(this.curIndex >= dataList.length) {  return None; }
+        if(this.itemInfos.length < this.curIndex) {
+            
+        }
         val itemData = dataList(this.curIndex)
         val container:UIElement = this.host.GetContainerForItem(itemData)
         this.linkContainerToItem(container,itemData)

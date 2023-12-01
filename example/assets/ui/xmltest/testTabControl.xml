@@ -8,15 +8,16 @@
             <ControlTemplate>
                 <Panel>
                     <Image sprite="default.white"  color="#aaaaaa" />
+                    <ContentPresenter contentSource="selectedContent" />
                     <ItemsPresenter ver="Start"  />
                 </Panel>
             </ControlTemplate>
         </TabControl.template>
         <TabItem header="Tab1" width="100" height="50" >
-            <Image sprite="default.white" color="#ffffff" />
+            <Image sprite="default.white" color="#666666" />
         </TabItem>
         <TabItem header="Tab2" width="100" height="50" >
-            <Image sprite="default.white" color="#ffff00" />
+            <Image sprite="default.white" color="#777777" />
         </TabItem>
     </TabControl>
 </Panel>

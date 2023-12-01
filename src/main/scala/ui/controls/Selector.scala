@@ -3,7 +3,7 @@ import core.reflect.ReflectType
 import ui.controls.Selector.SelectedEvent
 import ui.event.RouteEvent
 import ui.event.RouteEventArgs
-import ui.controls.Selector.ItemInfo
+import ui.controls.ItemInfo
 import scala.collection.mutable.ArrayBuffer
 import ui.controls.Selector.GetIsSelected
 import ui.controls.Selector.IsSelectedProperty
@@ -13,6 +13,7 @@ class Selector extends ItemsControl derives ReflectType {
   def selectIndex: Int = this._selectIndex
   def selectIndex_=(value: Int): Unit = {
     this._selectIndex = value; callPropertyChanged("selectIndex", this)
+    this.OnSelectedIndexChanged()
   }
 
   def SelectedItem:Any = this.GetPropValue(Selector.SelectedItemProperty)
@@ -27,7 +28,7 @@ class Selector extends ItemsControl derives ReflectType {
     this.SetPropValue(Selector.IsSelectedProperty,value); callPropertyChanged("isSelected", this)
   }
 
-  private var _selectedItems: InternalSelectedItemsStorage = new InternalSelectedItemsStorage()
+  protected var _selectedItems: InternalSelectedItemsStorage = new InternalSelectedItemsStorage()
 
   override def Enter(): Unit = {
     super.Enter()
@@ -68,7 +69,13 @@ class Selector extends ItemsControl derives ReflectType {
 
   def OnSelectionChanged(args:SelectionChangedEventArgs):Unit = {
     this.routeEventController.fireEvent(args)
-    
+  }
+
+  def OnSelectedIndexChanged():Unit = {
+    if(!this.SelectionChange.active) {
+      val info = this.ItemInfoFromIndex(this._selectIndex);
+      println(info)
+    }
   }
 
   private case class SelectionChanger(selector: Selector) {
@@ -89,7 +96,7 @@ class Selector extends ItemsControl derives ReflectType {
       }
       if(this.selector._selectedItems.Contains(info)) return false;
       if (this.toSelect.contains(info)) return true;
-      if (this.toSelect.length > 0) {
+      if (this.toSelect.nonEmpty) {
 
         this.toSelect.foreach { itemInfo =>
           this.selector.ItemSetIsSelected(itemInfo, false)
@@ -122,7 +129,7 @@ class Selector extends ItemsControl derives ReflectType {
 
       this.toSelect.clear();
       this.toUnselect.clear();
-      if(selected.length > 0 || unselected.length > 0) {
+      if(selected.nonEmpty || unselected.nonEmpty) {
         this.selector.InvokeSelectionChanged(selected,unselected)
       }
     }
@@ -160,7 +167,7 @@ class Selector extends ItemsControl derives ReflectType {
 
   def SetSelectedHelper(itemData: Any,ui: UIElement,selected: Boolean): Unit = {
     this.SelectionChange.Begin()
-    val info = Selector.ItemInfo(itemData, Some(ui))
+    val info = ItemInfo(itemData, Some(ui))
     info.Update(this.itemGenerator)
     if (selected) {
       this.SelectionChange.Select(info)
@@ -170,7 +177,7 @@ class Selector extends ItemsControl derives ReflectType {
     this.SelectionChange.End()
   }
 
-  def ItemSetIsSelected(info: ItemInfo, value: Boolean) = {
+  def ItemSetIsSelected(info: ItemInfo, value: Boolean): Unit = {
     if (info.container.isDefined) {
       if(GetIsSelected(info.container.get) != value) {
          info.container.get.SetPropValue(IsSelectedProperty,value)
@@ -195,27 +202,6 @@ object Selector {
   val UnselectedEvent: RouteEvent = RouteEvent("UnselectedEvent", classOf[Selector])
   val SelectionChangedEvent: RouteEvent = RouteEvent("SelectionChangedEvent", classOf[Selector])
 
-  case class ItemInfo(item: Any, var container: Option[UIElement]) {
-    var index: Int = -1
-    def Update(generator: ItemContainerGenerator): Unit = {
-      if (this.index < 0 && this.container.isDefined) {
-        this.index = generator.IndexFromItemData(this.container.get)
-      }
-    }
-
-    override def equals(x: Any): Boolean = {
-      x match
-        case other: ItemInfo => {
-          if (other.container.isDefined && this.container.isDefined) {
-            return other.container == this.container;
-          } else {
-            other.item == this.item
-          }
-        }
-        case _ => false
-    }
-
-  }
 
   def GetIsSelected(elem:UIElement):Boolean = elem.GetPropValue(IsSelectedProperty).asInstanceOf[Boolean]
 

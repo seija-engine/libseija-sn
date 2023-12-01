@@ -136,6 +136,11 @@ class ItemsControl extends Control with IGeneratorHost derives ReflectType {
       }
       itemData
     }
+
+    def ItemInfoFromIndex(index:Int):ItemInfo = {
+      val value = this.itemCollection.getDataList(index)
+       ItemInfo(value,this.itemGenerator.IndexFromItemData(value),index)
+    }
 }
 
 
@@ -147,3 +152,24 @@ object ItemsControl {
       }
   }
 }
+
+ case class ItemInfo(item: Any, var container: Option[UIElement],var index:Int = -1) {
+    def Update(generator: ItemContainerGenerator): Unit = {
+      if (this.index < 0 && this.container.isDefined) {
+        this.index = generator.IndexFromItemData(this.container.get)
+      }
+    }
+
+    override def equals(x: Any): Boolean = {
+      x match
+        case other: ItemInfo => {
+          if (other.container.isDefined && this.container.isDefined) {
+            return other.container == this.container;
+          } else {
+            other.item == this.item
+          }
+        }
+        case _ => false
+    }
+
+  }

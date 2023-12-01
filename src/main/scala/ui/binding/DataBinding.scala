@@ -160,6 +160,7 @@ case class BindingInst(
   }
 
   def tryConvValue(setValue:Any,toField:FieldInfo,fromField:FieldInfo):Try[Any] = {
+     if(setValue == null) return Success(setValue)
       val setValueTypName = setValue.getClass().getName();
       if(setValueTypName != toField.Name) {
         if(setValue.isInstanceOf[scala.collection.IndexedSeq[Any]] && toField.typName == "scala.collection.IndexedSeq[scala.Any]") {
