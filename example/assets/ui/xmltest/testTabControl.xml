@@ -1,5 +1,5 @@
 <Panel>
-    <Image sprite="default.white"  color="#eeeeee" />
+    <Image sprite="default.white"  color="#999999" />
     <TabControl>
         <TabControl.itemsPanel><ItemsPanelTemplate>
             <StackPanel orientation="Hor" spacing="10" isCanvas="true"  />
@@ -7,17 +7,46 @@
         <TabControl.template>
             <ControlTemplate>
                 <Panel>
-                    <Image sprite="default.white"  color="#aaaaaa" />
                     <ContentPresenter contentSource="selectedContent" />
                     <ItemsPresenter ver="Start"  />
                 </Panel>
             </ControlTemplate>
         </TabControl.template>
-        <TabItem header="Tab1" width="100" height="50" >
-            <Image sprite="default.white" color="#666666" />
+        <TabItem header="一" width="100" height="50" >
+            <Panel margin="0,70,0,0">
+                <Image sprite="default.white" color="#eeeeee" />
+                <Text color="#000000" height="60">
+                    "你每天都见证着，在资本主义社会中，只有那些口袋里有钱的人才能活得像个人，才能要求得到尊重。
+                    
+                    如果你要求得到尊重，别人只会嘲笑你。"
+                 </Text>
+            </Panel>
         </TabItem>
-        <TabItem header="Tab2" width="100" height="50" >
-            <Image sprite="default.white" color="#777777" />
+        <TabItem header="二" width="100" height="50" >
+            <Panel margin="0,70,0,0">
+                <Image sprite="default.white" color="#000000" />
+                <Text color="#ffffff"  height="30">
+                    "如同风、沙和阳光，社会对没有钱的人漠不关心。在社会生活中，你更像是一件物品而不是一个人。
+
+                    有时，当生活太过困难，你甚至会忘了自己是一个人。"
+                </Text>
+            </Panel>
+        </TabItem>
+        <TabItem header="三" width="100" height="50" >
+            <Panel margin="0,70,0,0">
+                <Image sprite="default.white" color="#000000" />
+                <Text color="#ffffff"  height="30">
+                    "爱是我们贫贱的一种标志。……人们需要诗歌，如同需要面包一样。人们需要的是，他们生活的日常即是诗歌本身。"
+                </Text>
+            </Panel>
+        </TabItem>
+        <TabItem header="四" width="100" height="50" >
+            <Panel margin="0,70,0,0">
+                <Image sprite="default.white" color="#000000" />
+                <Text color="#ffffff"  height="30">
+                    "想要保持作为人的清醒、意识及尊严是有可能的，但就得要每天克服绝望。"
+                </Text>
+            </Panel>
         </TabItem>
     </TabControl>
 </Panel>

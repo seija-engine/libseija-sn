@@ -34,7 +34,7 @@ enum LineMode(val v: Byte) {
 class TextBuilder extends RawComponentBuilder {
   var fontSize: Int = 24;
   var anchor: AnchorAlign = AnchorAlign.Center;
-  var lineMode: LineMode = LineMode.SingleLine;
+  var lineMode: LineMode = LineMode.MultiLine;
   var isAutoSize: Boolean = true;
   var color: Vector4 = Vector4(1, 1, 1, 1);
   var font: Handle[Font] = null;

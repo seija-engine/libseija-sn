@@ -3,7 +3,7 @@ package ui.controls
 import ui.binding.INotifyCollectionChanged
 import ui.binding.NotifyCollectionChangedEventArgs
 import ui.binding.CollectionChangedAction
-import scala.collection.mutable.ArrayBuffer
+import scala.collection.mutable
 
 case class ItemsChangedEventArgs(action:CollectionChangedAction,index:Int,count:Int,oldIndex:Int = -1)
 
@@ -20,7 +20,7 @@ trait IGeneratorHost {
 case class ItemContainerGenerator(host:IGeneratorHost) {
     private var curIndex:Int = -1
     var ItemsChanged:Option[ItemsChangedEventHandler] = None
-    val itemInfos:ArrayBuffer[ItemInfo] = ArrayBuffer.empty
+    val itemInfos:mutable.HashMap[Int,ItemInfo] = mutable.HashMap.empty
 
     host.View.changedCallBack = Some(this.OnCollectionChanged)
 
@@ -32,13 +32,13 @@ case class ItemContainerGenerator(host:IGeneratorHost) {
         val dataList = host.View.getDataList
        
         if(this.curIndex >= dataList.length) {  return None; }
-        if(this.itemInfos.length < this.curIndex) {
-            
-        }
+        
         val itemData = dataList(this.curIndex)
         val container:UIElement = this.host.GetContainerForItem(itemData)
         this.linkContainerToItem(container,itemData)
+        this.itemInfos.update(this.curIndex,ItemInfo(itemData,Some(container),this.curIndex))
         this.curIndex += 1
+        this.itemInfos.update(this.curIndex,ItemInfo(itemData,Some(container),this.curIndex))
         Some(container)
     }
 
@@ -67,7 +67,8 @@ case class ItemContainerGenerator(host:IGeneratorHost) {
                 this.ItemsChanged.foreach(_(this,ItemsChangedEventArgs(args.action,args.newStartingIndex,1,args.oldStartingIndex)))
             }
             case CollectionChangedAction.Clear => {
-                this.ItemsChanged.foreach(_(this,ItemsChangedEventArgs(args.action,0,0)))   
+                this.ItemsChanged.foreach(_(this,ItemsChangedEventArgs(args.action,0,0)))
+                this.itemInfos.clear()   
             }
         
     }
@@ -86,6 +87,10 @@ case class ItemContainerGenerator(host:IGeneratorHost) {
     }
 
     def IndexFromItemData(itemData:Any):Int = host.View.getDataList.indexOf(itemData)
+
+    def ContainerFromIndex(index:Int):Option[UIElement] = {
+        this.itemInfos.get(index).flatMap(_.container)
+    }
 }
 
 object ItemContainerGenerator {

@@ -364,9 +364,17 @@
     :template
     <ControlTemplate>
       <Panel>
-        <Image sprite="default.white" color="#000"  />
+        <Image Name="BG" sprite="default.white" />
         <ContentPresenter contentSource="header" />
       </Panel>
+      <ControlTemplate.vsm><VisualStateList>
+                        [
+                             :FocusStates {
+                               :Focused     {:color  (setter "BG" "#0011ff")   }
+                               :Unfocused   {:color  (setter "BG" "#000000")   }
+                             }
+                        ]
+      </VisualStateList></ControlTemplate.vsm>
     </ControlTemplate>
   })
 ]

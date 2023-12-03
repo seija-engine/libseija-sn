@@ -99,6 +99,7 @@ class UIElement extends INotifyPropertyChanged
 
     def SetPropValue(define:PropertyDefine,value:Any) = {
         exPropDict.put(define.propKey,value)
+        this.onPropertyChanged(define.propKey)
     }
     //endregion
 

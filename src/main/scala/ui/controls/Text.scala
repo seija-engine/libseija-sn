@@ -28,6 +28,7 @@ class Text extends UIElement derives ReflectType {
   def fontSize_=(value: Int) = {
     this._fontSize = value; this.callPropertyChanged("fontSize", this);
   }
+  
   override def OnEnter(): Unit = {
     val newEntity = this.createBaseEntity(true);
     if(this.font.isDefined) {

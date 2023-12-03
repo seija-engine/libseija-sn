@@ -74,7 +74,7 @@ class Selector extends ItemsControl derives ReflectType {
   def OnSelectedIndexChanged():Unit = {
     if(!this.SelectionChange.active) {
       val info = this.ItemInfoFromIndex(this._selectIndex);
-      println(info)
+      this.SelectionChange.SelectJustThisItem(info)
     }
   }
 
@@ -159,7 +159,25 @@ class Selector extends ItemsControl derives ReflectType {
           selectedItems += info;
         }
       }
+    }
 
+    def SelectJustThisItem(info:ItemInfo):Unit = {
+      this.Begin();
+      val len = this.selector._selectedItems._list.length;
+      var isSelected = false;
+      for(idx <- len.until(0,-1)) {
+        val curInfo = this.selector._selectedItems._list(idx)
+        if(info != curInfo) {
+          this.Unselect(this.selector._selectedItems._list(idx))
+        } else {
+          isSelected = true;
+        }
+      }
+      
+      if(!isSelected) {
+        this.Select(info)
+      }
+      this.End();
     }
   }
 
