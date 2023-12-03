@@ -14,8 +14,8 @@
         </TabControl.template>
         <TabItem header="一" width="100" height="50" >
             <Panel margin="0,70,0,0">
-                <Image sprite="default.white" color="#eeeeee" />
-                <Text color="#000000" height="60">
+                <Image sprite="default.white" color="#303030" />
+                <Text color="#ffffff" height="60">
                     "你每天都见证着，在资本主义社会中，只有那些口袋里有钱的人才能活得像个人，才能要求得到尊重。
                     
                     如果你要求得到尊重，别人只会嘲笑你。"
@@ -24,7 +24,7 @@
         </TabItem>
         <TabItem header="二" width="100" height="50" >
             <Panel margin="0,70,0,0">
-                <Image sprite="default.white" color="#000000" />
+                <Image sprite="default.white" color="#4e5f45" />
                 <Text color="#ffffff"  height="30">
                     "如同风、沙和阳光，社会对没有钱的人漠不关心。在社会生活中，你更像是一件物品而不是一个人。
 
@@ -34,7 +34,7 @@
         </TabItem>
         <TabItem header="三" width="100" height="50" >
             <Panel margin="0,70,0,0">
-                <Image sprite="default.white" color="#000000" />
+                <Image sprite="default.white" color="#006e5f" />
                 <Text color="#ffffff"  height="30">
                     "爱是我们贫贱的一种标志。……人们需要诗歌，如同需要面包一样。人们需要的是，他们生活的日常即是诗歌本身。"
                 </Text>
@@ -42,7 +42,7 @@
         </TabItem>
         <TabItem header="四" width="100" height="50" >
             <Panel margin="0,70,0,0">
-                <Image sprite="default.white" color="#000000" />
+                <Image sprite="default.white" color="#0041a5" />
                 <Text color="#ffffff"  height="30">
                     "想要保持作为人的清醒、意识及尊严是有可能的，但就得要每天克服绝望。"
                 </Text>

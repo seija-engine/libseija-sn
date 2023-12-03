@@ -370,7 +370,7 @@
       <ControlTemplate.vsm><VisualStateList>
                         [
                              :FocusStates {
-                               :Focused     {:color  (setter "BG" "#0011ff")   }
+                               :Focused     {:color  (setter "BG" "#a54358")   }
                                :Unfocused   {:color  (setter "BG" "#000000")   }
                              }
                         ]
