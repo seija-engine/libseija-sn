@@ -40,6 +40,7 @@ object UISXmlEnv {
     val uiModule = ExternModule("ui",MutHashMap.empty)
     uiModule.addFunc(style,true) 
     uiModule.addFunc(setter,true)
+    uiModule.addFunc(setterKV,true)
     uiModule.addFunc(res,true)
     uiModule
   }
@@ -53,6 +54,12 @@ object UISXmlEnv {
       case Success(value) => {
         VMValue.VMUserData(value)
       } 
+  }
+
+  private def setterKV(key:VMValue,target:VMValue,value:VMValue):VMValue = {
+    val targetName = target.toScalaValue().asInstanceOf[String]
+    val strKey = key.toScalaValue().asInstanceOf[String]
+    VMValue.VMUserData(Setter(strKey,value.toScalaValue(),targetName))
   }
 
   private def setter(target:VMValue,value:VMValue):VMValue = {

@@ -6,7 +6,6 @@ import com.seija.ui.event.{EventManager, EventType, RouteEventArgs}
 
 import scalanative.unsigned.*
 import com.seija.ui.visualState.ViewStates
-import javax.swing.text.View
 import com.seija.ui.visualState.ViewStates.CommonStates
 class TabItem extends HeaderedContentControl derives ReflectType {
     def IsSelected:Boolean = this.GetPropValue(Selector.IsSelectedProperty).asInstanceOf[Boolean]

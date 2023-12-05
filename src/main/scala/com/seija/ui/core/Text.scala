@@ -9,7 +9,8 @@ import com.seija.ui.core.FFISeijaUI
 import scala.scalanative.unsigned._
 import com.seija.math.Vector4
 import com.seija.asset.Handle
-
+import com.seija.math.Color
+import com.seija.core.reflect.{Into, TypeCastException};
 class Text;
 
 type RawTextFFI = CStruct4[RawVector4,Byte, Byte, Boolean];
@@ -24,6 +25,22 @@ enum AnchorAlign(val v: Byte) {
   case BottomLeft extends AnchorAlign(6.toByte);
   case Bottom extends AnchorAlign(7.toByte);
   case BottomRight extends AnchorAlign(8.toByte);
+}
+
+object AnchorAlign {
+   given Into[String, AnchorAlign] with {
+
+     override def into(fromValue: String): AnchorAlign = fromValue match
+      case "TopLeft" => AnchorAlign.TopLeft
+      case "Top" => AnchorAlign.Top
+      case "TopRight" => AnchorAlign.TopRight
+      case "Left" => AnchorAlign.Left
+      case "Right" => AnchorAlign.Right
+      case "BottomLeft" => AnchorAlign.BottomLeft
+      case "Bottom" => AnchorAlign.Bottom
+      case "BottomRight" => AnchorAlign.BottomRight
+      case _ => AnchorAlign.Center
+   }
 }
 
 enum LineMode(val v: Byte) {
@@ -52,6 +69,10 @@ class TextBuilder extends RawComponentBuilder {
 case class RawText(val ptr:Ptr[RawTextFFI]) {
   def setText(string:String) = {
     FFISeijaUI.entityTextSetString(ptr,string)
+  }
+
+  def setColor(color:Color):Unit = {
+    com.seija.math.Vector4RawFFI.toRaw(color.toVector4(),ptr.at1)
   }
 }
 

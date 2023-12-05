@@ -17,6 +17,7 @@ object Main {
 
   def runSeija(): Unit = {
     val app = com.seija.core.App
+    
     FFISeijaCore.initLog("ERROR")
     app.addModule(CoreModule())
     app.addModule(AssetModule("example/assets"))

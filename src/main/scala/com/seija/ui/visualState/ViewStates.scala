@@ -21,4 +21,9 @@ object ViewStates {
     val CheckStates = "CheckStates"
     val Checked = "Checked"
     val Unchecked = "Unchecked"
+
+
+    val SelectionStates = "SelectionStates"
+    val Selected = "Selected"
+    val Unselected = "Unselected"
 }

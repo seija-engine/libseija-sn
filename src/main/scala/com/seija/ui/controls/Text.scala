@@ -4,6 +4,7 @@ import com.seija.core.reflect.*;
 import com.seija.math.Color
 import com.seija.ui.Font
 import com.seija.ui.ContentProperty
+import com.seija.ui.core.AnchorAlign
 
 @ContentProperty("text")
 class Text extends UIElement derives ReflectType {
@@ -11,6 +12,7 @@ class Text extends UIElement derives ReflectType {
   var _color: Color = Color.black;
   var _font: Option[Font] = Font.getDefault();
   var _fontSize: Int = 24
+  var _anchor: AnchorAlign = AnchorAlign.Center;
 
   def text = this._text;
   def text_=(value: String) = {
@@ -28,6 +30,10 @@ class Text extends UIElement derives ReflectType {
   def fontSize_=(value: Int) = {
     this._fontSize = value; this.callPropertyChanged("fontSize", this);
   }
+  def anchor = this._fontSize;
+  def anchor_=(value: AnchorAlign) = {
+    this._anchor = value; this.callPropertyChanged("anchor", this);
+  }
   
   override def OnEnter(): Unit = {
     val newEntity = this.createBaseEntity(true);
@@ -37,6 +43,7 @@ class Text extends UIElement derives ReflectType {
             v.fontSize = this._fontSize;
             v.color = this._color.toVector4();
             v.font = this._font.get.handle;
+            v.anchor = this._anchor;
         })
     }
   }
@@ -48,6 +55,12 @@ class Text extends UIElement derives ReflectType {
         this.entity.foreach(e => {
            val rawText = e.get[CoreText]();
            rawText.setText(this._text);
+        })
+      }
+      case "color" => {
+        this.entity.foreach(e => {
+           val rawText = e.get[CoreText]();
+           rawText.setColor(this._color);
         })
       }
       case _: String => 

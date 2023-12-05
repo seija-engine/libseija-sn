@@ -63,7 +63,9 @@ class VisualStateList extends IXmlObject with IPostReadResource derives ReflectT
       for(handleItem <- this.handleList) {
          handleItem.sMatch match
             case StateMatch.Single(name) => {
-               if(name == changeGroup) handleItem.handle.onViewStateChanged(element,changeGroup,newState,nameScope)
+               if(name == changeGroup) {
+                  handleItem.handle.onViewStateChanged(element,changeGroup,newState,nameScope)
+               }
             }
             case com.seija.ui.visualState.StateMatch.Any => handleItem.handle.onViewStateChanged(element,changeGroup,newState,nameScope)
       }

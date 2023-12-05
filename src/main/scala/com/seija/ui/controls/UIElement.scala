@@ -321,12 +321,19 @@ class UIElement extends INotifyPropertyChanged
     }
     
     def setViewState(groupName:String,stateName:String):Unit = {
+        var isChanged = false;
         if(!this.curViewStateDict.contains(groupName)) {
             this.curViewStateDict.put(groupName,stateName);
+            isChanged = true;
         } else {
-            this.curViewStateDict.update(groupName,stateName);
+            if(this.curViewStateDict(groupName) != stateName) {
+                this.curViewStateDict.update(groupName,stateName);
+                isChanged = true;
+            }
         }
-        this.onViewStateChanged(groupName,stateName);
+        if(isChanged) {
+            this.onViewStateChanged(groupName,stateName);
+        }
     }
 
     protected def onViewStateChanged(changeGroup:String,newState:String):Unit = {

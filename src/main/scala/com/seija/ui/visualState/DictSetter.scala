@@ -29,6 +29,9 @@ case class DictSetter(stateSetterDict:HashMap[String,Any]) extends VisualStateCh
                         this.statesSetter.put(stateName,setterList.get)
                     }
                 }
+                case setList:Vector[?] => {
+                  this.statesSetter.put(stateName,ArrayBuffer.from(setList.asInstanceOf[Vector[Setter]]))
+                }
         }
     }
 

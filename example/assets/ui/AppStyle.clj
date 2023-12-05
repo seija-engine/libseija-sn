@@ -381,9 +381,23 @@
   (style "ListBoxItem" {
     :template <ControlTemplate>
                 <Panel>
-                  <Image color="#666" sprite="default.white" />
+                  <Image Name="Border" color="#aaa" sprite="default.white" />
+                  <Image margin="2,2,2,2" Name="BG" color="#aaa" sprite="default.white" />
                   <ContentPresenter />
                 </Panel>
+                <ControlTemplate.vsm><VisualStateList>
+                [
+                  :CommonStates {
+                    :Normal     {:color (setter "BG" "#aaa")         }
+                    :MouseOver  {:color (setter "BG" "#006611")      }
+                  }
+
+                  :SelectionStates {
+                    :Selected  { :color (setter  "Border" "#0022ff") }
+                    :Unselected { :color (setter "Border" "#aaa") }
+                  }
+                ]
+                </VisualStateList></ControlTemplate.vsm>
               </ControlTemplate>
   })
 

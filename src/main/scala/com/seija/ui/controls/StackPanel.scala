@@ -25,6 +25,7 @@ class StackPanel extends Panel derives ReflectType {
             v.common.ver = this._ver;
             v.common.uiSize.width = this._width;
             v.common.padding = this._padding;
+            v.common.margin = this._margin;
             v.common.uiSize.height = this._height;
             v.orientation = this._orientation;
             v.spacing = this._spacing;
