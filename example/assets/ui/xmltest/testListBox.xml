@@ -1,0 +1,7 @@
+<Panel>
+    <Image sprite="default.white" color="#eee"/>
+    <ListBox width="640" height="480">
+        <ListBoxItem margin="10,0,10,0"  height="50">"123123"</ListBoxItem>
+        <ListBoxItem margin="10,0,10,0" height="50">"456546"</ListBoxItem>
+    </ListBox>
+</Panel>

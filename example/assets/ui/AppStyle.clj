@@ -377,4 +377,27 @@
       </VisualStateList></ControlTemplate.vsm>
     </ControlTemplate>
   })
+
+  (style "ListBoxItem" {
+    :template <ControlTemplate>
+                <Panel>
+                  <Image color="#666" sprite="default.white" />
+                  <ContentPresenter />
+                </Panel>
+              </ControlTemplate>
+  })
+
+  (style "ListBox" {
+    :itemsPanel 
+      <ItemsPanelTemplate>
+        <StackPanel spacing="10" isCanvas="true"  />
+      </ItemsPanelTemplate>
+    
+    :template <ControlTemplate>
+                <Panel>
+                  <Image color="#ddd" sprite="default.white" />
+                  <ItemsPresenter  />
+                </Panel>
+              </ControlTemplate>
+  })
 ]
