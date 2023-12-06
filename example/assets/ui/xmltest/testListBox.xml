@@ -1,6 +1,6 @@
 <Panel>
     <Image sprite="default.white" color="#eee"/>
-    <ListBox width="640" height="480" ItemContainerStyle="{Res ItemsPresenterStyle}" itemsSource="{Binding Data dataList}">
+    <ListBox width="640" height="480" itemsSource="{Binding Data dataList}">
        
     </ListBox>
 </Panel>

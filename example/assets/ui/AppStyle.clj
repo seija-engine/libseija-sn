@@ -379,6 +379,7 @@
   })
 
   (style "ListBoxItem" {
+    :ver "Center"
     :template <ControlTemplate>
                 <Panel>
                   <Image Name="Border" color="#aaa" sprite="default.white" />
