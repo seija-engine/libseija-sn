@@ -1,6 +1,13 @@
 <Panel>
     <Image sprite="default.white" color="#eee"/>
-    <ListBox width="640" height="480" itemsSource="{Binding Data dataList}">
-       
+    <ListBox width="640" height="480" itemsSource="{Binding Data dataList2}">
+        <ListBox.itemTemplate>
+            <DataTemplate>
+              <Panel isCanvas="true" height="30" >
+                <Image sprite="default.white" color="#111199" height="30"/>
+                <Text color="#ffffff" text="{Binding Owner this}"/>
+              </Panel>
+            </DataTemplate>
+          </ListBox.itemTemplate>
     </ListBox>
 </Panel>

@@ -55,6 +55,22 @@ class TestDemo extends IGameApp {
 }
 
 import com.seija.core.reflect.ReflectType;  
+
+class TestDataItem extends INotifyPropertyChanged derives ReflectType {
+  var _ID:Int = 0
+  var _Name:String = "DataItem";
+  def ID = this._ID
+  def ID_=(value:Int) = { 
+      this._ID = value
+      callPropertyChanged("ID",this)
+  }
+  def Name = this._Name
+  def Name_=(value:String) = { 
+      this._Name = value
+      callPropertyChanged("Name",this)
+  }
+}
+
 class TestViewModel extends INotifyPropertyChanged derives ReflectType {
     var _floatNumber:Float = 0
     var count:Int = 0;
@@ -77,6 +93,8 @@ class TestViewModel extends INotifyPropertyChanged derives ReflectType {
       "Data@2",
       "Data@3","Data@4","Data@5"));
     var newCommand:FCommand = FCommand(this.testNew)
+
+    var dataList2:ObservableList[TestDataItem] = ObservableList.from(List(new TestDataItem(),new TestDataItem()))
 
     def setCount(count: Int): Unit = {
       this.count = count;

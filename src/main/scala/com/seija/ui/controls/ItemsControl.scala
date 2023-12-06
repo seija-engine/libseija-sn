@@ -119,14 +119,11 @@ class ItemsControl extends Control with IGeneratorHost derives ReflectType {
       this._ItemContainerStyle.foreach {style =>
         this.applyStyle(style,container)
       }
-      container match
-        case cp:ContentPresenter => {
-          cp.PrepareContentPresenter(itemData,this.itemTemplate)
-        }
-        case ip:ItemsPresenter => {
-
-        }
-        case _ =>
+      if(container.isInstanceOf[ContentPresenter]) {
+        container.asInstanceOf[ContentPresenter].PrepareContentPresenter(itemData,this.itemTemplate)
+      } else if(container.isInstanceOf[ContentControl]) {
+        container.asInstanceOf[ContentControl].PrepareContentControl(itemData,this.itemTemplate)
+      }
     }
 
     def GetItemOrContainerFromContainer(container:UIElement):Any = {
