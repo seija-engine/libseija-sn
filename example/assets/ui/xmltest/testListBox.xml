@@ -4,10 +4,10 @@
         <ListBox.itemTemplate>
             <DataTemplate>
               <Panel isCanvas="true" height="30" >
-                <Image sprite="default.white" color="#111199" height="30"/>
-                <Text color="#ffffff" text="{Binding Owner this}"/>
+                <Text color="#ffffff" text="{Binding Data Name}"/>
               </Panel>
             </DataTemplate>
           </ListBox.itemTemplate>
     </ListBox>
+    <ButtonBase command="{Binding Data update2Command}" ver="Start" >"测试"</ButtonBase>
 </Panel>

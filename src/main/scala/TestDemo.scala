@@ -35,6 +35,7 @@ class TestDemo extends IGameApp {
   
   override def OnStart(): Unit = {
     Assembly.add[TestViewModel]();
+    Assembly.add[TestDataItem]()
     this.loadAsset()
 
     UIResourceMgr.loadScriptResource("example/assets/ui/AppStyle.clj")
@@ -88,6 +89,8 @@ class TestViewModel extends INotifyPropertyChanged derives ReflectType {
     var removeCommand:FCommand = FCommand(this.testRemove);
     var moveCommand:FCommand = FCommand(this.testMove);
     var clearCommand:FCommand = FCommand(this.testClear);
+
+    var update2Command:FCommand = FCommand(this.testUpdate2);
     var dataList:ObservableList[String] = ObservableList.from(List(
       "Data@1",
       "Data@2",
@@ -116,6 +119,10 @@ class TestViewModel extends INotifyPropertyChanged derives ReflectType {
       if(this.dataList.length > 0) {
         this.dataList.update(0,"Replace 0");
       }
+    }
+
+    def testUpdate2(params:Any):Unit = {
+      this.dataList2.apply(1).Name = this.dataList2.apply(1).Name + "11"
     }
 
     def testRemove(params:Any):Unit = {
