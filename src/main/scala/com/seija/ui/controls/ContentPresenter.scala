@@ -77,6 +77,9 @@ class ContentPresenter extends UIElement derives ReflectType {
       if (this.content != null) {
         this._dataContext = content;
       }
+      if(this.content == null) {
+        this.content = this.dataContext;
+      }
     }
 
 

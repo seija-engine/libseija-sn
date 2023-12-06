@@ -153,6 +153,9 @@ class UIElement extends INotifyPropertyChanged
             this.applyStyle(v,this)    
         }
         this.applyBindItems()
+        if(this._dataContext == null) {
+            this.dataContext = this.findDataContext()
+        }
         this.OnEnter()
         this.isEntered = true;
         this.children.foreach(child => {
