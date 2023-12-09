@@ -54,6 +54,11 @@ class ButtonBase extends ContentControl derives ReflectType {
       this.command.foreach { cmd => cmd.Execute(this.commandParams); }
     }
 
+    override def onPropertyChanged(propertyName: String): Unit = {
+      propertyName match
+         case "IsEnabled" => if(this.isEntered) this.updateVisualState()
+         case _ =>
+    }
     override def Exit(): Unit = {
         super.Exit();
         EventManager.unRegister(this.entity.get);

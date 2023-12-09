@@ -51,6 +51,7 @@ class UIElement extends INotifyPropertyChanged
     protected var _padding:Thickness = Thickness.zero
     protected var _margin:Thickness = Thickness.zero
     protected var _active:Boolean = true
+    protected var _IsEnabled:Boolean = true
 
     protected var bindItemList:ListBuffer[BindingItem] = ListBuffer.empty
     protected var bindingInstList:ListBuffer[BindingInst] = ListBuffer.empty
@@ -81,6 +82,8 @@ class UIElement extends INotifyPropertyChanged
     def margin_=(value:Thickness) = { this._margin = value; this.callPropertyChanged("margin",this) }
     def active = this._active
     def active_=(value:Boolean):Unit = { this._active = value; callPropertyChanged("active",this)  }
+    def IsEnabled:Boolean = this._IsEnabled
+    def IsEnabled_=(value:Boolean):Unit = { this._IsEnabled = value;callPropertyChanged("IsEnabled",this) }
 
     def setStyle(style:Option[Style]):Unit = {
         this.style = style;
@@ -228,7 +231,6 @@ class UIElement extends INotifyPropertyChanged
     }
 
     def addBindItem(bindItem:BindingItem) = {
-        //println(s"addBindItem: $bindItem")
         this.bindItemList.addOne(bindItem);
     }
     
@@ -257,7 +259,7 @@ class UIElement extends INotifyPropertyChanged
                 }
                 case BindingSource.ID(name) => {
                     this.findIdScope().flatMap(_(name)).foreach {findElement =>
-                       DataBindingManager.binding(findElement,this,bindItem)  match {
+                       DataBindingManager.binding(findElement,this,bindItem).logError()  match {
                             case Success(Some(inst)) => this.bindingInstList += inst;
                             case _ => {}
                         }

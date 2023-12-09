@@ -88,6 +88,10 @@ class Control extends UIElement with ElementNameScope derives ReflectType {
     }
 
     def updateVisualState():Unit = {
+       if(!this._IsEnabled) {
+         this.setViewState(ViewStates.CommonStates,ViewStates.Disable)
+         return
+       }
        if(this._IsActive) {
          this.setViewState(ViewStates.CommonStates,ViewStates.Pressed);
        } else if(this._IsHover) {

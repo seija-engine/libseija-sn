@@ -6,6 +6,7 @@ import com.seija.ui.ContentProperty
 import scala.collection.mutable.ArrayBuffer
 import scala.util.Try
 import scala.collection.mutable.HashMap;
+import scala.collection.mutable;
 import com.seija.core.ICopy;
 import com.seija.core.copyObject
 import scala.util.Success
@@ -39,6 +40,11 @@ class ControlTemplate extends BaseTemplate with ElementNameScope with IPostReade
     override def LoadContent(parent:UIElement,nameScope:Option[ElementNameScope]): Try[UIElement] = {
         val instObject:UIElement = content.clone();
         setUIElementTemplate(instObject,parent,nameScope);
+        //nameScope.foreach{v =>
+        //    if(v.isInstanceOf[Control]) {
+        //       println(s"${nameScope} = ${v.asInstanceOf[Control].nameDict}") 
+        //    }    
+        //}
         Success(instObject)
     }
 

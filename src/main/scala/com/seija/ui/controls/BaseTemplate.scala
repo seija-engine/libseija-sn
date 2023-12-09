@@ -11,7 +11,7 @@ class BaseTemplate extends Cloneable {
     protected def setUIElementTemplate(curElement:UIElement,templateParent:UIElement,nameScope:Option[ElementNameScope]):Unit = {
         curElement.templateParent = Some(templateParent);
         nameScope.foreach {scope => 
-          if(curElement.Name != null) {
+          if(curElement.Name != null && curElement.Name != "") {
              scope.setScopeElement(curElement.Name,curElement);  
           }
         };

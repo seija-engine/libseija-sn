@@ -15,9 +15,13 @@ class Selector extends ItemsControl derives ReflectType {
     this._selectIndex = value; callPropertyChanged("selectIndex", this)
     this.OnSelectedIndexChanged()
   }
-
+  protected var _SelectedItem:Any = null
   def SelectedItem:Any = this.GetPropValue(Selector.SelectedItemProperty)
-  def SelectedItem_=(value:Any) = { this.SetPropValue(Selector.SelectedItemProperty,value) }
+  def SelectedItem_=(value:Any) = { 
+    this.SetPropValue(Selector.SelectedItemProperty,value)
+    _SelectedItem = value;
+    callPropertyChanged("SelectedItem",this)
+  }
 
   private def InternalSelectedItem:Any = {
     if(_selectedItems._list.length > 0) _selectedItems._list.head.item else null
