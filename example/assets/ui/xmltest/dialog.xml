@@ -1,0 +1,5 @@
+<Panel width="640" height="480" stopBubble="true">
+    <Image sprite="default.white" color="#999" />
+    <ButtonBase hor="Start" margin="100,0,0,50" ver="End" width="250" height="60" >"确定"</ButtonBase>
+    <ButtonBase hor="End" margin="0,0,100,50" ver="End" width="250" height="60" >"取消"</ButtonBase>
+</Panel>

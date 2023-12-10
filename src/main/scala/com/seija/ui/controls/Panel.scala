@@ -5,11 +5,14 @@ import com.seija.ui.core.Canvas
 import com.seija.ui.xml.IXmlObject
 import com.seija.ui.binding.CollectionChangedAction
 import com.seija
+import com.seija.ui.core.EventNode
 
 @ContentProperty("children")
 class Panel extends UIElement with IXmlObject derives ReflectType {
     var isClip:Boolean = false;
     var isCanvas:Boolean = false;
+    var stopCapture:Boolean = false;
+    var stopBubble:Boolean = false;
 
     var _isItemsHost:Boolean = false;
     def isItemsHost:Boolean = this._isItemsHost
@@ -21,6 +24,7 @@ class Panel extends UIElement with IXmlObject derives ReflectType {
     override def OnEnter(): Unit = {
       this.createBaseEntity(true);
       this.checkAddCanvas();
+      this.checkEventNode();
       //println(s"Panel OnEnter ${this.getEntity()} ${this.parent}")
       this.handleItemsHost()
     }
@@ -60,6 +64,15 @@ class Panel extends UIElement with IXmlObject derives ReflectType {
          curEntity.add[Canvas](builder => {
             builder.isClip = this.isClip;
          });
+      }
+    }
+
+    def checkEventNode():Unit = {
+      if(this.stopCapture || this.stopBubble) {
+        this.getEntity().get.add[EventNode](builder => {
+          builder.stopCapture  = this.stopCapture;
+          builder.stopBubble = this.stopBubble;
+        })
       }
     }
 

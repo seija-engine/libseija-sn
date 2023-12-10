@@ -16,7 +16,7 @@ import com.seija.core.Time
 class Thumb extends Control derives ReflectType {
     override def OnEnter(): Unit = {
         val thisEntity = this.createBaseEntity(true);
-        EventManager.register(thisEntity,EventType.ALL,this.OnElementEvent)
+        EventManager.register(thisEntity,EventType.ALL,false,this.OnElementEvent)
         this.loadControlTemplate()
         thisEntity.add[FreeLayoutItem]();
     }

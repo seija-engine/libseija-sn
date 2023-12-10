@@ -17,7 +17,7 @@ class ButtonBase extends ContentControl derives ReflectType {
        val thisEntity = this.createBaseEntity(true);
        this.loadControlTemplate();
        val events = EventType.ALL_TOUCH | EventType.ALL_MOUSE;
-       EventManager.register(thisEntity,events,this.OnElementEvent)
+       EventManager.register(thisEntity,events,false,this.OnElementEvent)
        updateVisualState();
     }
 

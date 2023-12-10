@@ -1,0 +1,4 @@
+<Panel >
+    <Image sprite="default.white" color="#dfdfdf" />
+    <ButtonBase command="{Binding Data openDialogCommand}" width="220" height="55">"打开窗口"</ButtonBase>
+</Panel>

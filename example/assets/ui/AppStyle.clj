@@ -191,7 +191,7 @@
   })
 
   <DataTemplate dataType="java.lang.String">
-    <Text height="22" fontSize="18" text="{Binding Data this}" />
+    <Text height="22" fontSize="20" text="{Binding Data this}" />
   </DataTemplate>
 
   <ControlTemplate key="HorSlider" forType="Slider">

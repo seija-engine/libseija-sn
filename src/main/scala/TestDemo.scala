@@ -6,6 +6,7 @@ import com.seija.ui.command.FCommand
 import com.seija.ui.core.Thickness
 import com.seija.ui.resources.UIResourceMgr
 import com.seija.ui.xml.XmlUIElement
+import com.seija.ui.CanvasManager
 
 class TestDemo extends IGameApp {
   var testViewModel:Option[TestViewModel] = None;
@@ -42,10 +43,12 @@ class TestDemo extends IGameApp {
     
     val viewModel = new TestViewModel();
     this.testViewModel = Some(viewModel);
-    XmlUIElement.fromFile("example/assets/ui/xmltest/testListBox.xml").logError().foreach {loadElement =>
+    XmlUIElement.fromFile("example/assets/ui/xmltest/testDialog.xml").logError().foreach {loadElement =>
       loadElement.addIDScope();
       loadElement.dataContext = this.testViewModel.get;
+      
       com.seija.ui.CanvasManager.fst().addElement(loadElement)
+      
     }
 }
 
@@ -89,6 +92,7 @@ class TestViewModel extends INotifyPropertyChanged derives ReflectType {
     var removeCommand:FCommand = FCommand(this.testRemove);
     var moveCommand:FCommand = FCommand(this.testMove);
     var clearCommand:FCommand = FCommand(this.testClear);
+    var openDialogCommand:FCommand = FCommand(this.openDialog);
 
     var update2Command:FCommand = FCommand(this.testUpdate2);
     var dataList:ObservableList[String] = ObservableList.from(List(
@@ -149,5 +153,11 @@ class TestViewModel extends INotifyPropertyChanged derives ReflectType {
 
     def testNew(params:Any):Unit = {
       slog.info("On New Menu")
+    }
+
+    def openDialog(params:Any):Unit = {
+      slog.error("Open Dialog")
+      val newDialog = XmlUIElement.fromFile("example/assets/ui/xmltest/dialog.xml").logError().get
+      CanvasManager.popup().addElement(newDialog);
     }
 }

@@ -208,6 +208,7 @@ class UIElement extends INotifyPropertyChanged
 
     protected def createBaseEntity(addBaseLayout:Boolean = true):Entity = {
         val parentEntity = this.parent.flatMap(_.getEntity());
+        
         val newEntity = Entity.spawnEmpty().add[Transform](_.parent = parentEntity).add[Rect2D]()
         if(addBaseLayout) {
             newEntity.add[ItemLayout](v => {

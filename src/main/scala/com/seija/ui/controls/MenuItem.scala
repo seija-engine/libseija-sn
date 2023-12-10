@@ -45,7 +45,7 @@ class MenuItem extends HeaderedItemsControl derives ReflectType {
         }
         this.updateMenuRole()
         super.OnEnter()
-        EventManager.register(this.getEntity().get,EventType.CLICK | EventType.ALL_MOUSE,OnElementEvent)
+        EventManager.register(this.getEntity().get,EventType.CLICK | EventType.ALL_MOUSE,false,OnElementEvent)
     }
 
     protected def OnElementEvent(typ:UInt,px:Float,py:Float,args:Any):Unit = {
