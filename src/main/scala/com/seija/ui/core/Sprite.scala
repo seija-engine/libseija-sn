@@ -1,21 +1,11 @@
 package com.seija.ui.core
 
-import com.seija.core.RawComponentBuilder
-import com.seija.core.{Entity,App}
-import com.seija.core.RawComponent
-import scala.scalanative.runtime.RawPtr
-import scala.scalanative.unsafe.Ptr
 import com.seija.asset.Handle
-import com.seija.math.Vector4
-import com.seija.ui.core.Thickness
-import com.seija.ui.core.FFISeijaUI
-import com.seija.ui.core.SpriteSheet
-import com.seija.ui.AtlasSprite
-import com.seija.core.App;
+import com.seija.core.{App, Entity, RawComponent, RawComponentBuilder}
 import com.seija.math.Color
-import com.seija.math.{RawVector4}
-import com.seija.math.Vector4RawFFI
-import com.seija.core.{RawComponent, App, Entity, RawComponentBuilder}
+import com.seija.ui.AtlasSprite
+
+import scala.scalanative.unsafe.Ptr
 
 class Sprite;
 

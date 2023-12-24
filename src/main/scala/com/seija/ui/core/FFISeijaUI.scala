@@ -11,6 +11,7 @@ import com.seija.core.App.worldPtr
 import com.seija.ui.core.CommonView
 import com.seija.ui.core.Thickness
 import com.seija.ui.core.RawStackLayout
+import com.seija.ui.core.RawInputTextFFI
 import com.seija.ui.core.RawUISize
 import com.seija.ui.core.RawFlexLayout
 import com.seija.ui.core.RawFlexItem
@@ -68,6 +69,9 @@ object FFISeijaUI {
     private val vec_add_u64Ptr = LibSeija.getFunc[CFuncPtr2[Ptr[Byte],Long,Unit]]("vec_add_u64")
     private val ui_to_ui_posPtr = LibSeija.getFunc[CFuncPtr3[Ptr[Byte],Ptr[RawVector3],Ptr[RawVector3],Unit]]("ui_to_ui_pos")
 
+    private val entity_add_inputPtr = LibSeija.getFunc[CFuncPtr6[Ptr[Byte],Long,Long,Int,Ptr[RawVector3],CString,Unit]]("entity_add_input")
+    private val entity_get_inputPtr = LibSeija.getFunc[CFuncPtr2[Ptr[Byte], Long, Ptr[RawInputTextFFI]]]("entity_get_input")
+    private val input_set_stringPtr = LibSeija.getFunc[CFuncPtr2[Ptr[RawInputTextFFI],CString,Unit]]("input_set_string");
     def addSpriteSheetModule(appPtr:Ptr[Byte]):Unit = addSpritesheetModulePtr(appPtr)
     def spriteSheetAssetGet(worldPtr:Ptr[Byte],id:Long):RawSpriteSheet = spriteSheetAssetGetPtr(worldPtr,id);
     def spritesheetGetIndex(sheet: RawSpriteSheet, name: String): Int = Zone { implicit z =>
@@ -202,8 +206,8 @@ object FFISeijaUI {
 
     def entityGetText(worldPtr:Ptr[Byte],entity:Long):Ptr[RawTextFFI] = entityGetTextPtr(worldPtr,entity)
 
-    def entityTextSetString(textPtr:Ptr[RawTextFFI],text:String) = Zone { implicit z =>
-        entityTextSetStringPtr(textPtr,toCString(text))
+    def entityTextSetString(textPtr: Ptr[RawTextFFI], text: String): Unit = Zone { implicit z =>
+      entityTextSetStringPtr(textPtr, toCString(text))
     }
 
     def entityAddFreeItem(worldPtr:Ptr[Byte],entity:Long,x:Float,y:Float):Unit = {
@@ -237,4 +241,12 @@ object FFISeijaUI {
       ui_to_ui_posPtr(com.seija.core.App.worldPtr,curPtr,outPtr)
       Vector3(outPtr._1,outPtr._2,outPtr._3)
     }
+
+    def entityAddInput(worldPtr: Ptr[Byte], inputEntity: Entity, textEntity: Entity, fontSize: Int, color: Color, text: String): Unit = Zone { implicit z =>
+      val rawColor = stackalloc[RawVector3]()
+      color.toVector3.setToPtr(rawColor)
+      entity_add_inputPtr(worldPtr,inputEntity.id,textEntity.id,fontSize,rawColor,toCString(text))
+    }
+    def entityGetInput(worldPtr: Ptr[Byte],entity: Entity):Ptr[RawInputTextFFI] = entity_get_inputPtr(worldPtr, entity.id)
+    def inputSetString(inputPtr:Ptr[RawInputTextFFI],string:String) = Zone { implicit z => input_set_stringPtr(inputPtr,toCString(string)) }
 }

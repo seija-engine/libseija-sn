@@ -415,4 +415,12 @@
                 </Panel>
               </ControlTemplate>
   })
+
+  (style "TextBox" {
+    :template <ControlTemplate>
+                <Panel>
+                  <InputText caretColor="#ff0000"  />
+                </Panel>
+              </ControlTemplate>
+  })
 ]

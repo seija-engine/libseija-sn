@@ -29,9 +29,11 @@ class TestDemo extends IGameApp {
     Atlas.getPath("default.scrollbar-horz-slider-hover").get.sliceInfo = Some(Thickness(5,0,5,0));
     Atlas.getPath("default.scrollbar-vert-trough").get.sliceInfo = Some(Thickness(0,0,1,0));
     Atlas.getPath("default.scrollbar-horz-trough").get.sliceInfo = Some(Thickness(0,0,0,1));
-
     Atlas.getPath("default.frame").get.sliceInfo = Some(Thickness(1,1,1,1));
     Atlas.getPath("default.menu-border").get.sliceInfo = Some(Thickness(1,1,1,1));
+    Atlas.getPath("default.entry").get.sliceInfo = Some(Thickness(4,4,4,4));
+    Atlas.getPath("default.entry-active").get.sliceInfo = Some(Thickness(4,4,4,4));
+    Atlas.getPath("default.entry-insensitive").get.sliceInfo = Some(Thickness(4,4,4,4));
   }
   
   override def OnStart(): Unit = {
@@ -43,7 +45,7 @@ class TestDemo extends IGameApp {
     
     val viewModel = new TestViewModel();
     this.testViewModel = Some(viewModel);
-    XmlUIElement.fromFile("example/assets/ui/xmltest/testDialog.xml").logError().foreach {loadElement =>
+    XmlUIElement.fromFile("example/assets/ui/xmltest/testInput.xml").logError().foreach {loadElement =>
       loadElement.addIDScope();
       loadElement.dataContext = this.testViewModel.get;
       

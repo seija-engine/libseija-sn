@@ -3,6 +3,8 @@ import com.seija.core.reflect.Into
 
 case class Color(val r: Float, val g: Float, val b: Float, val a: Float) {
   def toVector4(): Vector4 = Vector4(r, g, b, a)
+
+  def toVector3:Vector3 = Vector3(r,g,b)
 }
 
 object Color {

@@ -1,0 +1,7 @@
+<Panel>
+
+    <Panel  margin="0,10,0,0" width="202" height="37" ver="Start">
+        <InputText width="200" height="10" caretColor="#00ff00" />
+    </Panel>
+    <TextBox width="200" height="35" />
+</Panel>
