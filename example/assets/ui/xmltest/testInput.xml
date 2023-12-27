@@ -1,7 +1,7 @@
 <Panel>
+    <Image color="#eee" sprite="default.white" />
+    
+    <TextBox width="200" height="35" text="{Binding Data testString Type=Dst2Src}" />
 
-    <Panel  margin="0,10,0,0" width="202" height="37" ver="Start">
-        <InputText width="200" height="10" caretColor="#00ff00" />
-    </Panel>
-    <TextBox width="200" height="35" />
+    <Text margin="0,150,0,0" text="{Binding Data testString}" />
 </Panel>

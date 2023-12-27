@@ -80,6 +80,9 @@ class TestDataItem extends INotifyPropertyChanged derives ReflectType {
 class TestViewModel extends INotifyPropertyChanged derives ReflectType {
     var _floatNumber:Float = 0
     var count:Int = 0;
+    var _testString:String = "";
+    def testString = this._testString
+    def testString_=(value:String):Unit = { this._testString = value; callPropertyChanged("testString",this) }
     var numCommand:FCommand = FCommand(this.testClick);
 
     def floatNumber: Float = this._floatNumber
@@ -161,5 +164,12 @@ class TestViewModel extends INotifyPropertyChanged derives ReflectType {
       slog.error("Open Dialog")
       val newDialog = XmlUIElement.fromFile("example/assets/ui/xmltest/dialog.xml").logError().get
       CanvasManager.popup().addElement(newDialog);
+    }
+
+    override def onPropertyChanged(propertyName: String): Unit = {
+      propertyName match
+        case "testString" => 
+          println(s"new testString:${this._testString}")
+      
     }
 }

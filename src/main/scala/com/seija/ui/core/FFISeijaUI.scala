@@ -20,11 +20,12 @@ import scala.scalanative.runtime.libc
 import com.seija.math.Color
 import com.seija.math.RawVector2
 import com.seija.core.{LibSeija, App, Entity}
-
-
+import scalanative.runtime._
+import scala.scalanative.unsigned._
 type RawSpriteSheet = Ptr[Byte]
 
 object FFISeijaUI {
+    implicit val cacheZone:Zone = Zone.open()
     private val addSpritesheetModulePtr = LibSeija.getFunc[CFuncPtr1[Ptr[Byte],Unit]]("spritesheet_add_module");
     private val spriteSheetAssetGetPtr = LibSeija.getFunc[CFuncPtr2[Ptr[Byte],Long,RawSpriteSheet]]("spritesheet_asset_get");
     private val spritesheetGetIndexPtr = LibSeija.getFunc[CFuncPtr2[RawSpriteSheet,CString,Int]]("spritesheet_get_index");
@@ -72,6 +73,10 @@ object FFISeijaUI {
     private val entity_add_inputPtr = LibSeija.getFunc[CFuncPtr6[Ptr[Byte],Long,Long,Int,Ptr[RawVector3],CString,Unit]]("entity_add_input")
     private val entity_get_inputPtr = LibSeija.getFunc[CFuncPtr2[Ptr[Byte], Long, Ptr[RawInputTextFFI]]]("entity_get_input")
     private val input_set_stringPtr = LibSeija.getFunc[CFuncPtr2[Ptr[RawInputTextFFI],CString,Unit]]("input_set_string");
+    private val input_get_is_activePtr = LibSeija.getFunc[CFuncPtr2[Ptr[Byte],Long,Boolean]]("input_get_is_active")
+    private val input_read_string_dirtyPtr = LibSeija.getFunc[CFuncPtr2[Ptr[Byte],Long,Boolean]]("input_read_string_dirty")
+    private val input_get_stringPtr = LibSeija.getFunc[CFuncPtr3[Ptr[Byte],Long,CString,Boolean]]("input_get_string")
+
     def addSpriteSheetModule(appPtr:Ptr[Byte]):Unit = addSpritesheetModulePtr(appPtr)
     def spriteSheetAssetGet(worldPtr:Ptr[Byte],id:Long):RawSpriteSheet = spriteSheetAssetGetPtr(worldPtr,id);
     def spritesheetGetIndex(sheet: RawSpriteSheet, name: String): Int = Zone { implicit z =>
@@ -249,4 +254,20 @@ object FFISeijaUI {
     }
     def entityGetInput(worldPtr: Ptr[Byte],entity: Entity):Ptr[RawInputTextFFI] = entity_get_inputPtr(worldPtr, entity.id)
     def inputSetString(inputPtr:Ptr[RawInputTextFFI],string:String) = Zone { implicit z => input_set_stringPtr(inputPtr,toCString(string)) }
+
+    def inputGetIsActive(worldPtr: Ptr[Byte],entity: Entity):Boolean = input_get_is_activePtr(worldPtr,entity.id)
+    
+    def inputReadStringDirty(worldPtr:Ptr[Byte],entity:Entity):Boolean = input_read_string_dirtyPtr(worldPtr,entity.id)
+
+   
+    
+    val ptrStringBuffer = alloc[CChar](1024)
+    def inputGetString(worldPtr:Ptr[Byte],entity:Entity):String = {
+       libc.memset(toRawPtr(ptrStringBuffer),0,1024.toULong);
+       if(input_get_stringPtr(worldPtr,entity.id,ptrStringBuffer)) {
+         fromCString(ptrStringBuffer)
+       } else {
+        ""
+       }
+    }
 }
