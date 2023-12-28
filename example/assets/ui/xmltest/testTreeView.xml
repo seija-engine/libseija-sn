@@ -1,0 +1,8 @@
+<Panel>
+    <Image sprite="default.white"  color="#eeeeee" />
+    <TreeView>
+        <TreeViewItem>
+            "Item1"
+        </TreeViewItem>
+    </TreeView>
+</Panel>
