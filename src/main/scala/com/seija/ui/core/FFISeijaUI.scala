@@ -11,6 +11,7 @@ import com.seija.core.App.worldPtr
 import com.seija.ui.core.CommonView
 import com.seija.ui.core.Thickness
 import com.seija.ui.core.RawStackLayout
+import com.seija.ui.core.RawInputTextFFI
 import com.seija.ui.core.RawUISize
 import com.seija.ui.core.RawFlexLayout
 import com.seija.ui.core.RawFlexItem
@@ -19,11 +20,12 @@ import scala.scalanative.runtime.libc
 import com.seija.math.Color
 import com.seija.math.RawVector2
 import com.seija.core.{LibSeija, App, Entity}
-
-
+import scalanative.runtime._
+import scala.scalanative.unsigned._
 type RawSpriteSheet = Ptr[Byte]
 
 object FFISeijaUI {
+    implicit val cacheZone:Zone = Zone.open()
     private val addSpritesheetModulePtr = LibSeija.getFunc[CFuncPtr1[Ptr[Byte],Unit]]("spritesheet_add_module");
     private val spriteSheetAssetGetPtr = LibSeija.getFunc[CFuncPtr2[Ptr[Byte],Long,RawSpriteSheet]]("spritesheet_asset_get");
     private val spritesheetGetIndexPtr = LibSeija.getFunc[CFuncPtr2[RawSpriteSheet,CString,Int]]("spritesheet_get_index");
@@ -67,6 +69,13 @@ object FFISeijaUI {
     private val uiSetPostLayoutProcessPtr = LibSeija.getFunc[CFuncPtr2[Ptr[Byte],Ptr[Byte],Unit]]("ui_set_post_layout_process")
     private val vec_add_u64Ptr = LibSeija.getFunc[CFuncPtr2[Ptr[Byte],Long,Unit]]("vec_add_u64")
     private val ui_to_ui_posPtr = LibSeija.getFunc[CFuncPtr3[Ptr[Byte],Ptr[RawVector3],Ptr[RawVector3],Unit]]("ui_to_ui_pos")
+
+    private val entity_add_inputPtr = LibSeija.getFunc[CFuncPtr6[Ptr[Byte],Long,Long,Int,Ptr[RawVector3],CString,Unit]]("entity_add_input")
+    private val entity_get_inputPtr = LibSeija.getFunc[CFuncPtr2[Ptr[Byte], Long, Ptr[RawInputTextFFI]]]("entity_get_input")
+    private val input_set_stringPtr = LibSeija.getFunc[CFuncPtr2[Ptr[RawInputTextFFI],CString,Unit]]("input_set_string");
+    private val input_get_is_activePtr = LibSeija.getFunc[CFuncPtr2[Ptr[Byte],Long,Boolean]]("input_get_is_active")
+    private val input_read_string_dirtyPtr = LibSeija.getFunc[CFuncPtr2[Ptr[Byte],Long,Boolean]]("input_read_string_dirty")
+    private val input_get_stringPtr = LibSeija.getFunc[CFuncPtr3[Ptr[Byte],Long,CString,Boolean]]("input_get_string")
 
     def addSpriteSheetModule(appPtr:Ptr[Byte]):Unit = addSpritesheetModulePtr(appPtr)
     def spriteSheetAssetGet(worldPtr:Ptr[Byte],id:Long):RawSpriteSheet = spriteSheetAssetGetPtr(worldPtr,id);
@@ -202,8 +211,8 @@ object FFISeijaUI {
 
     def entityGetText(worldPtr:Ptr[Byte],entity:Long):Ptr[RawTextFFI] = entityGetTextPtr(worldPtr,entity)
 
-    def entityTextSetString(textPtr:Ptr[RawTextFFI],text:String) = Zone { implicit z =>
-        entityTextSetStringPtr(textPtr,toCString(text))
+    def entityTextSetString(textPtr: Ptr[RawTextFFI], text: String): Unit = Zone { implicit z =>
+      entityTextSetStringPtr(textPtr, toCString(text))
     }
 
     def entityAddFreeItem(worldPtr:Ptr[Byte],entity:Long,x:Float,y:Float):Unit = {
@@ -236,5 +245,29 @@ object FFISeijaUI {
       pos.setToPtr(curPtr)
       ui_to_ui_posPtr(com.seija.core.App.worldPtr,curPtr,outPtr)
       Vector3(outPtr._1,outPtr._2,outPtr._3)
+    }
+
+    def entityAddInput(worldPtr: Ptr[Byte], inputEntity: Entity, textEntity: Entity, fontSize: Int, color: Color, text: String): Unit = Zone { implicit z =>
+      val rawColor = stackalloc[RawVector3]()
+      color.toVector3.setToPtr(rawColor)
+      entity_add_inputPtr(worldPtr,inputEntity.id,textEntity.id,fontSize,rawColor,toCString(text))
+    }
+    def entityGetInput(worldPtr: Ptr[Byte],entity: Entity):Ptr[RawInputTextFFI] = entity_get_inputPtr(worldPtr, entity.id)
+    def inputSetString(inputPtr:Ptr[RawInputTextFFI],string:String) = Zone { implicit z => input_set_stringPtr(inputPtr,toCString(string)) }
+
+    def inputGetIsActive(worldPtr: Ptr[Byte],entity: Entity):Boolean = input_get_is_activePtr(worldPtr,entity.id)
+    
+    def inputReadStringDirty(worldPtr:Ptr[Byte],entity:Entity):Boolean = input_read_string_dirtyPtr(worldPtr,entity.id)
+
+   
+    
+    val ptrStringBuffer = alloc[CChar](1024)
+    def inputGetString(worldPtr:Ptr[Byte],entity:Entity):String = {
+       libc.memset(toRawPtr(ptrStringBuffer),0,1024.toULong);
+       if(input_get_stringPtr(worldPtr,entity.id,ptrStringBuffer)) {
+         fromCString(ptrStringBuffer)
+       } else {
+        ""
+       }
     }
 }

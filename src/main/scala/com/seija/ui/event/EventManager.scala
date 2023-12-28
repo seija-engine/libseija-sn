@@ -8,6 +8,7 @@ import scala.collection.mutable
 import scala.scalanative.unsafe.CFuncPtr4
 import scala.scalanative.unsigned.*
 import com.seija.core.{App, Entity}
+import com.seija.input.KeyCode.B
 object EventType {
     val NONE: UInt = 0.toUInt;
     val TOUCH_START: UInt = 1.toUInt;
@@ -30,23 +31,29 @@ private case class EventInfo(val entity:Entity,callFunc:(UInt,Float,Float,Any) =
 object EventManager {
     var eventInfos:mutable.HashMap[Long,EventInfo] = mutable.HashMap();
     
-    def register(entity:Entity,typ:UInt,useCapture:Boolean,callback:(UInt,Float,Float,Any) => Unit,args:Any = null):Boolean = {
+    def register(entity:Entity,typ:UInt,useCapture:Boolean,callback:(UInt,Float,Float,Any) => Unit,args:Any = null,addEventNode:Boolean = true):Boolean = {
         if(this.eventInfos.contains(entity.id)) {
             return false;
         }
-        entity.add[com.seija.ui.core.EventNode](ev => {
-            ev.eventType = typ;
-            ev.useCapture = useCapture;
-        });
+        if(addEventNode) {
+            entity.add[com.seija.ui.core.EventNode](ev => {
+                ev.eventType = typ;
+                ev.useCapture = useCapture;
+            });
+        }
         val info = EventInfo(entity,callback,args);
         this.eventInfos.put(entity.id,info);
         true
     }
 
-    def unRegister(entity:Entity): Unit = {
+   
+
+    def unRegister(entity:Entity,rmEventNode:Boolean = true): Unit = {
         if(this.eventInfos.contains(entity.id)) {
             this.eventInfos.remove(entity.id);
-            FFISeijaUI.entityRemoveEventNode(com.seija.core.App.worldPtr,entity.id);
+            if(rmEventNode) {
+                FFISeijaUI.entityRemoveEventNode(com.seija.core.App.worldPtr,entity.id);
+            }
         }
     }
 

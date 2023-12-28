@@ -13,6 +13,7 @@ class Text extends UIElement derives ReflectType {
   var _font: Option[Font] = Font.getDefault();
   var _fontSize: Int = 24
   var _anchor: AnchorAlign = AnchorAlign.Center;
+  var _isAutoSize:Boolean = true
 
   def text = this._text;
   def text_=(value: String) = {
@@ -34,9 +35,13 @@ class Text extends UIElement derives ReflectType {
   def anchor_=(value: AnchorAlign) = {
     this._anchor = value; this.callPropertyChanged("anchor", this);
   }
+  def isAutoSize = this._isAutoSize
+  def isAutoSize_=(value:Boolean):Unit = {
+    this._isAutoSize = value; callPropertyChanged("isAutoSize",this)
+  }
   
   override def OnEnter(): Unit = {
-    val newEntity = this.createBaseEntity(true);
+    val newEntity = this.createBaseEntity(true)
     if(this.font.isDefined) {
         newEntity.add[CoreText](v => {
             v.text = this._text;
@@ -44,6 +49,7 @@ class Text extends UIElement derives ReflectType {
             v.color = this._color.toVector4();
             v.font = this._font.get.handle;
             v.anchor = this._anchor;
+            v.isAutoSize = this._isAutoSize
         })
     }
   }

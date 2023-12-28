@@ -29,9 +29,11 @@ class TestDemo extends IGameApp {
     Atlas.getPath("default.scrollbar-horz-slider-hover").get.sliceInfo = Some(Thickness(5,0,5,0));
     Atlas.getPath("default.scrollbar-vert-trough").get.sliceInfo = Some(Thickness(0,0,1,0));
     Atlas.getPath("default.scrollbar-horz-trough").get.sliceInfo = Some(Thickness(0,0,0,1));
-
     Atlas.getPath("default.frame").get.sliceInfo = Some(Thickness(1,1,1,1));
     Atlas.getPath("default.menu-border").get.sliceInfo = Some(Thickness(1,1,1,1));
+    Atlas.getPath("default.entry").get.sliceInfo = Some(Thickness(4,4,4,4));
+    Atlas.getPath("default.entry-active").get.sliceInfo = Some(Thickness(4,4,4,4));
+    Atlas.getPath("default.entry-insensitive").get.sliceInfo = Some(Thickness(4,4,4,4));
   }
   
   override def OnStart(): Unit = {
@@ -43,7 +45,7 @@ class TestDemo extends IGameApp {
     
     val viewModel = new TestViewModel();
     this.testViewModel = Some(viewModel);
-    XmlUIElement.fromFile("example/assets/ui/xmltest/testDialog.xml").logError().foreach {loadElement =>
+    XmlUIElement.fromFile("example/assets/ui/xmltest/testInput.xml").logError().foreach {loadElement =>
       loadElement.addIDScope();
       loadElement.dataContext = this.testViewModel.get;
       
@@ -78,6 +80,9 @@ class TestDataItem extends INotifyPropertyChanged derives ReflectType {
 class TestViewModel extends INotifyPropertyChanged derives ReflectType {
     var _floatNumber:Float = 0
     var count:Int = 0;
+    var _testString:String = "";
+    def testString = this._testString
+    def testString_=(value:String):Unit = { this._testString = value; callPropertyChanged("testString",this) }
     var numCommand:FCommand = FCommand(this.testClick);
 
     def floatNumber: Float = this._floatNumber
@@ -159,5 +164,12 @@ class TestViewModel extends INotifyPropertyChanged derives ReflectType {
       slog.error("Open Dialog")
       val newDialog = XmlUIElement.fromFile("example/assets/ui/xmltest/dialog.xml").logError().get
       CanvasManager.popup().addElement(newDialog);
+    }
+
+    override def onPropertyChanged(propertyName: String): Unit = {
+      propertyName match
+        case "testString" => 
+          println(s"new testString:${this._testString}")
+      
     }
 }

@@ -1,0 +1,7 @@
+<Panel>
+    <Image color="#eee" sprite="default.white" />
+    
+    <TextBox width="200" height="35" text="{Binding Data testString Type=Dst2Src}" />
+
+    <Text margin="0,150,0,0" text="{Binding Data testString}" />
+</Panel>

@@ -1,19 +1,15 @@
 package com.seija.ui.core
 
-import com.seija.core.RawComponentBuilder
-import com.seija.core.Entity
-import com.seija.core.RawComponent
-import scala.scalanative.unsafe._
-import com.seija.math.RawVector4
-import com.seija.ui.core.FFISeijaUI
-import scala.scalanative.unsigned._
-import com.seija.math.Vector4
 import com.seija.asset.Handle
-import com.seija.math.Color
-import com.seija.core.reflect.{Into, TypeCastException};
-class Text;
+import com.seija.core.{Entity, RawComponent, RawComponentBuilder}
+import com.seija.core.reflect.Into
+import com.seija.math.{Color, RawVector4, Vector4}
 
-type RawTextFFI = CStruct4[RawVector4,Byte, Byte, Boolean];
+import scala.scalanative.unsafe.*
+import scala.scalanative.unsigned.*;
+class Text
+
+type RawTextFFI = CStruct4[RawVector4,Byte, Byte, Boolean]
 
 enum AnchorAlign(val v: Byte) {
   case TopLeft extends AnchorAlign(0.toByte);
@@ -67,8 +63,8 @@ class TextBuilder extends RawComponentBuilder {
 }
 
 case class RawText(val ptr:Ptr[RawTextFFI]) {
-  def setText(string:String) = {
-    FFISeijaUI.entityTextSetString(ptr,string)
+  def setText(string: String): Unit = {
+    FFISeijaUI.entityTextSetString(ptr, string)
   }
 
   def setColor(color:Color):Unit = {

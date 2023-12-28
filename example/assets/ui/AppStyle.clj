@@ -415,4 +415,21 @@
                 </Panel>
               </ControlTemplate>
   })
+
+  (style "TextBox" {
+    :template <ControlTemplate>
+                <Panel>
+                  <Image Name="BG" sprite="default.entry" imageType="Slice" />
+                  <InputText text="{Binding Owner text Type=Dst2Src}" margin="5,0,0,0" caretColor="#000"  />
+                </Panel>
+                <ControlTemplate.vsm><VisualStateList>
+                [
+                  :CommonStates {
+                    :Normal  {:sprite  (setter  "BG" "default.entry")    }
+                    :Pressed  {:sprite (setter "BG" "default.entry-active") }
+                  }
+                ]
+                </VisualStateList></ControlTemplate.vsm>
+              </ControlTemplate>
+  })
 ]
