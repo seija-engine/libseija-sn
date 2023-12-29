@@ -11,7 +11,7 @@ class TabItem extends HeaderedContentControl derives ReflectType {
     def IsSelected:Boolean = this.GetPropValue(Selector.IsSelectedProperty).asInstanceOf[Boolean]
     def IsSelected_=(value:Boolean):Unit = {
         this.SetPropValue(Selector.IsSelectedProperty,value)
-        callPropertyChanged("IsSelected",this)
+        callPropertyChanged("IsSelected")
         OnIsSelectedChanged()
     }
 

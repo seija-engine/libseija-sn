@@ -18,14 +18,14 @@ class Control extends UIElement with ElementNameScope derives ReflectType {
     def IsActive:Boolean = _IsActive;
     def IsActive_=(value:Boolean):Unit = {
         _IsActive = value;
-        this.callPropertyChanged("IsActive",this);
+        this.callPropertyChanged("IsActive");
     }
 
     var _IsHover:Boolean = false;
     def IsHover:Boolean = _IsHover;
     def IsHover_=(value:Boolean):Unit = {
         _IsHover = value;
-        this.callPropertyChanged("IsHover",this);
+        this.callPropertyChanged("IsHover");
     }
     
 

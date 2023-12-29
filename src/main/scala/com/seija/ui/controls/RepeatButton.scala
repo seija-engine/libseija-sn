@@ -9,9 +9,9 @@ class RepeatButton extends ButtonBase derives ReflectType {
     var _delay:Float = 0;
     var _interval:Float = 0.3;
     def delay:Float = this._delay;
-    def delay_=(value: Float): Unit = { this._delay = value; this.callPropertyChanged("delay",this); }
+    def delay_=(value: Float): Unit = { this._delay = value; this.callPropertyChanged("delay"); }
     def interval:Float = this._interval;
-    def interval_=(value:Float): Unit = { this._interval = value;this.callPropertyChanged("interval",this); }
+    def interval_=(value:Float): Unit = { this._interval = value;this.callPropertyChanged("interval"); }
 
     private var _runInterval:Boolean = false;
     private var _remainDelay:Float = _delay;

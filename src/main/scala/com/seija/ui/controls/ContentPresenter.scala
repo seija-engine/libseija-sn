@@ -12,7 +12,7 @@ class ContentPresenter extends UIElement derives ReflectType {
     protected var _contentSource:String = "content"
     def contentSource:String = this._contentSource
     def contentSource_=(value:String):Unit = {
-      this._contentSource = value; callPropertyChanged("contentSource",this)
+      this._contentSource = value; callPropertyChanged("contentSource")
     }
 
     override def OnEnter(): Unit = {

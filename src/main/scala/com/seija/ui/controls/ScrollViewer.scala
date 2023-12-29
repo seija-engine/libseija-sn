@@ -33,33 +33,33 @@ class ScrollViewer extends ContentControl derives ReflectType {
   def barHeight: Float = this._barHeight
   def showHorBar:Boolean = this._showHorBar
   def showVerBar:Boolean = this._showVerBar
-  def showHorBar_=(value:Boolean):Unit = if(value != this._showHorBar) {this._showHorBar = value; callPropertyChanged("showHorBar",this)  }
-  def showVerBar_=(value:Boolean):Unit = if(value != this._showVerBar) {this._showVerBar = value; callPropertyChanged("showVerBar",this)  }
+  def showHorBar_=(value:Boolean):Unit = if(value != this._showHorBar) {this._showHorBar = value; callPropertyChanged("showHorBar")  }
+  def showVerBar_=(value:Boolean):Unit = if(value != this._showVerBar) {this._showVerBar = value; callPropertyChanged("showVerBar")  }
   def scrollableHeight_=(value: Float): Unit = {
     this._scrollableHeight = value;
-    this.callPropertyChanged("scrollableHeight",this);
+    this.callPropertyChanged("scrollableHeight");
   }
   def scrollableWidth_=(value:Float):Unit = {
     this._scrollableWidth = value;
-    this.callPropertyChanged("scrollableWidth",this);
+    this.callPropertyChanged("scrollableWidth");
   }
   def verticalOffset_=(value:Float):Unit = {
-    this._verticalOffset = value; callPropertyChanged("verticalOffset",this)
+    this._verticalOffset = value; callPropertyChanged("verticalOffset")
   }
   def horizontalOffset_=(value:Float):Unit = {
-    this._horizontalOffset = value; callPropertyChanged("horizontalOffset",this)
+    this._horizontalOffset = value; callPropertyChanged("horizontalOffset")
   }
   def viewportWidth_=(value:Float):Unit = {
-    this._viewportWidth = value; callPropertyChanged("viewportWidth",this)
+    this._viewportWidth = value; callPropertyChanged("viewportWidth")
   }
   def viewportHeight_=(value: Float): Unit = {
-    this._viewportHeight = value; callPropertyChanged("viewportHeight", this)
+    this._viewportHeight = value; callPropertyChanged("viewportHeight")
   }
   def barWidth_=(value:Float):Unit = {
-    this._barWidth = value;callPropertyChanged("barWidth",this)
+    this._barWidth = value;callPropertyChanged("barWidth")
   }
   def barHeight_=(value:Float):Unit = {
-    this._barHeight = value;callPropertyChanged("barHeight",this)
+    this._barHeight = value;callPropertyChanged("barHeight")
   }
   //endregion
 

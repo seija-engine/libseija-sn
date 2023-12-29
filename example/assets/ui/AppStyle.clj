@@ -420,7 +420,7 @@
     :template <ControlTemplate>
                 <Panel>
                   <Image Name="BG" sprite="default.entry" imageType="Slice" />
-                  <InputText text="{Binding Owner text Type=Dst2Src}" margin="5,0,0,0" caretColor="#000"  />
+                  <InputText text="{Binding Owner text Type=Both}" margin="5,0,0,0" caretColor="#000"  />
                 </Panel>
                 <ControlTemplate.vsm><VisualStateList>
                 [

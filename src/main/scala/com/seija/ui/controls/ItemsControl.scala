@@ -22,7 +22,7 @@ class ItemsControl extends Control with IGeneratorHost derives ReflectType {
     var _ItemContainerStyle:Option[Style] = None;
     def ItemContainerStyle:Option[Style] = this._ItemContainerStyle
     def ItemContainerStyle_=(value:Option[Style]):Unit = {
-      this._ItemContainerStyle = value;callPropertyChanged("ItemContainerStyle",this)
+      this._ItemContainerStyle = value;callPropertyChanged("ItemContainerStyle")
     }
     
     var itemCollection:ItemCollection = ItemCollection()
@@ -35,7 +35,7 @@ class ItemsControl extends Control with IGeneratorHost derives ReflectType {
     protected var _hasItems:Boolean = false
     def hasItems: Boolean = this._hasItems
     def hasItems_=(value:Boolean):Boolean = {
-      this._hasItems = value; callPropertyChanged("hasItems",this);
+      this._hasItems = value; callPropertyChanged("hasItems");
       this._hasItems
     }
 
@@ -46,7 +46,7 @@ class ItemsControl extends Control with IGeneratorHost derives ReflectType {
         val notifyList = this._itemsSource.asInstanceOf[INotifyCollectionChanged]
         notifyList.removeChangedHandler(this.onItemsChangedHandle)
       }
-      this._itemsSource = value; callPropertyChanged("itemsSource",this)
+      this._itemsSource = value; callPropertyChanged("itemsSource")
     }
 
     override def Awake(): Unit = {

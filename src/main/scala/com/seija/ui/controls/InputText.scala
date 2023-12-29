@@ -16,19 +16,20 @@ class InputText extends UIElement derives ReflectType {
     var _text: String = ""
     def text:String = this._text
     def text_=(value:String):Unit = {
-        this._text = value; callPropertyChanged("text",this);
+        this._text = value; 
+        callPropertyChanged("text");
     }
 
     var _fontSize:Int = 24
     def fontSize:Int = this._fontSize
     def fontSize_=(value:Int):Unit = {
-      this._fontSize = value;callPropertyChanged("fontSize",this)
+      this._fontSize = value;callPropertyChanged("fontSize")
     }
 
     var _caretColor:Color = Color.black
     def caretColor:Color = this._caretColor
     def caretColor_=(value:Color):Unit = {
-      this._caretColor = value; callPropertyChanged("caretColor",this)
+      this._caretColor = value; callPropertyChanged("caretColor")
     }
 
     var _isActive:Boolean = false;
@@ -75,8 +76,21 @@ class InputText extends UIElement derives ReflectType {
        val isStringDirty = FFISeijaUI.inputReadStringDirty(com.seija.core.App.worldPtr,curEntity)
        if(isStringDirty) {
           val newString = FFISeijaUI.inputGetString(com.seija.core.App.worldPtr,curEntity)
-          this.text = newString;
+          this._text = newString;
+          this.callPropertyChanged("text",false)
        }
+    }
+
+    override def onPropertyChanged(propertyName: String): Unit = {
+      propertyName match
+        case "text" => {
+          this.getEntity().foreach {e =>
+            val rawInput = e.get[RawInputText]()
+            rawInput.setText(this._text)
+          }
+        } 
+        case _ =>
+      
     }
 
     override def Exit(): Unit = {

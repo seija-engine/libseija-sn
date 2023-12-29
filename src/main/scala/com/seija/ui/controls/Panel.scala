@@ -17,7 +17,7 @@ class Panel extends UIElement with IXmlObject derives ReflectType {
     var _isItemsHost:Boolean = false;
     def isItemsHost:Boolean = this._isItemsHost
     def isItemsHost_=(value:Boolean):Unit = {
-      this._isItemsHost = value;callPropertyChanged("isItemsHost",this)
+      this._isItemsHost = value;callPropertyChanged("isItemsHost")
     }
 
     private var _itemGenerator:ItemContainerGenerator = null

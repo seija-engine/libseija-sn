@@ -17,27 +17,27 @@ class Text extends UIElement derives ReflectType {
 
   def text = this._text;
   def text_=(value: String) = {
-    this._text = value; this.callPropertyChanged("text", this);
+    this._text = value; this.callPropertyChanged("text");
   }
   def color = this._color;
   def color_=(value: Color) = {
-    this._color = value; this.callPropertyChanged("color", this);
+    this._color = value; this.callPropertyChanged("color");
   }
   def font = this._font;
   def font_=(font: Option[Font]) = {
-    this._font = font; this.callPropertyChanged("font", this);
+    this._font = font; this.callPropertyChanged("font");
   }  
   def fontSize = this._fontSize;
   def fontSize_=(value: Int) = {
-    this._fontSize = value; this.callPropertyChanged("fontSize", this);
+    this._fontSize = value; this.callPropertyChanged("fontSize");
   }
   def anchor = this._fontSize;
   def anchor_=(value: AnchorAlign) = {
-    this._anchor = value; this.callPropertyChanged("anchor", this);
+    this._anchor = value; this.callPropertyChanged("anchor");
   }
   def isAutoSize = this._isAutoSize
   def isAutoSize_=(value:Boolean):Unit = {
-    this._isAutoSize = value; callPropertyChanged("isAutoSize",this)
+    this._isAutoSize = value; callPropertyChanged("isAutoSize")
   }
   
   override def OnEnter(): Unit = {

@@ -9,11 +9,11 @@ class HeaderedItemsControl extends ItemsControl derives ReflectType {
 
     def header:Any = this._header
     def header_=(value:Any):Unit = {
-        this._header = value; callPropertyChanged("header",this)
+        this._header = value; callPropertyChanged("header")
     }
     def headerTemplate:DataTemplate = this._headerTemplate.get
     def headerTemplate_=(value:DataTemplate): Unit = {
-        this._headerTemplate = Some(value);callPropertyChanged("headerTemplate",this)
+        this._headerTemplate = Some(value);callPropertyChanged("headerTemplate")
     }
     //endregion
     

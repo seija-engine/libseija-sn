@@ -31,20 +31,20 @@ class Track extends RangeBase derives ReflectType {
   def orientation: Orientation = _orientation;
   def orientation_=(value: Orientation): Unit = {
     _orientation = value;
-    this.callPropertyChanged("orientation", this);
+    this.callPropertyChanged("orientation");
   }
   def trackLength: Float = this._trackLength
   def trackLength_=(value: Float): Unit = {
     this._trackLength = value;
-    callPropertyChanged("trackLength", this)
+    callPropertyChanged("trackLength")
   }
   def thumbSize: Float = this._thumbSize
   def thumbSize_=(value: Float): Unit = {
     this._thumbSize = value
-    callPropertyChanged("thumbSize", this)
+    callPropertyChanged("thumbSize")
   }
   def fillLength: Float = this._fillLength
-  def fillLength_=(value:Float):Unit = { this._fillLength = value; callPropertyChanged("fillLength",this) }
+  def fillLength_=(value:Float):Unit = { this._fillLength = value; callPropertyChanged("fillLength") }
   //endregion
 
   private def createEntity(): Entity = {

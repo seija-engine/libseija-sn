@@ -49,8 +49,8 @@ class TestDemo extends IGameApp {
       loadElement.addIDScope();
       loadElement.dataContext = this.testViewModel.get;
       
-      com.seija.ui.CanvasManager.fst().addElement(loadElement)
       
+      com.seija.ui.CanvasManager.fst().addElement(loadElement)
     }
 }
 
@@ -68,27 +68,27 @@ class TestDataItem extends INotifyPropertyChanged derives ReflectType {
   def ID = this._ID
   def ID_=(value:Int) = { 
       this._ID = value
-      callPropertyChanged("ID",this)
+      callPropertyChanged("ID")
   }
   def Name = this._Name
   def Name_=(value:String) = { 
       this._Name = value
-      callPropertyChanged("Name",this)
+      callPropertyChanged("Name")
   }
 }
 
 class TestViewModel extends INotifyPropertyChanged derives ReflectType {
     var _floatNumber:Float = 0
     var count:Int = 0;
-    var _testString:String = "";
+    var _testString:String = "TestString";
     def testString = this._testString
-    def testString_=(value:String):Unit = { this._testString = value; callPropertyChanged("testString",this) }
+    def testString_=(value:String):Unit = { this._testString = value; callPropertyChanged("testString") }
     var numCommand:FCommand = FCommand(this.testClick);
 
     def floatNumber: Float = this._floatNumber
     def floatNumber_=(value:Float):Unit = {
       this._floatNumber = value
-      callPropertyChanged("floatNumber",this)
+      callPropertyChanged("floatNumber")
     }
 
     var lstCommand:FCommand = FCommand(this.testAdd);
@@ -98,8 +98,9 @@ class TestViewModel extends INotifyPropertyChanged derives ReflectType {
     var moveCommand:FCommand = FCommand(this.testMove);
     var clearCommand:FCommand = FCommand(this.testClear);
     var openDialogCommand:FCommand = FCommand(this.openDialog);
-
     var update2Command:FCommand = FCommand(this.testUpdate2);
+    var setStringCommand:FCommand = FCommand(this.setString);
+
     var dataList:ObservableList[String] = ObservableList.from(List(
       "Data@1",
       "Data@2",
@@ -110,7 +111,7 @@ class TestViewModel extends INotifyPropertyChanged derives ReflectType {
 
     def setCount(count: Int): Unit = {
       this.count = count;
-      this.callPropertyChanged("count", this);
+      this.callPropertyChanged("count");
     }
 
     def testAdd(params:Any):Unit = {
@@ -132,6 +133,10 @@ class TestViewModel extends INotifyPropertyChanged derives ReflectType {
 
     def testUpdate2(params:Any):Unit = {
       this.dataList2.apply(1).Name = this.dataList2.apply(1).Name + "11"
+    }
+
+    def setString(params:Any):Unit = {
+      this.testString = "重置文本"
     }
 
     def testRemove(params:Any):Unit = {
@@ -170,6 +175,7 @@ class TestViewModel extends INotifyPropertyChanged derives ReflectType {
       propertyName match
         case "testString" => 
           println(s"new testString:${this._testString}")
+        case _ =>
       
     }
 }

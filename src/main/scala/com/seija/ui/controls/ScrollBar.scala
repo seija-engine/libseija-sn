@@ -12,11 +12,11 @@ class ScrollBar extends RangeBase derives ReflectType {
 
     def orientation: Orientation = _orientation
     def orientation_=(value: Orientation): Unit = {
-        _orientation = value; this.callPropertyChanged("orientation", this);
+        _orientation = value; this.callPropertyChanged("orientation");
     }
     def barLength:Float = this._barLength
     def barLength_=(value:Float):Unit = {
-      this._barLength = value;callPropertyChanged("barLength",this)
+      this._barLength = value;callPropertyChanged("barLength")
     }
     
     //endregion

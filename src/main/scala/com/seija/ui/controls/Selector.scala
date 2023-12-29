@@ -12,7 +12,7 @@ class Selector extends ItemsControl derives ReflectType {
   var _selectIndex: Int = -1
   def selectIndex: Int = this._selectIndex
   def selectIndex_=(value: Int): Unit = {
-    this._selectIndex = value; callPropertyChanged("selectIndex", this)
+    this._selectIndex = value; callPropertyChanged("selectIndex")
     this.OnSelectedIndexChanged()
   }
   protected var _SelectedItem:Any = null
@@ -20,7 +20,7 @@ class Selector extends ItemsControl derives ReflectType {
   def SelectedItem_=(value:Any) = { 
     this.SetPropValue(Selector.SelectedItemProperty,value)
     _SelectedItem = value;
-    callPropertyChanged("SelectedItem",this)
+    callPropertyChanged("SelectedItem")
   }
 
   private def InternalSelectedItem:Any = {
@@ -29,7 +29,7 @@ class Selector extends ItemsControl derives ReflectType {
 
   def isSelected: Boolean = this.GetPropValue(Selector.IsSelectedProperty).asInstanceOf[Boolean]
   def isSelected_=(value: Boolean): Unit = {
-    this.SetPropValue(Selector.IsSelectedProperty,value); callPropertyChanged("isSelected", this)
+    this.SetPropValue(Selector.IsSelectedProperty,value); callPropertyChanged("isSelected")
   }
 
   protected var _selectedItems: InternalSelectedItemsStorage = new InternalSelectedItemsStorage()

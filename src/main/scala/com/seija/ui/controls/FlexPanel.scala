@@ -8,31 +8,31 @@ class FlexPanel extends Panel derives ReflectType {
   var _direction:FlexDirection = FlexDirection.Row
   def direction:FlexDirection = this._direction
   def direction_=(value:FlexDirection):Unit = {
-    this._direction = value;callPropertyChanged("direction",this)
+    this._direction = value;callPropertyChanged("direction")
   }
 
   var _wrap:FlexWrap = FlexWrap.NoWrap
   def wrap:FlexWrap = this._wrap
   def wrap_=(value:FlexWrap):Unit = {
-    this._wrap = value;callPropertyChanged("wrap",this)
+    this._wrap = value;callPropertyChanged("wrap")
   }
 
   var _justify:FlexJustify = FlexJustify.Start
   def justify:FlexJustify = this._justify
   def justify_=(value:FlexJustify):Unit = {
-    this._justify = value;callPropertyChanged("justify",this)
+    this._justify = value;callPropertyChanged("justify")
   }
 
   var _alignItems:FlexAlignItems = FlexAlignItems.Start
   def alignItems:FlexAlignItems = this._alignItems
   def alignItems_=(value:FlexAlignItems):Unit = {
-    this._alignItems = value;callPropertyChanged("alignItems",this)
+    this._alignItems = value;callPropertyChanged("alignItems")
   }
 
   var _alignContent:FlexAlignContent = FlexAlignContent.Start
   def alignContent:FlexAlignContent = this._alignContent
   def alignContent_=(value:FlexAlignContent):Unit = {
-    this._alignContent = value; callPropertyChanged("alignContent",this)
+    this._alignContent = value; callPropertyChanged("alignContent")
   }
 
 

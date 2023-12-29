@@ -19,7 +19,9 @@ class InputTextBuilder extends RawComponentBuilder {
 type RawInputTextFFI = CStruct1[Int]
 
 case class RawInputText(ptr:Ptr[RawInputTextFFI]) {
-
+  def setText(value:String):Unit = {
+    FFISeijaUI.inputSetString(ptr,value)
+  }
 }
 
 object InputText {

@@ -11,7 +11,7 @@ class ButtonBase extends ContentControl derives ReflectType {
     
     var _IsPressed:Boolean = false;
     def IsPressed:Boolean = _IsPressed;
-    def IsPressed_=(value:Boolean):Unit = { _IsPressed = value; this.callPropertyChanged("IsPressed",this); }
+    def IsPressed_=(value:Boolean):Unit = { _IsPressed = value; this.callPropertyChanged("IsPressed"); }
 
     override def OnEnter(): Unit = {
        val thisEntity = this.createBaseEntity(true);

@@ -8,7 +8,7 @@ class ToggleButton extends ButtonBase derives ReflectType {
 
     def isChecked:Boolean = this._isChecked
     def isChecked_=(value:Boolean):Unit = {
-        this._isChecked = value; callPropertyChanged("isChecked",this)
+        this._isChecked = value; callPropertyChanged("isChecked")
     }
 
     override protected def onClick(): Unit = {

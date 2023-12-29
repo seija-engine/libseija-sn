@@ -16,15 +16,15 @@ class Slider extends RangeBase derives ReflectType {
 
     def orientation: Orientation = _orientation
     def orientation_=(value: Orientation): Unit = {
-        _orientation = value; this.callPropertyChanged("orientation", this);
+        _orientation = value; this.callPropertyChanged("orientation");
     }
     def isInteger:Boolean = this._isInteger
     def isInteger_=(value:Boolean):Boolean = {
-      this._isInteger = value; callPropertyChanged("isInteger",this); this._isInteger
+      this._isInteger = value; callPropertyChanged("isInteger"); this._isInteger
     }
 
     override def value_=(num: Float): Unit = {
-      this._value = clipValue(num);callPropertyChanged("value",this)
+      this._value = clipValue(num);callPropertyChanged("value")
       this._realValue = num
     }
     //endregion
@@ -54,7 +54,7 @@ class Slider extends RangeBase derives ReflectType {
       val newValue = this.clipValue(this._realValue)
       if(newValue != this._value) {
         this._value = newValue
-        callPropertyChanged("value",this)
+        callPropertyChanged("value")
       }
     }
 

@@ -69,21 +69,21 @@ class UIElement extends INotifyPropertyChanged
     //region Setter
 
     def hor: LayoutAlignment = this._hor;
-    def hor_=(value:LayoutAlignment): Unit = { this._hor = value; this.callPropertyChanged("hor",this) }
+    def hor_=(value:LayoutAlignment): Unit = { this._hor = value; this.callPropertyChanged("hor") }
     def ver: LayoutAlignment = this._ver;
-    def ver_=(value:LayoutAlignment): Unit = { this._ver = value; this.callPropertyChanged("ver",this) }
+    def ver_=(value:LayoutAlignment): Unit = { this._ver = value; this.callPropertyChanged("ver") }
     def width: SizeValue = this._width;
-    def width_=(value:SizeValue): Unit = { this._width = value; this.callPropertyChanged("width",this) }
+    def width_=(value:SizeValue): Unit = { this._width = value; this.callPropertyChanged("width") }
     def height: SizeValue = this._height;
-    def height_=(value:SizeValue):Unit = { this._height = value; this.callPropertyChanged("height",this) }
+    def height_=(value:SizeValue):Unit = { this._height = value; this.callPropertyChanged("height") }
     def padding:Thickness = this._padding
-    def padding_=(value:Thickness):Unit = { this._padding = value; this.callPropertyChanged("padding",this) }
+    def padding_=(value:Thickness):Unit = { this._padding = value; this.callPropertyChanged("padding") }
     def margin = this._margin
-    def margin_=(value:Thickness) = { this._margin = value; this.callPropertyChanged("margin",this) }
+    def margin_=(value:Thickness) = { this._margin = value; this.callPropertyChanged("margin") }
     def active = this._active
-    def active_=(value:Boolean):Unit = { this._active = value; callPropertyChanged("active",this)  }
+    def active_=(value:Boolean):Unit = { this._active = value; callPropertyChanged("active")  }
     def IsEnabled:Boolean = this._IsEnabled
-    def IsEnabled_=(value:Boolean):Unit = { this._IsEnabled = value;callPropertyChanged("IsEnabled",this) }
+    def IsEnabled_=(value:Boolean):Unit = { this._IsEnabled = value;callPropertyChanged("IsEnabled") }
 
     def setStyle(style:Option[Style]):Unit = {
         this.style = style;
@@ -91,7 +91,7 @@ class UIElement extends INotifyPropertyChanged
     def dataContext = this._dataContext;
     def dataContext_=(value:Any) = {
         this._dataContext = value;
-        this.callPropertyChanged("dataContext",this);
+        this.callPropertyChanged("dataContext");
         this.onDataContextChanged();
     }
 

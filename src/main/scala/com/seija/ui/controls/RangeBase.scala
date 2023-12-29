@@ -10,9 +10,9 @@ class RangeBase extends Control derives ReflectType {
     def value:Float = this._value;
     def maxValue:Float = this._maxValue;
     def minValue:Float = this._minValue;
-    def value_=(num:Float):Unit = { this._value = num; this.callPropertyChanged("value",this); }
-    def maxValue_=(value:Float):Unit = { this._maxValue = value; callPropertyChanged("maxValue",this); }
-    def minValue_=(value:Float):Unit = { this._minValue = value; callPropertyChanged("minValue",this); }
+    def value_=(num:Float):Unit = { this._value = num; this.callPropertyChanged("value"); }
+    def maxValue_=(value:Float):Unit = { this._maxValue = value; callPropertyChanged("maxValue"); }
+    def minValue_=(value:Float):Unit = { this._minValue = value; callPropertyChanged("minValue"); }
     //endregion
 
     protected def clipValue(newValue:Float):Float = {

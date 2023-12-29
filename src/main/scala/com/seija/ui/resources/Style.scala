@@ -83,7 +83,7 @@ case class Setter(
     if(target == null) {
       typInfo.getFieldTry(this.key).logError().foreach {field =>
         field.set(elem,this.value)
-        elem.callPropertyChanged(this.key,elem)
+        elem.callPropertyChanged(this.key)
       }
     }
   }

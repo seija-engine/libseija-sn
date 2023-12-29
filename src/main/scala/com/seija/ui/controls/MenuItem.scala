@@ -21,13 +21,13 @@ class MenuItem extends HeaderedItemsControl derives ReflectType {
     protected var _isSubmenuOpen:Boolean = false
     def isSubmenuOpen:Boolean = this._isSubmenuOpen
     def isSubmenuOpen_=(value:Boolean):Unit = {
-        this._isSubmenuOpen = value; callPropertyChanged("isSubmenuOpen",this)
+        this._isSubmenuOpen = value; callPropertyChanged("isSubmenuOpen")
     }
     protected var _role:MenuItemRole = MenuItemRole.TopLevelItem
     def role:MenuItemRole = this._role
     def role_=(value: MenuItemRole): Unit = {
       this._role = value
-      callPropertyChanged("role",this)
+      callPropertyChanged("role")
     }
 
     private var parentMenu:Option[Menu] = None

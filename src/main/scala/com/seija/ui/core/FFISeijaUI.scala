@@ -252,7 +252,9 @@ object FFISeijaUI {
       color.toVector3.setToPtr(rawColor)
       entity_add_inputPtr(worldPtr,inputEntity.id,textEntity.id,fontSize,rawColor,toCString(text))
     }
-    def entityGetInput(worldPtr: Ptr[Byte],entity: Entity):Ptr[RawInputTextFFI] = entity_get_inputPtr(worldPtr, entity.id)
+    def entityGetInput(worldPtr: Ptr[Byte],entity: Entity):Ptr[RawInputTextFFI] = {
+         entity_get_inputPtr(worldPtr, entity.id)
+    }
     def inputSetString(inputPtr:Ptr[RawInputTextFFI],string:String) = Zone { implicit z => input_set_stringPtr(inputPtr,toCString(string)) }
 
     def inputGetIsActive(worldPtr: Ptr[Byte],entity: Entity):Boolean = input_get_is_activePtr(worldPtr,entity.id)

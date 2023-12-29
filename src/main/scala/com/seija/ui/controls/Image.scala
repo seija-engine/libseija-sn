@@ -32,13 +32,13 @@ class Image extends UIElement derives ReflectType {
     var _color:Color = Color.white;
 
     def imageType = this._imageType
-    def imageType_= (value:ImageType):Unit = { this._imageType = value; this.callPropertyChanged("imageType",this) }
+    def imageType_= (value:ImageType):Unit = { this._imageType = value; this.callPropertyChanged("imageType") }
 
     def sprite = this._sprite
-    def sprite_= (value:Option[AtlasSprite]):Unit = { this._sprite = value; this.callPropertyChanged("sprite",this) }
+    def sprite_= (value:Option[AtlasSprite]):Unit = { this._sprite = value; this.callPropertyChanged("sprite") }
 
     def color = this._color
-    def color_=(value:Color) = { this._color = value; this.callPropertyChanged("color",this) }
+    def color_=(value:Color) = { this._color = value; this.callPropertyChanged("color") }
 
     override def OnEnter(): Unit = {
       val spriteType = this.getSpriteType;

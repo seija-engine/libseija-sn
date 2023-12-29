@@ -55,16 +55,16 @@ class Popup extends UIElement derives ReflectType {
   def mode:PlacementMode = PlacementMode.Bottom
   def target:UIElement = this._target
   def child_=(value:UIElement):Unit = {
-    this._child = value; callPropertyChanged("child",this)
+    this._child = value; callPropertyChanged("child")
   }
   def isOpen_=(value:Boolean):Unit = {
-    this._isOpen = value;callPropertyChanged("isOpen",this)
+    this._isOpen = value;callPropertyChanged("isOpen")
   }
   def mode_=(value:PlacementMode):Unit = {
-    this._mode = value; callPropertyChanged("mode",this)
+    this._mode = value; callPropertyChanged("mode")
   }
   def target_=(value:UIElement):Unit = {
-    this._target = value;callPropertyChanged("target",this)
+    this._target = value;callPropertyChanged("target")
   }
   //endregion
   

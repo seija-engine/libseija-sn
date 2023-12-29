@@ -48,7 +48,7 @@ case class DictSetter(stateSetterDict:HashMap[String,Any]) extends VisualStateCh
           if(setter.target == null) {
             typeInfo.get.getField(setter.key).foreach {f => 
                 f.set(element,setter.value);
-                element.callPropertyChanged(setter.key,this);
+                element.callPropertyChanged(setter.key);
             }
           } else nameScope.foreach {scope =>
             val findElement = scope.getScopeElement(setter.target)
@@ -56,7 +56,7 @@ case class DictSetter(stateSetterDict:HashMap[String,Any]) extends VisualStateCh
 
                 Assembly.getTypeInfo(elem).get.getField(setter.key).foreach {f => 
                   f.set(elem,setter.value);
-                  elem.callPropertyChanged(setter.key,this);
+                  elem.callPropertyChanged(setter.key);
                 }
             }
           }

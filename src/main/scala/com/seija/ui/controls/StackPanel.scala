@@ -11,11 +11,11 @@ class StackPanel extends Panel derives ReflectType {
     
     def orientation:Orientation = _orientation;
     def orientation_=(value:Orientation):Unit = {
-        _orientation = value; this.callPropertyChanged("orientation",this);
+        _orientation = value; this.callPropertyChanged("orientation");
     }
     def spacing:Float = _spacing;
     def spacing_=(value:Float):Unit = {
-        _spacing = value; this.callPropertyChanged("spacing",this);
+        _spacing = value; this.callPropertyChanged("spacing");
     }
 
     override def OnEnter(): Unit = {
