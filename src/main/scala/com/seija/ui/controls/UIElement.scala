@@ -140,6 +140,16 @@ class UIElement extends INotifyPropertyChanged
         this.children.insert(index,elem);
     }
 
+    def removeChild(elem:UIElement,isRelease:Boolean = true):Unit = {
+        val idx = this.children.indexOf(elem)
+        if(idx >= 0) {
+            this.children.remove(idx)
+            if(isRelease) {
+                elem.Release()
+            }
+        }
+    }
+
     def setParent(elem:Option[UIElement]): Unit = { this.parent = elem; }
     def getParent:Option[UIElement] = this.parent
     def setLogicParent(elem:Option[UIElement]):Unit = { 
@@ -369,6 +379,9 @@ class UIElement extends INotifyPropertyChanged
     override def clone():UIElement = {
         val cloneObject = super.clone().asInstanceOf[UIElement];
         cloneObject.children = new ListBuffer[UIElement]()
+        cloneObject.linkObjectList = ArrayBuffer.empty
+        cloneObject.handleList = ArrayBuffer.empty
+
         cloneObject.setRouteEventElem(cloneObject)
         cloneObject.vsm = cloneObject.vsm.clone()
         for(child <- this.children) {

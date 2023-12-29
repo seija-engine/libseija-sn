@@ -24,8 +24,8 @@ case class LinkObjectInfo(
 type PropertyChangedCallBack = (INotifyPropertyChanged, String, Any) => Unit;
 
 trait INotifyPropertyChanged {
-  val handleList:ArrayBuffer[ChangedHandle] = ArrayBuffer()
-  val linkObjectList:ArrayBuffer[LinkObjectInfo] = ArrayBuffer.empty
+  var handleList:ArrayBuffer[ChangedHandle] = ArrayBuffer()
+  var linkObjectList:ArrayBuffer[LinkObjectInfo] = ArrayBuffer.empty
 
   def addHandle(handle:ChangedHandle):Unit = {
     this.handleList += handle
@@ -64,7 +64,6 @@ trait INotifyPropertyChanged {
        if(!callSets.contains(linkInfo) && linkInfo.srcProperty.Name == propertyName && 
         !(linkInfo.linkObject == srcObject && linkInfo.dstProperty.Name == srcPropertyName)) {
          callSets += linkInfo
-
          var srcValue = linkInfo.srcProperty.get(this);
          this.tryConvValue(srcValue,linkInfo.dstProperty) match
            case Failure(exception) => slog.error(exception)

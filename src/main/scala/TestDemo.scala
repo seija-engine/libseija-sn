@@ -7,6 +7,8 @@ import com.seija.ui.core.Thickness
 import com.seija.ui.resources.UIResourceMgr
 import com.seija.ui.xml.XmlUIElement
 import com.seija.ui.CanvasManager
+import com.seija.input.Input
+import com.seija.input.KeyCode
 
 class TestDemo extends IGameApp {
   var testViewModel:Option[TestViewModel] = None;
@@ -55,6 +57,10 @@ class TestDemo extends IGameApp {
 }
 
   override def OnUpdate(): Unit = {
+    if(Input.getKeyDown(KeyCode.Escape)) {
+      println("call quit?")
+      com.seija.core.App.quit()
+    }
     //val dt = Time.getDeltaTime();
     //this.testViewModel.get.setTestString(s"dt:${dt.formatted("%.3f")}  frame:${Time.getFrameCount()}");
   }

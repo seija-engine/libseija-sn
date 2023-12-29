@@ -26,4 +26,8 @@ class CanvasLayer(cameraEntity:Entity,layerZ:Float,isPopup:Boolean) extends UIEl
     this.addChild(element)
     element.Enter()
   }
+
+  def removeElement(element:UIElement):Unit = {
+    this.removeChild(element,true)
+  }
 }

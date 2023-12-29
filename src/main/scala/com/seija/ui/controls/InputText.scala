@@ -32,11 +32,18 @@ class InputText extends UIElement derives ReflectType {
       this._caretColor = value; callPropertyChanged("caretColor")
     }
 
+    var _textColor:Color = Color.black
+    def textColor:Color = this._textColor
+    def textColor_=(value:Color):Unit = {
+      this._textColor = value;callPropertyChanged("textColor")
+    }
+
     var _isActive:Boolean = false;
 
-    private val _textComp:Text = new Text()
+    private var _textComp:Text = null
 
     override def Enter(): Unit = {
+      this._textComp = new Text();
       this._textComp.hor = this._hor
       this._textComp.ver = this._ver
       this._textComp.width = this._width
@@ -45,7 +52,7 @@ class InputText extends UIElement derives ReflectType {
       this._textComp.margin = this._margin
       this._textComp.fontSize = this.fontSize
       this._textComp.setParent(this.parent)
-      this._textComp.color = Color.black
+      this._textComp.color = this._textColor
       this._textComp.anchor = AnchorAlign.Left
       this._textComp.isAutoSize = false
       this._textComp.Enter()

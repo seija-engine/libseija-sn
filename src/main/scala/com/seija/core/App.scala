@@ -59,4 +59,8 @@ object App {
     UpdateMgr.update();
     this.gameApp.OnUpdate();
   }
+
+  def quit():Unit = {
+    FFISeijaApp.appQuit(appPtr)
+  }
 }

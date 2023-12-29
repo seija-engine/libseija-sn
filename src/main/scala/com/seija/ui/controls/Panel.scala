@@ -118,7 +118,7 @@ class Panel extends UIElement with IXmlObject derives ReflectType {
     }
 
     override def Exit(): Unit = {
-      super.Enter()
+      super.Exit()
       if(_itemGenerator != null) {
         _itemGenerator.ItemsChanged = None
       }
