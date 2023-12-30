@@ -13,7 +13,6 @@ class Selector extends ItemsControl derives ReflectType {
   def selectIndex: Int = this._selectIndex
   def selectIndex_=(value: Int): Unit = {
     this._selectIndex = value; callPropertyChanged("selectIndex")
-    this.OnSelectedIndexChanged()
   }
   protected var _SelectedItem:Any = null
   def SelectedItem:Any = this.GetPropValue(Selector.SelectedItemProperty)
@@ -78,7 +77,12 @@ class Selector extends ItemsControl derives ReflectType {
   def OnSelectedIndexChanged():Unit = {
     if(!this.SelectionChange.active) {
       val info = this.ItemInfoFromIndex(this._selectIndex);
-      this.SelectionChange.SelectJustThisItem(info)
+      info match
+        case Some(info) => this.SelectionChange.SelectJustThisItem(info)
+        case None => {
+          this.SelectionChange.SelectJustThisItem(null)
+        }
+      
     }
   }
 
@@ -124,13 +128,13 @@ class Selector extends ItemsControl derives ReflectType {
     }
 
     def End(): Unit = {
-      this.active = false;
       this.ApplyCanSelectMultiple();
       val unselected:ArrayBuffer[ItemInfo] = ArrayBuffer.empty;
       val selected:ArrayBuffer[ItemInfo] = ArrayBuffer.empty;
       this.CreateDeltaSelectionChange(unselected,selected);
       this.selector.UpdatePublicSelectionProperties();
 
+      this.active = false;
       this.toSelect.clear();
       this.toUnselect.clear();
       if(selected.nonEmpty || unselected.nonEmpty) {
@@ -170,15 +174,15 @@ class Selector extends ItemsControl derives ReflectType {
       val len = this.selector._selectedItems._list.length;
       var isSelected = false;
       for(idx <- len.until(0,-1)) {
-        val curInfo = this.selector._selectedItems._list(idx)
+        val curInfo = this.selector._selectedItems._list(idx - 1)
         if(info != curInfo) {
-          this.Unselect(this.selector._selectedItems._list(idx))
+          this.Unselect(this.selector._selectedItems._list(idx - 1))
         } else {
           isSelected = true;
         }
       }
       
-      if(!isSelected) {
+      if(!isSelected && info != null) {
         this.Select(info)
       }
       this.End();
@@ -207,6 +211,20 @@ class Selector extends ItemsControl derives ReflectType {
     } else if(info.item.isInstanceOf[UIElement]) {
       info.item.asInstanceOf[UIElement].SetPropValue(IsSelectedProperty,value)
     }
+  }
+
+  override def onPropertyChanged(propertyName: String): Unit = {
+    super.onPropertyChanged(propertyName);
+    propertyName match
+      case "SelectedItem" => {
+        val findIdx = this.itemGenerator.IndexFromItemData(this._SelectedItem);
+        this.selectIndex = findIdx;
+      }
+      case "selectIndex" => {
+        this.OnSelectedIndexChanged()
+      }
+      case _ => 
+    
   }
 
   override def Exit(): Unit = {

@@ -134,9 +134,14 @@ class ItemsControl extends Control with IGeneratorHost derives ReflectType {
       itemData
     }
 
-    def ItemInfoFromIndex(index:Int):ItemInfo = {
-      val value = this.itemCollection.getDataList(index)
-      ItemInfo(value,this.itemGenerator.ContainerFromIndex(index),index)
+    def ItemInfoFromIndex(index:Int):Option[ItemInfo] = {
+      val dataList = this.itemCollection.getDataList
+      if(index < 0 || index >= dataList.length) {
+        None
+      } else {
+        val value = this.itemCollection.getDataList(index)
+        Some(ItemInfo(value,this.itemGenerator.ContainerFromIndex(index),index))
+      }
     }
 }
 
