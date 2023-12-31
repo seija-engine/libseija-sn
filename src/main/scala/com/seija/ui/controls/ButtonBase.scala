@@ -4,10 +4,14 @@ import scalanative.unsigned._
 import com.seija.ui.visualState.ViewStates
 import com.seija.ui.command.ICommand
 import com.seija.ui.event.{EventManager, EventType}
+import com.seija.core.Time
 
 class ButtonBase extends ContentControl derives ReflectType {
     var command:Option[ICommand] = None;
     var commandParams:Any = null;
+    var dbClickCommand:Option[ICommand] = None;
+
+    private var lastClickTime:Float = 0
     
     var _IsPressed:Boolean = false;
     def IsPressed:Boolean = _IsPressed;
@@ -22,6 +26,7 @@ class ButtonBase extends ContentControl derives ReflectType {
     }
 
     protected def OnElementEvent(typ:UInt,px:Float,py:Float,args:Any):Unit = {
+      if(!this._IsEnabled) { return }
        this.processViewStates(typ,args);
        val zero = 0.toUInt;
        if((typ & EventType.TOUCH_START) != zero) {
@@ -48,7 +53,15 @@ class ButtonBase extends ContentControl derives ReflectType {
 
     protected def onEndPressed():Unit = { }
 
-    protected def onClick():Unit = { this.callCommand(); }
+    protected def onClick():Unit = {
+      val curTime = Time.getFrameCount().toLong.toFloat * Time.getDeltaTime();
+      if(curTime - this.lastClickTime < 0.5f) {
+         this.dbClickCommand.foreach(_.Execute(commandParams))
+         this.lastClickTime = 0f;
+      }
+      this.lastClickTime = curTime
+      this.callCommand(); 
+    }
 
     protected def callCommand():Unit = {
       this.command.foreach { cmd => cmd.Execute(this.commandParams); }

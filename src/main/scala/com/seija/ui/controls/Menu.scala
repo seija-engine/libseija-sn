@@ -73,6 +73,7 @@ class Menu extends ItemsControl derives ReflectType {
     this.selectItem.foreach {v => v.closeALLItem() }
     item.isSubmenuOpen = true
     this.selectItem = Some(item)
+    item.setViewState(ViewStates.CommonStates,ViewStates.Pressed)
   }
 
   def onUpdate(dt:Float):Unit = {

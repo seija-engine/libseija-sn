@@ -18,3 +18,10 @@ class WindowModule extends IModule {
        FFISeijaWindow.addWinitModule(appPtr,configPtr);
   }
 }
+
+
+object Window {
+  def setFullScreen():Unit = FFISeijaWindow.setFullScreen(com.seija.core.App.appPtr)
+  def setMaximized(value:Boolean):Unit = FFISeijaWindow.setMaximized(com.seija.core.App.appPtr,value)
+  def setInnerSize(width:Float,height:Float) = FFISeijaWindow.setInnerSize(com.seija.core.App.appPtr,width,height)
+}
