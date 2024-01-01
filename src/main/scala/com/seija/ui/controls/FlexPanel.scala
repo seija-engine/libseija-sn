@@ -2,6 +2,11 @@ package com.seija.ui.controls
 import com.seija.ui.ContentProperty
 import com.seija.core.reflect.ReflectType
 import com.seija.ui.core.{FlexAlignContent, FlexAlignItems, FlexDirection, FlexJustify, FlexLayout, FlexLayoutBuilder, FlexWrap}
+import com.seija.core.reflect.Into
+import com.seija.ui.core.FlexItem
+import com.seija.ui.core.FlexItemBuilder
+import com.seija.ui.core.FlexAlignSelf
+import com.seija.core.reflect.convert
 
 @ContentProperty("children")
 class FlexPanel extends Panel derives ReflectType {
@@ -39,6 +44,14 @@ class FlexPanel extends Panel derives ReflectType {
   override def OnEnter(): Unit = {
     val entity = this.createBaseEntity(false)
     entity.add[FlexLayout](builder => {
+      builder.common.ver = this.ver;
+      builder.common.hor = this.hor;
+      builder.common.uiSize.width = this._width;
+      builder.common.uiSize.height = this._height;
+      builder.common.margin = this.margin;
+      builder.common.padding = this.padding;
+    
+
       builder.direction = this._direction
       builder.warp = this._wrap
       builder.justify = this._justify
@@ -47,5 +60,27 @@ class FlexPanel extends Panel derives ReflectType {
     })
     this.checkAddCanvas()
   }
+}
 
+object FlexPanel {
+  given Into[String,FlexItemBuilder] with {
+    override def into(fromValue: String): FlexItemBuilder = {
+      val builder = FlexItemBuilder()
+      val propList = fromValue.split(",")
+      for(propString <- propList) {
+        val kvArray = propString.split("=");
+        val propName = kvArray(0)
+        val propValue = kvArray(1)
+        propName match
+          case "grow" => { builder.grow = propValue.toFloat }
+          case "shrink" => { builder.shrink = propValue.toFloat }
+          case "order" => { builder.order = propValue.toInt }
+          case "basis" => { builder.basis = propValue.toFloat }
+          case "alignSelf" => { builder.alignSelf = convert[String,FlexAlignSelf](propValue).get }
+          case _ => slog.error(s"not match flexitem name:${propName}")
+        
+      }
+      builder
+    }
+  }
 }

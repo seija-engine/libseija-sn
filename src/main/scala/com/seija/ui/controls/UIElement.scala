@@ -1,7 +1,7 @@
 package com.seija.ui.controls
 import com.seija.core.Entity
 import com.seija.ui.binding.INotifyPropertyChanged
-import com.seija.ui.core.{FFISeijaUI, ItemLayout, LayoutAlignment, Rect2D, SizeValue, Thickness}
+import com.seija.ui.core.{FFISeijaUI, ItemLayout, LayoutAlignment, Rect2D, SizeValue, Thickness,FlexItem}
 import com.seija.core.reflect.ReflectType
 import scala.Conversion
 import com.seija.ui.resources.UIResource
@@ -16,6 +16,7 @@ import com.seija.ui.binding.BindingInst
 import scala.util.Success
 import com.seija.core.copyObject
 import com.seija.core.ICopy
+import com.seija.ui.core.FlexItemComponent
 import com.seija.ui.ContentProperty
 import scala.collection.mutable.HashMap
 import com.seija.ui.resources.UIResourceMgr
@@ -30,6 +31,8 @@ import com.seija.transform.FFISeijaTransform
 import com.seija.ui.resources.Style
 import com.seija.ui.visualState.VisualStateList
 import com.seija.ui.trigger.TriggerList
+import com.seija.ui.core.FlexItemBuilder
+import com.seija.ui.core.FlexItem
 
 case class PropertyDefine(propKey:String,default:Any);
 
@@ -43,6 +46,7 @@ class UIElement extends INotifyPropertyChanged
     protected var logicParent:Option[UIElement] = None
     var Name:String = "";
     var Id:String = "";
+    var flexItem:FlexItemBuilder = null;
 
     protected var _hor:LayoutAlignment = LayoutAlignment.Stretch
     protected var _ver:LayoutAlignment = LayoutAlignment.Stretch
@@ -170,6 +174,7 @@ class UIElement extends INotifyPropertyChanged
             this.dataContext = this.findDataContext()
         }
         this.OnEnter()
+        this.onHandleFlexItem()
         this.isEntered = true;
         this.children.foreach(child => {
           child.setParent(Some(this))
@@ -178,6 +183,19 @@ class UIElement extends INotifyPropertyChanged
     }
 
     def OnEnter(): Unit = { this.createBaseEntity(true); }
+
+    protected def onHandleFlexItem():Unit = {
+        if(this.flexItem != null) {
+           val curEntity = this.getEntity().get;
+           curEntity.add[com.seija.ui.core.FlexItem](builer => {
+            builer.shrink = this.flexItem.shrink;
+            builer.order = this.flexItem.order;
+            builer.grow = this.flexItem.grow;
+            builer.basis = this.flexItem.basis;
+            builer.alignSelf = this.flexItem.alignSelf;
+           })
+        }
+    }
 
     def OnAddContent(value:Any):Unit = { }
 
@@ -379,11 +397,11 @@ class UIElement extends INotifyPropertyChanged
     override def clone():UIElement = {
         val cloneObject = super.clone().asInstanceOf[UIElement];
         cloneObject.children = new ListBuffer[UIElement]()
-        cloneObject.linkObjectList = ArrayBuffer.empty
         cloneObject.handleList = ArrayBuffer.empty
-
         cloneObject.setRouteEventElem(cloneObject)
         cloneObject.vsm = cloneObject.vsm.clone()
+        cloneObject.linkObjectList = ArrayBuffer.empty
+
         for(child <- this.children) {
             val cloneChild = child.clone()
             cloneObject.addChild(cloneChild)

@@ -1,19 +1,35 @@
 <Panel>
     <Image sprite="default.white"  color="#eeeeee" />
-    <FlexPanel wrap="NoWrap" direction="Column"  alignItems="Start" >
-        <Panel width="121" height="100">
-            <Image sprite="default.white"  color="#aa22ea" />
-            <Text text="100" color="#ffffff"/>
-        </Panel>
-        <Panel width="121" height="100">
-            <Image sprite="default.white"  color="#aa22ea" />
-            <Text text="200" color="#ffffff"/>
-        </Panel>
-        <Panel width="121" height="100">
-            <Image sprite="default.white"  color="#aa22ea" />
-            <Text text="300" color="#ffffff"/>
-        </Panel>
-    </FlexPanel>
 
-    <ButtonBase>"刷新"</ButtonBase>
+    <FlexPanel ver="Start" hor="Start" width="1024"  wrap="NoWrap"  direction="Column"  justify="Start">
+        <FlexPanel flexItem="grow=0"  wrap="NoWrap"  height="300" direction="Row"  justify="Start" >
+            <Panel width="100" padding="5,5,5,5" flexItem="grow=2"  >
+                <Image sprite="default.white"  color="#aa22ea"  />
+                <Text text="100" color="#ffffff"/>
+            </Panel>
+            <Panel width="100" padding="5,5,5,5" flexItem="grow=8" >
+                <Image sprite="default.white"  color="#aa22ea" />
+                <Text text="200" color="#ffffff"/>
+            </Panel>
+            <Panel width="100" padding="5,5,5,5"  flexItem="grow=2">
+                <Image sprite="default.white"  color="#aa22ea" />
+                <Text text="300" color="#ffffff"/>
+            </Panel>
+        </FlexPanel>
+
+        <FlexPanel flexItem="grow=0"  wrap="NoWrap"  height="300" direction="Column"  justify="Start" >
+            <Panel height="10" padding="5,5,5,5" flexItem="grow=1"  >
+                <Image sprite="default.white"  color="#aa22ea"  />
+                <Text text="100" color="#ffffff"/>
+            </Panel>
+            <Panel height="10" padding="5,5,5,5" flexItem="grow=2" >
+                <Image sprite="default.white"  color="#aa22ea" />
+                <Text text="200" color="#ffffff"/>
+            </Panel>
+            <Panel height="10" padding="5,5,5,5"  flexItem="grow=1">
+                <Image sprite="default.white"  color="#aa22ea" />
+                <Text text="300" color="#ffffff"/>
+            </Panel>
+        </FlexPanel>
+    </FlexPanel>
 </Panel>
