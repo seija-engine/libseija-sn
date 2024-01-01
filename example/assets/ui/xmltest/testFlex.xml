@@ -1,7 +1,7 @@
 <Panel>
     <Image sprite="default.white"  color="#eeeeee" />
 
-    <FlexPanel ver="Start" hor="Start" width="1024"  wrap="NoWrap"  direction="Column"  justify="Start">
+    <FlexPanel   wrap="NoWrap"  direction="Column"  justify="Start">
         <FlexPanel flexItem="grow=0"  wrap="NoWrap"  height="300" direction="Row"  justify="Start" >
             <Panel width="100" padding="5,5,5,5" flexItem="grow=2"  >
                 <Image sprite="default.white"  color="#aa22ea"  />
