@@ -10,12 +10,15 @@ class TreeViewItem extends HeaderedItemsControl derives ReflectType {
     def IsExpanded(value:Boolean):Unit = {
         this._IsExpanded = value; callPropertyChanged("IsExpanded")
     }
+    
+    private def headerElement:Option[UIElement] = this.nameDict.get("PART_Header")
 
     override def Enter(): Unit = {
         this.setViewState(ViewStates.SelectionStates,ViewStates.Unselected)
         super.Enter();
-        val thisEntity = this.getEntity().get
-        EventManager.register(thisEntity,EventType.ALL_TOUCH,false,true,this.OnElementEvent)
+        this.headerElement.foreach {header =>
+            EventManager.register(header.getEntity().get,EventType.ALL_TOUCH,false,true,this.OnElementEvent)
+        }
         this.updateVisualState()
     }
 
@@ -48,7 +51,9 @@ class TreeViewItem extends HeaderedItemsControl derives ReflectType {
     }
 
     override def Exit(): Unit = {
-        EventManager.unRegister(this.getEntity().get)
+        this.headerElement.foreach {header =>
+            EventManager.unRegister(header.getEntity().get)
+        }
         super.Exit()
     }
 }

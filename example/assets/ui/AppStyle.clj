@@ -478,10 +478,10 @@
           <Image sprite="default.white" color="#66666699" />
           <ToggleButton Name="TreeBtn" isChecked="{Binding Owner IsExpanded Type=Both}" ver="Start" hor="Start" margin="2,8,0,0" width="16" height="16" />
           <StackPanel padding="20,0,0,0">
-            <ContentPresenter hor="Start" contentSource="header" height="30" >
+            <ContentPresenter Name="PART_Header"  contentSource="header" height="30" >
               <ContentPresenter.contentTemplate>
                 <DataTemplate>
-                  <Text  anchor="Left" text="{Binding Data this}" fontSize="22" />
+                  <Text hor="Start" anchor="Left" text="{Binding Data this}" fontSize="22" />
                 </DataTemplate>
               </ContentPresenter.contentTemplate>
             </ContentPresenter>
