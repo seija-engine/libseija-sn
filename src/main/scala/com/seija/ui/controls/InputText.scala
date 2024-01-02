@@ -67,7 +67,7 @@ class InputText extends UIElement derives ReflectType {
         builder.textEntity = Some(this._textComp.getEntity().get)
         builder.caretColor = this._caretColor
       })
-      EventManager.register(newEntity,EventType.TOUCH_START,false,this.OnElementEvent)
+      EventManager.register(newEntity,EventType.TOUCH_START,false,false,this.OnElementEvent)
       UpdateMgr.add(this.onUpdate);
     }
 

@@ -475,8 +475,9 @@
     :template 
       <ControlTemplate>
         <Panel>
+          <Image sprite="default.white" color="#66666699" />
           <ToggleButton Name="TreeBtn" isChecked="{Binding Owner IsExpanded Type=Both}" ver="Start" hor="Start" margin="2,8,0,0" width="16" height="16" />
-          <StackPanel margin="20,0,0,0">
+          <StackPanel padding="20,0,0,0">
             <ContentPresenter hor="Start" contentSource="header" height="30" >
               <ContentPresenter.contentTemplate>
                 <DataTemplate>

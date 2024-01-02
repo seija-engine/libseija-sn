@@ -17,7 +17,7 @@ class ListBoxItem extends ContentControl derives ReflectType {
         this.setViewState(ViewStates.SelectionStates,ViewStates.Unselected)
         super.Enter();
         val thisEntity = this.getEntity().get
-        EventManager.register(thisEntity,EventType.ALL_MOUSE | EventType.ALL_TOUCH,false,this.OnElementEvent)
+        EventManager.register(thisEntity,EventType.ALL_MOUSE | EventType.ALL_TOUCH,false,false,this.OnElementEvent)
         this.updateVisualState()
     }
 
@@ -54,6 +54,11 @@ class ListBoxItem extends ContentControl derives ReflectType {
         } else {
             this.setViewState(ViewStates.SelectionStates,ViewStates.Unselected)
         }
+    }
+
+    override def Exit(): Unit = {
+        EventManager.unRegister(this.getEntity().get)
+        super.Exit()
     }
 
 }

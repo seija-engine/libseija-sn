@@ -31,7 +31,7 @@ private case class EventInfo(val entity:Entity,callFunc:(UInt,Float,Float,Any) =
 object EventManager {
     var eventInfos:mutable.HashMap[Long,EventInfo] = mutable.HashMap();
     
-    def register(entity:Entity,typ:UInt,useCapture:Boolean,callback:(UInt,Float,Float,Any) => Unit,args:Any = null,addEventNode:Boolean = true):Boolean = {
+    def register(entity:Entity,typ:UInt,useCapture:Boolean,stopBubble:Boolean,callback:(UInt,Float,Float,Any) => Unit,args:Any = null,addEventNode:Boolean = true):Boolean = {
         if(this.eventInfos.contains(entity.id)) {
             return false;
         }
@@ -39,6 +39,7 @@ object EventManager {
             entity.add[com.seija.ui.core.EventNode](ev => {
                 ev.eventType = typ;
                 ev.useCapture = useCapture;
+                ev.stopBubble = stopBubble;
             });
         }
         val info = EventInfo(entity,callback,args);

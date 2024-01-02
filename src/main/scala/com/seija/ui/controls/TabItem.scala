@@ -19,7 +19,7 @@ class TabItem extends HeaderedContentControl derives ReflectType {
         this.setViewState(ViewStates.FocusStates,ViewStates.Unfocused)
         super.Enter()
         val thisEntity = this.getEntity().get
-        EventManager.register(thisEntity,EventType.ALL_MOUSE | EventType.ALL_TOUCH,false,this.OnElementEvent)
+        EventManager.register(thisEntity,EventType.ALL_MOUSE | EventType.ALL_TOUCH,false,false,this.OnElementEvent)
         this.updateVisualState()
     }
 
