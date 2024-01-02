@@ -26,4 +26,12 @@ object ViewStates {
     val SelectionStates = "SelectionStates"
     val Selected = "Selected"
     val Unselected = "Unselected"
+
+    val ExpansionStates = "ExpansionStates"
+    val Expanded = "Expanded"
+    val Collapsed = "Collapsed"
+
+    val HasItemsStates = "HasItemsStates"
+    val HasItems = "HasItems"
+    val NoItems = "NoItems"
 }

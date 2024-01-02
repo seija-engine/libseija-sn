@@ -63,35 +63,6 @@ class UIResource extends Growable[BaseUIResource] derives ReflectType {
             case _ =>
         this
     }
-    /*
-    override def addOne(elem: BaseUIResource): this.type = {
-        this.resList.addOne(elem)
-        elem match {
-            case style:OldStyle => {
-               if(style.getKey == "") {
-                 val autoKey = style.forTypeInfo.map(_.name).getOrElse("");
-                 this.styleDict.put(autoKey,style);
-                 this.allResDict.put(autoKey,style);
-               } else {
-                 println(s"add Style Key:${style.getKey}");
-                 this.styleDict.put(style.getKey,style)
-                 this.allResDict.put(style.getKey,style);
-               }
-               
-            }
-            case dataTemplate:DataTemplate => {
-                this.dataTemplateDict.addOne(dataTemplate.dataType,dataTemplate);
-                this.allResDict.put(dataTemplate.dataType,dataTemplate);
-            }
-            case controlTemplate: ControlTemplate => {
-                if(controlTemplate.key != null) { 
-                    this.controlTemplateDict.put(controlTemplate.key,controlTemplate);
-                    this.allResDict.put(controlTemplate.key,controlTemplate);
-                }
-            }
-        }
-        this
-    }*/
 }
 
 object UIResource {

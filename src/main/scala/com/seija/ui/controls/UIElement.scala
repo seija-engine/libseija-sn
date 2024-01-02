@@ -401,6 +401,7 @@ class UIElement extends INotifyPropertyChanged
         cloneObject.setRouteEventElem(cloneObject)
         cloneObject.vsm = cloneObject.vsm.clone()
         cloneObject.linkObjectList = ArrayBuffer.empty
+        cloneObject.curViewStateDict = HashMap.empty
 
         for(child <- this.children) {
             val cloneChild = child.clone()

@@ -432,4 +432,75 @@
                 </VisualStateList></ControlTemplate.vsm>
               </ControlTemplate>
   })
+
+  (style "ToggleButton" {
+    :template <ControlTemplate>
+                <Panel>
+                  <Image Name="BG" />
+                </Panel>
+                <ControlTemplate.vsm>
+                    <VisualStateList>
+                      [
+                        :CheckStates {
+                          :Checked    {:sprite (setter "BG" "default.pan-down")    }
+                          :Unchecked {:sprite (setter  "BG" "default.pan-right")   }
+                        }
+                      ]
+                    </VisualStateList>
+                  </ControlTemplate.vsm>
+              </ControlTemplate>
+  })
+
+  (style "TreeView" {
+    :itemsPanel 
+      <ItemsPanelTemplate>
+        <StackPanel isCanvas="true"  />
+      </ItemsPanelTemplate>
+    :template 
+      <ControlTemplate>
+        <Panel>
+          <Image sprite="default.white" color="#ddd" />
+          <ItemsPresenter />
+        </Panel>
+      </ControlTemplate>
+  })
+
+  (style "TreeViewItem" {
+    :ver "Start"
+
+    :itemsPanel 
+      <ItemsPanelTemplate>
+        <StackPanel  isCanvas="true"  />
+      </ItemsPanelTemplate>
+    :template 
+      <ControlTemplate>
+        <Panel>
+          <ToggleButton Name="TreeBtn" isChecked="{Binding Owner IsExpanded Type=Both}" ver="Start" hor="Start" margin="2,8,0,0" width="16" height="16" />
+          <StackPanel margin="20,0,0,0">
+            <ContentPresenter hor="Start" contentSource="header" height="30" >
+              <ContentPresenter.contentTemplate>
+                <DataTemplate>
+                  <Text  anchor="Left" text="{Binding Data this}" fontSize="22" />
+                </DataTemplate>
+              </ContentPresenter.contentTemplate>
+            </ContentPresenter>
+            <ItemsPresenter  Name="TreeChild"  active="false" />
+          </StackPanel>
+        </Panel>
+        <ControlTemplate.vsm>
+          <VisualStateList>
+            [
+              :ExpansionStates {
+                :Expanded    {:active (setter "TreeChild" true)    }
+                :Collapsed   {:active (setter "TreeChild" false)   }
+              }
+              :HasItemsStates {
+                :HasItems    {:active (setter "TreeBtn" true)    }
+                :NoItems     {:active (setter "TreeBtn" false)   }
+              }
+            ]
+          </VisualStateList>
+        </ControlTemplate.vsm>
+      </ControlTemplate>
+  })
 ]
