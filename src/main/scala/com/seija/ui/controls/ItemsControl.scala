@@ -153,6 +153,12 @@ object ItemsControl {
         case _ => None
       }
   }
+
+  def ItemsControlFromItemContainer(container:UIElement):Option[ItemsControl] = {
+    container.getLogicParent match
+      case Some(value:ItemsControl) => Some(value)  
+      case _ => None
+  }
 }
 
  case class ItemInfo(item: Any, var container: Option[UIElement],var index:Int = -1) {
