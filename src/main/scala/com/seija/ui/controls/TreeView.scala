@@ -10,6 +10,7 @@ class TreeView extends ItemsControl derives ReflectType {
         this._SelectedItem = value;callPropertyChanged("SelectedItem")
     }
 
+    override def GetContainerForItemOverride(): UIElement = new TreeViewItem()
 
     def ChangeSelection(data:Any,container:TreeViewItem,selected:Boolean):Unit = {
         var changed:Boolean = false;
@@ -37,6 +38,9 @@ class TreeView extends ItemsControl derives ReflectType {
                 oldValue = data;
                 changed = true;
             }
+        }
+        if (container.IsSelected != selected){
+            container.IsSelected = selected;
         }
     }
 

@@ -73,6 +73,7 @@ class TreeViewItem extends HeaderedItemsControl derives ReflectType {
     }
 
     override def updateVisualState(): Unit = {
+        this._IsActive = this._IsSelected;
         super.updateVisualState()
         if(this._IsExpanded) {
             this.setViewState(ViewStates.ExpansionStates,ViewStates.Expanded)

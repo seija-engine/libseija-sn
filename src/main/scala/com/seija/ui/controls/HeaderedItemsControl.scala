@@ -17,5 +17,8 @@ class HeaderedItemsControl extends ItemsControl derives ReflectType {
     }
     //endregion
     
+    def PrepareHeaderedItemsControl(item:Any,parentItemsControl:ItemsControl):Unit = {
+        
+    }
 
 }
