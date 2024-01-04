@@ -17,8 +17,23 @@ class HeaderedItemsControl extends ItemsControl derives ReflectType {
     }
     //endregion
     
-    def PrepareHeaderedItemsControl(item:Any,parentItemsControl:ItemsControl):Unit = {
-        
+    def PrepareHeaderedItemsControl(itemData:Any,parentItemsControl:ItemsControl):Unit = {
+        val headerIsNotLogical = itemData != this;
+        this.PrepareItemsControl(itemData,parentItemsControl)
+        if(headerIsNotLogical) {
+            this.header = itemData;
+           
+            parentItemsControl.itemTemplate.foreach {v => this.headerTemplate = v }
+            this.PrepareHierarchy(itemData,parentItemsControl)
+        }
+    }
+
+    def PrepareHierarchy(itemData:Any,parentItemsControl:ItemsControl):Unit = {
+        val headerTemplate = this.headerTemplate;
+        if(headerTemplate == null) 
+        {
+            //TODO find template by dataType
+        }
     }
 
 }

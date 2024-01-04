@@ -475,16 +475,13 @@
     :template 
       <ControlTemplate>
         <Panel>
+          ;<Image sprite="default.white" color="#66666699" />
           <ToggleButton Name="TreeBtn" isChecked="{Binding Owner IsExpanded Type=Both}" ver="Start" hor="Start" margin="2,8,0,0" width="16" height="16" />
           <StackPanel padding="20,0,0,0">
             <Panel height="30" >
               <Image Name="Select" sprite="default.white" color="#0000ff66" margin="-2,0,0,0" />
               <ContentPresenter Name="PART_Header"  contentSource="header" height="30" >
-                <ContentPresenter.contentTemplate>
-                  <DataTemplate>
-                    <Text hor="Start" anchor="Left" text="{Binding Data this}" fontSize="22" />
-                  </DataTemplate>
-                </ContentPresenter.contentTemplate>
+               
               </ContentPresenter>
             </Panel>
             <ItemsPresenter  Name="TreeChild"  active="false" />

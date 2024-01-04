@@ -95,6 +95,8 @@ class TreeViewItem extends HeaderedItemsControl derives ReflectType {
         }
     }
 
+    override def GetContainerForItemOverride(): UIElement = new TreeViewItem()
+
     override def Exit(): Unit = {
         this.headerElement.foreach {header =>
             EventManager.unRegister(header.getEntity().get)

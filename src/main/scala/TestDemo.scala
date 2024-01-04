@@ -9,6 +9,7 @@ import com.seija.ui.xml.XmlUIElement
 import com.seija.ui.CanvasManager
 import com.seija.input.Input
 import com.seija.input.KeyCode
+import scala.collection.mutable.ArrayBuffer
 
 class TestDemo extends IGameApp {
   var testViewModel:Option[TestViewModel] = None;
@@ -40,6 +41,7 @@ class TestDemo extends IGameApp {
   
   override def OnStart(): Unit = {
     Assembly.add[TestViewModel]();
+    Assembly.add[TestTreeNode]();
     Assembly.add[TestDataItem]()
     this.loadAsset()
 
@@ -83,6 +85,20 @@ class TestDataItem extends INotifyPropertyChanged derives ReflectType {
   }
 }
 
+class TestTreeNode extends INotifyPropertyChanged derives ReflectType {
+    var NodeName:String = "";
+    var nodes:ArrayBuffer[TestTreeNode] = ArrayBuffer.empty
+}
+object TestTreeNode {
+  def apply(name:String,list:TestTreeNode*):TestTreeNode = {
+      val node = new TestTreeNode();
+      node.NodeName = name
+      List()
+      node.nodes = ArrayBuffer.from(list)
+      node
+  }
+}
+
 class TestViewModel extends INotifyPropertyChanged derives ReflectType {
     var _floatNumber:Float = 0
     var count:Int = 0;
@@ -114,6 +130,14 @@ class TestViewModel extends INotifyPropertyChanged derives ReflectType {
     var newCommand:FCommand = FCommand(this.testNew)
 
     var dataList2:ObservableList[TestDataItem] = ObservableList.from(List(new TestDataItem(),new TestDataItem()))
+
+    var nodes:ArrayBuffer[TestTreeNode] = ArrayBuffer(
+        TestTreeNode("杯装之诗",
+          TestTreeNode("角色",TestTreeNode("温迪",TestTreeNode("风神之诗")),
+                              TestTreeNode("香菱"),TestTreeNode("芭芭拉"),TestTreeNode("菲谢尔")),
+          TestTreeNode("武器",TestTreeNode("阿莫斯之弓"),TestTreeNode("风鹰剑")),
+        )
+      )
 
     def setCount(count: Int): Unit = {
       this.count = count;

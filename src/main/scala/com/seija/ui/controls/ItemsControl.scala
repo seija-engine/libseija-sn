@@ -94,7 +94,7 @@ class ItemsControl extends Control with IGeneratorHost derives ReflectType {
     def onItemsChangedHandle(_sender:INotifyCollectionChanged, _args:NotifyCollectionChangedEventArgs):Unit = {
       this.updateHasItems()
       this.OnItemsChanged(_args)
-    }
+    } 
 
     def OnItemsChanged(args:NotifyCollectionChangedEventArgs):Unit = {}
 
@@ -141,6 +141,14 @@ class ItemsControl extends Control with IGeneratorHost derives ReflectType {
       } else {
         val value = this.itemCollection.getDataList(index)
         Some(ItemInfo(value,this.itemGenerator.ContainerFromIndex(index),index))
+      }
+    }
+
+    def PrepareItemsControl(itemData:Any,parentItemsControl:ItemsControl):Unit = {
+      if(itemData == this) { return; }
+      parentItemsControl.itemTemplate.foreach { v => this.itemTemplate = Some(v) };
+      if(this.bindItemList.isEmpty) {
+        this.bindItemList.appendAll(parentItemsControl.bindItemList)
       }
     }
 }

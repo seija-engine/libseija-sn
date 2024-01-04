@@ -33,6 +33,7 @@ import com.seija.ui.visualState.VisualStateList
 import com.seija.ui.trigger.TriggerList
 import com.seija.ui.core.FlexItemBuilder
 import com.seija.ui.core.FlexItem
+import scala.util.Failure
 
 case class PropertyDefine(propKey:String,default:Any);
 
@@ -280,9 +281,10 @@ class UIElement extends INotifyPropertyChanged
                     val findDataContext = this.findDataContext();
                     //println(s"findDataContext = ${findDataContext}");
                     if(findDataContext != null) {
-                        DataBindingManager.binding(findDataContext,this,bindItem).logError() match {
+                        DataBindingManager.binding(findDataContext,this,bindItem) match {
                             case Success(Some(inst)) => this.bindingInstList += inst;
-                            case _ => {}
+                            case Success(_) => 
+                            case Failure(exception) => slog.error(s"e:${exception} item:${bindItem} data:${findDataContext}");
                         }
                     }
                 }
