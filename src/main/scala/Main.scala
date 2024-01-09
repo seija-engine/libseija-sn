@@ -8,6 +8,7 @@ import com.seija.window.WindowModule
 import scala.io.AnsiColor
 import com.seija.math.Color
 import com.seija
+import com.seija.`2d`.Module2D
 object Main {
   def main(args: Array[String]): Unit = {
     //slog.Logger.root.clearModifiers().withMinimumLevel(slog.Level.Trace)
@@ -25,6 +26,7 @@ object Main {
     app.addModule(WindowModule())
     app.addModule(RUVModule())
     app.addModule(InputModule())
+    app.addModule(Module2D())
     app.addModule(
       com.seija.render.RenderModule(
         com.seija.render.RenderConfig(
@@ -37,7 +39,7 @@ object Main {
 
 
     app.addModule(UIModule())
-    app.start(new TestDemo())
+    app.start(new Test2D())
     app.run()
 
   }

@@ -55,7 +55,7 @@ object Sprite {
      override def builder(): BuilderType = new SpriteBuilder()
 
      override def getRaw(entity: Entity,isMut:Boolean): RawType =
-       RawSprite(FFISeijaUI.entityGetSprite(App.worldPtr,entity.id,true))
+       RawSprite(FFISeijaUI.entityGetSprite(App.worldPtr,entity.id,isMut))
    }
 }
 

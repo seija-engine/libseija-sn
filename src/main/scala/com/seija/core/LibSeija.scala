@@ -11,7 +11,7 @@ object LibSeija {
 
    def initLib():Library = {
       val libPath = if(scalanative.runtime.Platform.isWindows()) {
-        "E:\\SDKBin\\lib_seija.dll"
+        "lib_seija.dll"
       } else {
          "./liblib_seija.so"
       }
