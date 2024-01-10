@@ -39,7 +39,7 @@ object Main {
 
 
     app.addModule(UIModule())
-    app.start(new Test2D())
+    app.start(new TestDemo())
     app.run()
 
   }

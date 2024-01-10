@@ -57,6 +57,7 @@ class UIElement extends INotifyPropertyChanged
     protected var _margin:Thickness = Thickness.zero
     protected var _active:Boolean = true
     protected var _IsEnabled:Boolean = true
+    protected var _contentMenu:ContextMenu = null;
 
     protected var bindItemList:ListBuffer[BindingItem] = ListBuffer.empty
     protected var bindingInstList:ListBuffer[BindingInst] = ListBuffer.empty
@@ -89,6 +90,11 @@ class UIElement extends INotifyPropertyChanged
     def active_=(value:Boolean):Unit = { this._active = value; callPropertyChanged("active")  }
     def IsEnabled:Boolean = this._IsEnabled
     def IsEnabled_=(value:Boolean):Unit = { this._IsEnabled = value;callPropertyChanged("IsEnabled") }
+    
+    def contentMenu:ContextMenu = this._contentMenu
+    def contentMenu_=(menu:ContextMenu):Unit = {
+        this._contentMenu = menu;callPropertyChanged("contentMenu")
+    }
 
     def setStyle(style:Option[Style]):Unit = {
         this.style = style;
