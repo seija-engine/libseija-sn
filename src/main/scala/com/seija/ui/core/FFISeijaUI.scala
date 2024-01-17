@@ -22,6 +22,7 @@ import com.seija.math.RawVector2
 import com.seija.core.{LibSeija, App, Entity}
 import scalanative.runtime._
 import scala.scalanative.unsigned._
+import scala.scalanative.libc.stddef
 type RawSpriteSheet = Ptr[Byte]
 
 object FFISeijaUI {
@@ -124,7 +125,15 @@ object FFISeijaUI {
 
     def entityAddEventNode(worldPtr:Ptr[Byte],entity:Long,eventNodePtr:Ptr[RawEventNode]) =  Zone { implicit z =>
         entityAddEventNodePtr(worldPtr,entity,eventNodePtr)
-       
+    }
+
+    private val entity_get_event_nodePtr:CFuncPtr2[Ptr[Byte],Long,Ptr[RawEventNode]] =  LibSeija.getFunc("entity_get_event_node");
+    def entityGetEventNode(worldPtr:Ptr[Byte],entity:Entity):Option[Ptr[RawEventNode]] = {
+        val ptrEventNode = entity_get_event_nodePtr(worldPtr,entity.id)
+        if(ptrEventNode == stddef.NULL) {
+            return None;
+        }
+        Some(ptrEventNode)
     }
 
     def entityRemoveEventNode(worldPtr:Ptr[Byte],entity:Long):Boolean = entityRemoveEventPtr(worldPtr,entity)

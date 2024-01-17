@@ -14,7 +14,7 @@ import scala.collection.mutable.ArrayBuffer
 
 class Menu extends ItemsControl derives ReflectType {
  
-  private var waitCloseFrame:Long = 0
+  protected  var waitCloseFrame:Long = 0
   override def OnEnter(): Unit = {
     super.OnEnter()
     UpdateMgr.add(this.onUpdate)
@@ -23,6 +23,7 @@ class Menu extends ItemsControl derives ReflectType {
   private var selectItem:Option[MenuItem] = None
 
   def onChildItemEvent(item:MenuItem, typ:UInt):Unit = {
+    
     val zero = 0.toUInt
     val isMouseEnter = (typ & EventType.MOUSE_ENTER) != zero
     val isMouseLeave = (typ & EventType.MOUSE_LEAVE) != zero

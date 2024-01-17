@@ -1,0 +1,11 @@
+<Panel>
+    <Image sprite="default.white"  color="#eee" />
+    <Panel.contextMenu>
+        <ContextMenu>
+            <MenuItem  style="{Res ctxMenuItem}" header="上下切分窗口" />
+            <MenuItem  style="{Res ctxMenuItem}" header="左右切分窗口" />
+            <MenuItem  style="{Res ctxMenuItem}" header="刷新" />
+            <MenuItem  style="{Res ctxMenuItem}" header="视图" />
+        </ContextMenu>
+    </Panel.contextMenu>
+</Panel>

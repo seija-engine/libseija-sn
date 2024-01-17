@@ -39,10 +39,10 @@ object EventNode {
 
     given EventNodeComponent:RawComponent[EventNode] with {
       type BuilderType = EventNodeBuilder;
-      type RawType = Ptr[Byte];
+      type RawType = Option[Ptr[RawEventNode]];
 
       override def builder(): BuilderType = new EventNodeBuilder();
 
-      override def getRaw(entity: Entity,isMut:Boolean): RawType = ???
+      override def getRaw(entity: Entity,isMut:Boolean): RawType = FFISeijaUI.entityGetEventNode(com.seija.core.App.worldPtr,entity)
     }
 }

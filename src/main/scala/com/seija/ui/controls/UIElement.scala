@@ -34,6 +34,11 @@ import com.seija.ui.trigger.TriggerList
 import com.seija.ui.core.FlexItemBuilder
 import com.seija.ui.core.FlexItem
 import scala.util.Failure
+import com.seija.ui.event.EventManager
+import org.w3c.dom.events.UIEvent
+import com.seija.ui.event.EventType
+import com.seija.input.Input
+import scalanative.unsigned._
 
 case class PropertyDefine(propKey:String,default:Any);
 
@@ -57,7 +62,7 @@ class UIElement extends INotifyPropertyChanged
     protected var _margin:Thickness = Thickness.zero
     protected var _active:Boolean = true
     protected var _IsEnabled:Boolean = true
-    protected var _contentMenu:ContextMenu = null;
+    protected var _contextMenu:ContextMenu = null;
 
     protected var bindItemList:ListBuffer[BindingItem] = ListBuffer.empty
     protected var bindingInstList:ListBuffer[BindingInst] = ListBuffer.empty
@@ -91,9 +96,9 @@ class UIElement extends INotifyPropertyChanged
     def IsEnabled:Boolean = this._IsEnabled
     def IsEnabled_=(value:Boolean):Unit = { this._IsEnabled = value;callPropertyChanged("IsEnabled") }
     
-    def contentMenu:ContextMenu = this._contentMenu
-    def contentMenu_=(menu:ContextMenu):Unit = {
-        this._contentMenu = menu;callPropertyChanged("contentMenu")
+    def contextMenu:ContextMenu = this._contextMenu
+    def contextMenu_=(menu:ContextMenu):Unit = {
+        this._contextMenu = menu;callPropertyChanged("contextMenu")
     }
 
     def setStyle(style:Option[Style]):Unit = {
@@ -182,6 +187,7 @@ class UIElement extends INotifyPropertyChanged
         }
         this.OnEnter()
         this.onHandleFlexItem()
+        this.onHandleContextMenu()
         this.isEntered = true;
         this.children.foreach(child => {
           child.setParent(Some(this))
@@ -190,6 +196,21 @@ class UIElement extends INotifyPropertyChanged
     }
 
     def OnEnter(): Unit = { this.createBaseEntity(true); }
+
+    protected def onHandleContextMenu():Unit = {
+        if(this._contextMenu != null) 
+        {
+            EventManager.register(this.getEntity().get,EventType.TOUCH_END,false,false,this.OnTouchEnd);
+        }
+    }
+
+    protected def OnTouchEnd(typ:UInt,mouse:UInt,x:Float,y:Float,arg:Any):Unit = {
+      if(mouse != 1.toUInt) return;
+      if(!this._contextMenu.isEntered) {
+        this._contextMenu.Enter();
+      }
+      this._contextMenu.Open();
+    }
 
     protected def onHandleFlexItem():Unit = {
         if(this.flexItem != null) {

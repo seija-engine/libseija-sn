@@ -23,7 +23,7 @@ class TabItem extends HeaderedContentControl derives ReflectType {
         this.updateVisualState()
     }
 
-    protected def OnElementEvent(typ:UInt,px:Float,py:Float,args:Any):Unit = {
+    protected def OnElementEvent(typ:UInt,mouse:UInt,px:Float,py:Float,args:Any):Unit = {
        val zero = 0.toUInt
        if((typ & EventType.TOUCH_START) != zero) {
         if(!this.IsSelected) {

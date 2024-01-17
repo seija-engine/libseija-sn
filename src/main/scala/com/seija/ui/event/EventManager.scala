@@ -9,6 +9,8 @@ import scala.scalanative.unsafe.CFuncPtr4
 import scala.scalanative.unsigned.*
 import com.seija.core.{App, Entity}
 import com.seija.input.KeyCode.B
+import scala.collection.mutable.ArrayBuffer
+import scala.scalanative.unsafe.CFuncPtr5
 object EventType {
     val NONE: UInt = 0.toUInt;
     val TOUCH_START: UInt = 1.toUInt;
@@ -26,46 +28,49 @@ object EventType {
     val ALL: UInt = ALL_TOUCH | ALL_MOUSE | ALL_DRAG;
 }
 
-private case class EventInfo(val entity:Entity,callFunc:(UInt,Float,Float,Any) => Unit,args:Any);
+private case class EventInfo(val entity:Entity,callList:ArrayBuffer[(UInt,UInt,Float,Float,Any) => Unit],args:Any);
 
 object EventManager {
     var eventInfos:mutable.HashMap[Long,EventInfo] = mutable.HashMap();
     
-    def register(entity:Entity,typ:UInt,useCapture:Boolean,stopBubble:Boolean,callback:(UInt,Float,Float,Any) => Unit,args:Any = null,addEventNode:Boolean = true):Boolean = {
+    def register(entity:Entity,typ:UInt,useCapture:Boolean,stopBubble:Boolean,callback:(UInt,UInt,Float,Float,Any) => Unit,args:Any = null):Boolean = {
         if(this.eventInfos.contains(entity.id)) {
-            return false;
-        }
-        if(addEventNode) {
+            this.eventInfos(entity.id).callList.addOne(callback)
+            entity.get[com.seija.ui.core.EventNode]().foreach {ptr =>
+                ptr._2 = ptr._2 | typ;
+            }
+        } else {
             entity.add[com.seija.ui.core.EventNode](ev => {
                 ev.eventType = typ;
                 ev.useCapture = useCapture;
                 ev.stopBubble = stopBubble;
             });
+            val info = EventInfo(entity,ArrayBuffer(callback),args);
+            this.eventInfos.put(entity.id,info);
         }
-        val info = EventInfo(entity,callback,args);
-        this.eventInfos.put(entity.id,info);
+        
         true
     }
 
    
 
-    def unRegister(entity:Entity,rmEventNode:Boolean = true): Unit = {
+    def unRegister(entity:Entity): Unit = {
         if(this.eventInfos.contains(entity.id)) {
             this.eventInfos.remove(entity.id);
-            if(rmEventNode) {
-                FFISeijaUI.entityRemoveEventNode(com.seija.core.App.worldPtr,entity.id);
-            }
+            FFISeijaUI.entityRemoveEventNode(com.seija.core.App.worldPtr,entity.id);
         }
     }
 
     def update():Unit = {
-        FFISeijaUI.readUIEvents(com.seija.core.App.worldPtr,CFuncPtr4.fromScalaFunction(onReadEvent));
+        FFISeijaUI.readUIEvents(com.seija.core.App.worldPtr,CFuncPtr5.fromScalaFunction(onReadEvent));
     }
 
-    def onReadEvent(entityId:Long,typ:UInt,px:Float,py:Float):Unit = {
+    def onReadEvent(entityId:Long,typ:UInt,mouse:UInt,px:Float,py:Float):Unit = {
        if(this.eventInfos.contains(entityId)) {
           val info = this.eventInfos(entityId);
-          info.callFunc(typ,px,-py,info.args);
+          info.callList.foreach {f => 
+             f(typ,mouse,px,-py,info.args);
+          };
        }
     }
 }

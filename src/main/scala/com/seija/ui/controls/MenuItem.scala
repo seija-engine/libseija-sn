@@ -48,7 +48,7 @@ class MenuItem extends HeaderedItemsControl derives ReflectType {
         EventManager.register(this.getEntity().get,EventType.CLICK | EventType.ALL_MOUSE,false,false,OnElementEvent)
     }
 
-    protected def OnElementEvent(typ:UInt,px:Float,py:Float,args:Any):Unit = {
+    protected def OnElementEvent(typ:UInt,mouse:UInt,px:Float,py:Float,args:Any):Unit = {
       val zero = 0.toUInt
       val isClick = (typ & EventType.CLICK) != zero
       val isMouseEnter = (typ & EventType.MOUSE_ENTER) != zero

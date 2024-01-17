@@ -71,7 +71,7 @@ class InputText extends UIElement derives ReflectType {
       UpdateMgr.add(this.onUpdate);
     }
 
-    protected def OnElementEvent(typ:UInt,px:Float,py:Float,args:Any):Unit = { }
+    protected def OnElementEvent(typ:UInt,mouse:UInt,px:Float,py:Float,args:Any):Unit = { }
 
     private def onUpdate(dt:Float):Unit = {
        val curEntity = this.getEntity().get

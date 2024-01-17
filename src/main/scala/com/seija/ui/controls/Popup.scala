@@ -12,6 +12,7 @@ import scala.scalanative.unsigned._
 import com.seija.core.Time
 import com.seija.math
 import com.seija
+import com.seija.input.Input
 
 enum PlacementMode(v:Int) {
   case Center extends PlacementMode(0)
@@ -108,6 +109,10 @@ class Popup extends UIElement derives ReflectType {
     }
   }
 
+  def UpdatePos():Unit = {
+    this.waitSetFrame = Some(Time.getFrameCount())
+  }
+
   protected def OnPostLayout(step:Int):Unit = {
     val curFrame = Time.getFrameCount()
     if(this.waitSetFrame.isDefined && curFrame == this.waitSetFrame.get) {
@@ -150,7 +155,10 @@ class Popup extends UIElement derives ReflectType {
         val yOffset =  targetUIPos.y + targetRect.height * 0.5f
         Vector2(xOffset, yOffset)
       }
-      case PlacementMode.Absolute | PlacementMode.Mouse => ???
+      case PlacementMode.Mouse => {
+          Vector2(targetUIPos.x,targetUIPos.y)
+      }
+      case PlacementMode.Absolute => Vector2.zero
     }
     ltPos
   }
@@ -171,8 +179,10 @@ class Popup extends UIElement derives ReflectType {
       val targetRect = targetEntity.get[Rect2D]()
       //println(targetRect.toData)
       return (targetPos,targetRect.toData)
+    } else {
+        val mouse = Input.getMousePos();
+        (new Vector3(mouse.x,mouse.y,0),math.Rect2D.zero)
     }
-    ???
   }
 
   private def isHasTargetMode:Boolean = {

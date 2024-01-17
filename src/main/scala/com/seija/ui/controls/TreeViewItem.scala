@@ -46,7 +46,7 @@ class TreeViewItem extends HeaderedItemsControl derives ReflectType {
         this.updateVisualState()
     }
 
-    def OnElementEvent(typ:UInt,px:Float,py:Float,args:Any):Unit = {
+    def OnElementEvent(typ:UInt,mouse:UInt,px:Float,py:Float,args:Any):Unit = {
         this.processViewStates(typ,args);
         val zero = 0.toUInt
         if((typ & EventType.TOUCH_START) != zero) {

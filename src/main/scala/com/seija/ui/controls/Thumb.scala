@@ -21,7 +21,7 @@ class Thumb extends Control derives ReflectType {
         thisEntity.add[FreeLayoutItem]();
     }
 
-    protected def OnElementEvent(typ:UInt,px:Float,py:Float,args:Any):Unit = {
+    protected def OnElementEvent(typ:UInt,mouse:UInt,px:Float,py:Float,args:Any):Unit = {
         this.processViewStates(typ,args);
         val zero = 0.toUInt;
         if((typ & EventType.BEGIN_DRAG) != zero) {

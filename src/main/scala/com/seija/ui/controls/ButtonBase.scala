@@ -25,7 +25,7 @@ class ButtonBase extends ContentControl derives ReflectType {
        updateVisualState();
     }
 
-    protected def OnElementEvent(typ:UInt,px:Float,py:Float,args:Any):Unit = {
+    protected def OnElementEvent(typ:UInt,mouse:UInt,px:Float,py:Float,args:Any):Unit = {
       if(!this._IsEnabled) { return }
        this.processViewStates(typ,args);
        val zero = 0.toUInt;

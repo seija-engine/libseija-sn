@@ -508,4 +508,29 @@
         </ControlTemplate.vsm>
       </ControlTemplate>
   })
+
+  (style "ContextMenu" {
+    :itemsPanel 
+      <ItemsPanelTemplate>
+        <StackPanel orientation="Ver" />
+      </ItemsPanelTemplate>
+    :template <ControlTemplate>
+                <Panel  >
+                  <Image  sprite="default.white"  />
+                  <Image imageType="Slice"  sprite="default.menu-border" />
+                  <ItemsPresenter />
+                </Panel>
+              </ControlTemplate>
+  })
+
+  (style {:type "MenuItem" :key "ctxMenuItem"} {
+    
+    :height "30"
+    :template <ControlTemplate>
+                <Panel width="120" height="30">
+                  <ContentPresenter contentSource="header" />
+                  <Image  width="120" imageType="Slice" sprite="default.frame" color="#ffffff" />
+                </Panel>
+              </ControlTemplate>
+  })
 ]
